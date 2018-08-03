@@ -5,6 +5,23 @@ namespace Lodestone\Modules;
 
 trait Converters {
     
+    private function imageToBool(string $img): bool
+    {
+        switch(strtolower($img)) {
+            case 'Yes':
+            case '○':
+            case 'oui':
+            case '○':
+            case 'https://img.finalfantasyxiv.com/lds/h/h/iMiPYBWuh22FtFJTn2coPIp0I0.png':
+            case 'https://img.finalfantasyxiv.com/lds/h/A/te5gEgEroS6xWX-bPrAVizJcSg.png':
+            case 'https://img.finalfantasyxiv.com/lds/h/D/_VRXR3uARNQzxAv1v16NYvS5xk.png':
+                $bool = true;
+            default:
+                $bool = false;
+        }
+        return $bool;
+    }
+    
     private function getAchKindId(string $kind): string
     {
         switch(strtolower($kind)) {

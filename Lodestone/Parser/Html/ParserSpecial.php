@@ -64,52 +64,6 @@ trait ParserSpecial
     }
 
     /**
-     * Special HTML action for Class/Jobs
-     *
-     * @return Document
-     */
-    protected function getSpecial__ClassJobs()
-    {
-        $html = $this->dom->innerHtml();
-
-        // strip start
-        $start = strpos($html, 'character__job');
-        $start = $start - 50;
-        $html = substr($html, $start);
-
-        // strip finish
-        $finish = strpos($html, 'Fisher');
-        $finish = $finish + 200;
-        $html = substr($html, 0, $finish);
-
-        $dom = $this->getDocumentFromHtml($html);
-        unset($html);
-        return $dom;
-    }
-
-    /**
-     * Special HTML action for Collectables
-     *
-     * @return bool|Document
-     */
-    protected function getSpecial__Collectables()
-    {
-        $html = $this->dom->innerHtml();
-
-        // strip start
-        $start = strpos($html, 'character__mounts');
-        $html = substr($html, $start - 30);
-
-        if (!$html) {
-            return false;
-        }
-
-        $dom = $this->getDocumentFromHtml($html);
-        unset($html);
-        return $dom;
-    }
-
-    /**
      * Special HTML action for Equipment
      *
      * @return Document

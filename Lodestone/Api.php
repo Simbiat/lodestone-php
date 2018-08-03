@@ -4,31 +4,12 @@ namespace Lodestone;
 
 // use all the things
 use Lodestone\Modules\{
-    Logging\Benchmark, Logging\Logger, Routes, Validator, HttpRequest
-};
-
-use Lodestone\Search\{
-    Character as CharacterSearch,
-    FreeCompany as FreeCompanySearch,
-    Linkshell as LinkshellSearch,
-    PvPTeam as PvPTeamSearch,
+    Logging\Benchmark, Logging\Logger, Routes, Regex, Validator, HttpRequest
 };
 
 use Lodestone\Parser\{
     Character as CharacterParser,
-    Friends as CharacterFriendsParser,
-    Following as CharacterFollowingParser,
-    
-    Achievements as AchievementsParser,
-    
-    FreeCompany as FreeCompanyParser,
-    FreeCompanyMembers as FreeCompanyMembersParser,
-    
-    Linkshell as LinkshellParser,
-    
-    PvPTeam as PvPTeamParser,
-    
-    Lodestone as LodeStoneParser
+    Achievements as AchievementsParser
 };
 
 /**
@@ -118,9 +99,7 @@ class Api
                     $this->pageCount()->PvPTeamsList();
                     break;
                 case 'Character':
-                    if (!empty($this->typesettings)) {
-                        $this->result = (new CharacterParser($this->typesettings['id'], $this->html))->results;
-                    }
+                    $this->Character();
                     break;
                 case 'Achievements':
                     if (!empty($this->typesettings)) {
@@ -182,7 +161,6 @@ class Api
     /**
      * @test 730968
      * @param $id
-     * @return Entities\Character\CharacterProfile
      */
     public function getCharacter($id)
     {
@@ -197,7 +175,6 @@ class Api
      * @softfail true
      * @param $id
      * @param $page
-     * @return Entities\Character\CharacterFriends
      */
     public function getCharacterFriends($id, $page = 1)
     {
@@ -211,7 +188,6 @@ class Api
      * @softfail true
      * @param $id
      * @param $page
-     * @return Entities\Character\CharacterFollowing
      */
     public function getCharacterFollowing($id, $page = 1)
     {
@@ -226,7 +202,6 @@ class Api
      * @param int $kind = 1
      * @param bool $includeUnobtained = false
      * @param int $category = false
-     * @return Entities\Character\Achievements
      */
     public function getCharacterAchievements($id, $achievementId = false, int $kind = 1, bool $includeUnobtained = false, bool $category = false, bool $details = false)
     {
@@ -250,13 +225,11 @@ class Api
     /**
      * @test 9231253336202687179
      * @param $id
-     * @return Entities\FreeCompany\FreeCompany
      */
     public function getFreeCompany($id)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_URL, $id);
         $this->type = 'FreeCompany';
-        $this->typesettings = ['id'=>$id];
         return $this->parse();
     }
 
@@ -264,13 +237,11 @@ class Api
      * @test 9231253336202687179
      * @param $id
      * @param bool $page
-     * @return Entities\FreeCompany\FreeCompanyMembers
      */
     public function getFreeCompanyMembers($id, $page = 1)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'FreeCompanyMembers';
-        $this->typesettings = ['id'=>$id];
         return $this->parse();
     }
 
@@ -278,26 +249,22 @@ class Api
      * @test 19984723346535274
      * @param $id
      * @param bool $page
-     * @return Entities\Linkshell\Linkshell
      */
     public function getLinkshell($id, $page = 1)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'LinkshellMembers';
-        $this->typesettings = ['id'=>$id];
         return $this->parse();
     }
     
     /**
      * @test c7a8e4e6fbb5aa2a9488015ed46a3ec3d97d7d0d
      * @param $id
-     * @return Entities\PvPTeam\PvPTeam
      */
     public function getPvPTeam($id)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_PVPTEAM_MEMBERS_URL, $id);
         $this->type = 'PvPTeamMembers';
-        $this->typesettings = ['id'=>$id];
         return $this->parse();
     }
     

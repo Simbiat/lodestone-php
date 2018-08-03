@@ -3,10 +3,326 @@ namespace Lodestone\Modules;
 
 trait Parsers
 {    
+    private function Character()
+    {
+        #General
+        preg_match_all(
+            Regex::CHARACTER_GENERAL,
+            $this->html,
+            $characters,
+            PREG_SET_ORDER
+        );
+        $this->html = str_replace($characters[0][0], '', $this->html);
+        #Race, grand/free company
+        preg_match_all(
+            Regex::CHARACTER_GROUPS,
+            $this->html,
+            $characters2,
+            PREG_SET_ORDER
+        );
+        $this->html = str_replace($characters2[0][0], '', $this->html);
+        #Profile text
+        preg_match_all(
+            Regex::CHARACTER_TEXT,
+            $this->html,
+            $characters3,
+            PREG_SET_ORDER
+        );
+        $this->html = str_replace($characters3[0][0], '', $this->html);
+        #Portrait
+        preg_match_all(
+            Regex::CHARACTER_PORTRAIT,
+            $this->html,
+            $characters4,
+            PREG_SET_ORDER
+        );
+        $this->html = str_replace($characters4[0][0], '', $this->html);
+        #Jobs
+        preg_match_all(
+            Regex::CHARACTER_JOBS,
+            $this->html,
+            $characters5,
+            PREG_SET_ORDER
+        );
+        $this->html = str_replace($characters5[0][0], '', $this->html);
+        #Mounts
+        preg_match_all(
+            Regex::CHARACTER_MOUNTS,
+            $this->html,
+            $mounts,
+            PREG_SET_ORDER
+        );
+        if (!empty($mounts[0][0])) {
+            $this->html = @str_replace($mounts[0][0], '', $this->html);
+            $mounts = $mounts[0];
+        }
+        #Minions
+        preg_match_all(
+            Regex::CHARACTER_MINIONS,
+            $this->html,
+            $minions,
+            PREG_SET_ORDER
+        );
+        if (!empty($minions[0][0])) {
+            $this->html = @str_replace($minions[0][0], '', $this->html);
+            $minions = $minions[0];
+        }
+        #Attributes
+        preg_match_all(
+            Regex::CHARACTER_ATTRIBUTES,
+            $this->html,
+            $characters8,
+            PREG_SET_ORDER
+        );
+        $this->html = str_replace($characters8[0][0], '', $this->html);
+        #HP/MP/TP
+        preg_match_all(
+            Regex::CHARACTER_HPMPTP,
+            $this->html,
+            $characters9,
+            PREG_SET_ORDER
+        );
+        $this->html = str_replace($characters9[0][0], '', $this->html);
+        $characters[0] = array_merge ($characters[0], $characters2[0], $characters3[0], $characters4[0], $characters5[0], $mounts, $minions, $characters8[0], $characters9[0]);
+        foreach ($characters as $key=>$character) {
+            #Remove non-named groups
+            foreach ($character as $key2=>$details) {
+                if (is_numeric($key2) || empty($details)) {
+                    unset($characters[$key][$key2]);
+                }
+            }
+            #Decode html entities
+            $characters[$key]['race'] = htmlspecialchars_decode($character['race']);
+            $characters[$key]['clan'] = htmlspecialchars_decode($character['clan']);
+            if (!empty($character['uppertitle'])) {
+                $characters[$key]['title'] = htmlspecialchars_decode($character['uppertitle']);
+            } elseif (!empty($character['undertitle'])) {
+                $characters[$key]['title'] = htmlspecialchars_decode($character['uppertitle']);
+            }
+            #Gender to text
+            $characters[$key]['gender'] = ($character['gender'] == '♂' ? 'male' : 'female');
+            #Guardian
+            $characters[$key]['guardian'] = [
+                'name'=>htmlspecialchars_decode($character['guardian']),
+                'icon'=>$character['guardianicon'],
+            ];
+            #City
+            $characters[$key]['city'] = [
+                'name'=>htmlspecialchars_decode($character['city']),
+                'icon'=>$character['cityicon'],
+            ];
+            #Grand Company
+            if (!empty($character['gcname'])) {
+                $characters[$key]['grandCompany'] = [
+                    'name'=>htmlspecialchars_decode($character['gcname']),
+                    'rank'=>htmlspecialchars_decode($character['gcrank']),
+                    'icon'=>$character['gcicon'],
+                ];
+            }
+            #Free Company
+            if (!empty($character['fcid'])) {
+                $characters[$key]['freeCompany'] = [
+                    'id'=>$character['fcid'],
+                    'name'=>htmlspecialchars_decode($character['fcname']),
+                ];
+                $characters[$key]['freeCompany']['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['crest1']);
+                if (!empty($character['crest2'])) {
+                    $characters[$key]['freeCompany']['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['crest2']);
+                }
+                if (!empty($character['crest3'])) {
+                    $characters[$key]['freeCompany']['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['crest3']);
+                }
+            }
+            #PvP Team
+            if (!empty($character['pvpid'])) {
+                $characters[$key]['pvp'] = [
+                    'id'=>$character['pvpid'],
+                    'name'=>htmlspecialchars_decode($character['pvpname']),
+                ];
+                $characters[$key]['pvp']['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['pvpcrest1']);
+                if (!empty($character['pvpcrest2'])) {
+                    $characters[$key]['pvp']['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['pvpcrest2']);
+                }
+                if (!empty($character['pvpcrest3'])) {
+                    $characters[$key]['pvp']['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['pvpcrest3']);
+                }
+            }
+            #Bio
+            $character['bio'] = trim($character['bio']);
+            if ($character['bio'] == '-') {
+                $character['bio'] = '';
+            }
+            if (!empty($character['bio'])) {
+                $characters[$key]['bio'] = strip_tags($character['bio'], '<br>');
+            } else {
+                unset($characters[$key]['bio']);
+            }
+            #Jobs
+            for ($i = 1; $i <= 26; $i++) {
+                $characters[$key]['jobs'][$character['jobname'.$i]] = [
+                    'level'=>(is_numeric($character['joblvl'.$i]) ? (int)$character['joblvl'.$i] : 0),
+                    'exp'=>(is_numeric($character['jobexpcur'.$i]) ? (int)$character['jobexpcur'.$i] : 0),
+                    'expmax'=>(is_numeric($character['jobexpmax'.$i]) ? (int)$character['jobexpmax'.$i] : 0),
+                    'icon'=>$character['jobicon'.$i],
+                ];
+                unset($characters[$key]['jobname'.$i], $characters[$key]['joblvl'.$i], $characters[$key]['jobexpcur'.$i], $characters[$key]['jobexpmax'.$i], $characters[$key]['jobicon'.$i]);
+            }
+            #Attributes
+            for ($i = 1; $i <= 20; $i++) {
+                $characters[$key]['attributes'][$character['attrname'.$i]] = $character['attrvalue'.$i];
+                unset($characters[$key]['attrname'.$i], $characters[$key]['attrvalue'.$i]);
+            }
+            #Mounts
+            unset($characters[$key]['mounts']);
+            if (!empty($character['mounts'])) {
+                preg_match_all(
+                    Regex::COLLECTIBLE,
+                    $character['mounts'],
+                    $mounts,
+                    PREG_SET_ORDER
+                );
+                $characters[$key]['mounts'] = [];
+                foreach ($mounts as $mount) {
+                    $characters[$key]['mounts'][$mount[1]] = $mount[2];
+                }
+            }
+            #Minions
+            unset($characters[$key]['minions']);
+            if (!empty($character['minions'])) {
+                preg_match_all(
+                    Regex::COLLECTIBLE,
+                    $character['minions'],
+                    $minions,
+                    PREG_SET_ORDER
+                );
+                $characters[$key]['minions'] = [];
+                foreach ($minions as $minion) {
+                    $characters[$key]['minions'][$minion[1]] = $minion[2];
+                }
+            }
+            unset($characters[$key]['crest1'], $characters[$key]['crest2'], $characters[$key]['crest3'], $characters[$key]['cityicon'], $characters[$key]['guardianicon'], $characters[$key]['gcname'], $characters[$key]['gcrank'], $characters[$key]['gcicon'], $characters[$key]['fcid'], $characters[$key]['fcname'], $characters[$key]['uppertitle'], $characters[$key]['undertitle'], $characters[$key]['pvpid'], $characters[$key]['pvpname'], $characters[$key]['pvpcrest1'], $characters[$key]['pvpcrest2'], $characters[$key]['pvpcrest3']);
+        }
+        #Items
+        preg_match_all(
+            Regex::CHARACTER_GEAR,
+            $this->html,
+            $items,
+            PREG_SET_ORDER
+        );
+        #Remove duplicates
+        $half = count($items);
+        for ($i = count($items)/2; $i <= $half; $i++) {
+            unset($items[$i]);
+        }
+        #Remove non-named groups
+        foreach ($items as $key=>$item) {
+            foreach ($item as $key2=>$details) {
+                if (is_numeric($key2) || empty($details)) {
+                    unset($items[$key][$key2]);
+                }
+            }
+            $items[$key]['armoireable'] = $this->imageToBool($item['armoireable']);
+            if (empty($item['hq'])) {
+                $items[$key]['hq'] = false;
+            } else {
+                $items[$key]['hq'] = true;
+            }
+            if (empty($item['unique'])) {
+                $items[$key]['unique'] = false;
+            } else {
+                $items[$key]['unique'] = true;
+            }
+            #Requirements
+            $items[$key]['requirements'] = [
+                'level'=>$item['level'],
+                'classes'=>explode(' ', $item['classes']),
+            ];
+            #Attributes
+            for ($i = 1; $i <= 15; $i++) {
+                if (!empty($item['attrname'.$i])) {
+                    $items[$key]['attributes'][htmlspecialchars_decode($item['attrname'.$i])] = $item['attrvalue'.$i];
+                    unset($items[$key]['attrname'.$i], $items[$key]['attrvalue'.$i]);
+                }
+            }
+            #Materia
+            for ($i = 1; $i <= 5; $i++) {
+                if (!empty($item['materianame'.$i])) {
+                    $items[$key]['materia'][] = [
+                        'name'=>htmlspecialchars_decode($item['materianame'.$i]),
+                        'attribute'=>$item['materiaattr'.$i],
+                        'bonus'=>$item['materiaval'.$i],
+                    ];
+                    unset($items[$key]['materianame'.$i], $items[$key]['materiaattr'.$i], $items[$key]['materiaval'.$i]);
+                }
+            }
+            #Crafting
+            if (!empty($item['repair'])) {
+                $items[$key]['crafting']['class'] = $item['repair'];
+                $items[$key]['crafting']['materials'] = $item['materials'];
+                if (empty($item['desynthesizable'])) {
+                    $items[$key]['crafting']['desynth'] = false;
+                } else {
+                    $items[$key]['crafting']['desynth'] = $item['desynthesizable'];
+                }
+                if (empty($item['melding'])) {
+                    $items[$key]['crafting']['melding'] = false;
+                } else {
+                    $items[$key]['crafting']['melding'] = $item['melding'];
+                    if (empty($item['advancedmelding'])) {
+                        $items[$key]['crafting']['advancedmelding'] = true;
+                    } else {
+                        $items[$key]['crafting']['advancedmelding'] = false;
+                    }
+                }
+                $items[$key]['crafting']['convertible'] = $this->imageToBool($item['convertible']);
+            }
+            #Trading
+            if (empty($item['price'])) {
+                $items[$key]['trading']['price'] = NULL;
+            } else {
+                $items[$key]['trading']['price'] = $item['price'];
+            }
+            if (empty($item['unsellable'])) {
+                $items[$key]['trading']['sellable'] = true;
+            } else {
+                $items[$key]['trading']['sellable'] = false;
+            }
+            if (empty($item['marketprohibited'])) {
+                $items[$key]['trading']['marketable'] = true;
+            } else {
+                $items[$key]['trading']['marketable'] = false;
+            }
+            if (empty($item['untradeable'])) {
+                $items[$key]['trading']['tradeable'] = true;
+            } else {
+                $items[$key]['trading']['tradeable'] = false;
+            }
+            #Customization
+            $items[$key]['customization'] = [
+                'crestable'=>$this->imageToBool($item['crestable']),
+                'glamourable'=>$this->imageToBool($item['glamourable']),
+                'projectable'=>$this->imageToBool($item['projectable']),
+                'dyeable'=>$this->imageToBool($item['dyeable']),
+            ];
+            #Glamour
+            if (!empty($item['glamourname'])) {
+                $items[$key]['customization']['glamour'] = [
+                    'id'=>$item['glamourid'],
+                    'name'=>htmlspecialchars_decode($item['glamourname']),
+                    'icon'=>$item['glamouricon'],
+                ];
+            }
+            unset($items[$key]['level'], $items[$key]['classes'], $items[$key]['price'], $items[$key]['unsellable'], $items[$key]['marketprohibited'], $items[$key]['repair'], $items[$key]['materials'], $items[$key]['desynthesizable'], $items[$key]['melding'], $items[$key]['advancedmelding'], $items[$key]['convertible'], $items[$key]['glamourname'], $items[$key]['glamourid'], $items[$key]['glamouricon'], $items[$key]['crestable'], $items[$key]['glamourable'], $items[$key]['projectable'], $items[$key]['dyeable'], $items[$key]['untradeable']);
+            $characters[0]['gear'][] = $items[$key];
+        }
+        $this->result = $characters[0];
+        return $this;
+    }
+    
     private function FreeCompany()
     {
         preg_match_all(
-            '/<div class="entry">\s*<a href="\/lodestone\/freecompany\/(?<id>\d*)\/" class="entry__freecompany">\s*<div class="entry__freecompany__crest">\s*<div class="entry__freecompany__crest--position">\s*<img src=".{66}\.png" width="68" height="68" alt="" class="entry__freecompany__crest__base">\s*<div class="entry__freecompany__crest__image">\s*<img src="(?<crest1>.{80}\.png)" width="64" height="64">(\s*<img src="(?<crest2>.{80}\.png)" width="64" height="64">)?(\s*<img src="(?<crest3>.{80}\.png)" width="64" height="64">)?\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="entry__freecompany__box">\s*<p class="entry__freecompany__gc">(?<grandCompany>.{1,40})&#60;.{1,20}<\/p>\s*<p class="entry__freecompany__name">(?<name>.{1,40})<\/p>\s*<p class="entry__freecompany__gc">\s*(?<server>.{1,40})\s*<\/p>\s*<\/div>\s*<\/a>\s*<\/div>\s*<h3 class="heading--lead">.{1,40}<\/h3>\s*<p class="freecompany__text freecompany__text__message">(?<slogan>.{1,200})<\/p>\s*<h3 class="heading--lead">.{1,100}<span class="freecompany__text__tag">.{1,100}<\/span><\/h3>\s*<p class="freecompany__text__name">.{1,40}<p>\s*<p class="freecompany__text freecompany__text__tag">&laquo;(?<tag>.{1,5})&raquo;<\/span><\/p>\s*<h3 class="heading--lead">.{1,20}<\/h3>\s*<p class="freecompany__text">\s*<span id="datetime-0\.\d*">-<\/span>\s*<script>\s*document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<formed>\d*), \'YMD\'\);\s*<\/script>\s*<\/p>\s*<h3 class="heading--lead">.{1,50}<\/h3>\s*<p class="freecompany__text">(?<members>\d*)<\/p>\s*<h3 class="heading--lead">.{1,15}<\/h3>\s*<p class="freecompany__text">(?<rank>\d*)<\/p>\s*<h3 class="heading--lead">.{1,20}<\/h3>\s*<div class="freecompany__reputation">\s*<div class="freecompany__reputation__icon">\s*<img src=".{66}\.png" alt="" width="32" height="32">\s*<\/div>\s*<div class="freecompany__reputation__data">\s*<p class="freecompany__reputation__gcname">(?<gcname1>.{1,40})<\/p>\s*<p class="freecompany__reputation__rank color_\d*">(?<gcrepu1>.{1,40})<\/p>\s*<div class="character__bar">\s*<div style="width:\d*%;"><\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="freecompany__reputation">\s*<div class="freecompany__reputation__icon">\s*<img src=".{66}\.png" alt="" width="32" height="32">\s*<\/div>\s*<div class="freecompany__reputation__data">\s*<p class="freecompany__reputation__gcname">(?<gcname2>.{1,40})<\/p>\s*<p class="freecompany__reputation__rank color_\d*">(?<gcrepu2>.{1,40})<\/p>\s*<div class="character__bar">\s*<div style="width:\d*%;"><\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="freecompany__reputation last">\s*<div class="freecompany__reputation__icon">\s*<img src=".{66}\.png" alt="" width="32" height="32">\s*<\/div>\s*<div class="freecompany__reputation__data">\s*<p class="freecompany__reputation__gcname">(?<gcname3>.{1,40})<\/p>\s*<p class="freecompany__reputation__rank color_\d*">(?<gcrepu3>.{1,40})<\/p>\s*<div class="character__bar">\s*<div style="width:\d*%;"><\/div>\s*<\/div>\s*<\/div>\s*<\/div>\s*<h3 class="heading--lead">.{1,40}<\/h3>\s*<table class="character__ranking__data parts__space--reset">\s*<tr>\s*<th>[^\d\-]{1,17}(?<weekly_rank>[\d\-]{1,})?[^\d]{0,20}<\/th>\s*<\/tr>\s*<tr>\s*<th>[^\d\-]{1,17}(?<monthly_rank>[\d\-]{1,})?[^\d]{0,20}<\/th>\s*<\/tr>\s*<\/table>\s*<p class="freecompany__ranking__notes">.{1,100}\/p>\s*<h3 class="heading--lead">.{1,100}<\/h3>\s*((<p class="freecompany__estate__name">(?<estate_name>.{1,20})<\/p>|<p class="parts__text">.{1,40}<\/p>)\s*<p class="freecompany__estate__title">.{1,40}<\/p>\s*<p class="freecompany__estate__text">(?<estate_address>.{1,200})<\/p>\s*<p class="freecompany__estate__title">.{1,20}<\/p>\s*<p class="freecompany__estate__greeting">(?<estate_greeting>.{0,200})<\/p>|<p class="freecompany__estate__none">.{1,50}<\/p>)\s*<\/div>\s*<div class="ldst__window">\s*<h2 class="heading--lg parts__space--add" id="anchor__focus">.{1,40}<\/h2>\s*<h3 class="heading--lead">.{1,40}<\/h3>\s*<p class="freecompany__text">\s*(?<active>.{1,40})\s*<\/p>\s*<h3 class="heading--lead">.{1,40}<\/h3>\s*<p class="freecompany__text( freecompany__recruitment)?">\s*(?<recruitment>.{1,40})\s*<\/p>\s*<h3 class="heading--lead">.{1,40}<\/h3>\s*(<ul class="freecompany__focus_icon clearfix">\s*<li( class="(?<focusoff1>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon1>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname1>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff2>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon2>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname2>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff3>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon3>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname3>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff4>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon4>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname4>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff5>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon5>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname5>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff6>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon6>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname6>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff7>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon7>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname7>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff8>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon8>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname8>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<focusoff9>freecompany__focus_icon--off)")?>\s*<div><img src="(?<focusicon9>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<focusname9>.{1,40})<\/p>\s*<\/li>\s*<\/ul>|<p class="freecompany__text">.{1,40}<\/p>)\s*<h3 class="heading--lead">.{1,40}<\/h3>\s*(<ul class="freecompany__focus_icon freecompany__focus_icon--role clearfix">\s*<li( class="(?<seekingoff1>freecompany__focus_icon--off)")?>\s*<div><img src="(?<seekingicon1>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<seekingname1>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<seekingoff2>freecompany__focus_icon--off)")?>\s*<div><img src="(?<seekingicon2>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<seekingname2>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<seekingoff3>freecompany__focus_icon--off)")?>\s*<div><img src="(?<seekingicon3>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<seekingname3>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<seekingoff4>freecompany__focus_icon--off)")?>\s*<div><img src="(?<seekingicon4>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<seekingname4>.{1,40})<\/p>\s*<\/li>\s*<li( class="(?<seekingoff5>freecompany__focus_icon--off)")?>\s*<div><img src="(?<seekingicon5>.{66}\.png)" alt="" width="32" height="32"><\/div>\s*<p>(?<seekingname5>.{1,40})<\/p>\s*<\/li>\s*<\/ul>|<p class="parts__text">.{1,30}<\/p>)/mi',
+            Regex::FREECOMPANY,
             $this->html,
             $characters,
             PREG_SET_ORDER
@@ -17,12 +333,12 @@ trait Parsers
                     unset($characters[$key][$key2]);
                 }
             }
-            $characters[$key]['crest'][] = str_replace('64x64', '128x128', $character['crest1']);
+            $characters[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['crest1']);
             if (!empty($character['crest2'])) {
-                $characters[$key]['crest'][] = str_replace('64x64', '128x128', $character['crest2']);
+                $characters[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['crest2']);
             }
             if (!empty($character['crest3'])) {
-                $characters[$key]['crest'][] = str_replace('64x64', '128x128', $character['crest3']);
+                $characters[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $character['crest3']);
             }
             //ranking checks for --
             if ($character['weekly_rank'] == '--') {
@@ -161,7 +477,7 @@ trait Parsers
     private function DeepDungeon()
     {
         preg_match_all(
-            '/<li class="deepdungeon__ranking__list__item"\s*data-href="\/lodestone\/character\/(?<id>\d*)\/"\s*>\s*<div class="deepdungeon__ranking__order">\s*<p class="deepdungeon__ranking__result__order">(?<rank>\d*)<\/p>\s*<\/div>\s*<div class="deepdungeon__ranking__face">\s*<div class="deepdungeon__ranking__face__inner">\s*<img src="(?<avatar>.{109}\.jpg)\?\d*" width="50" height="50" alt="">\s*<\/div>\s*<\/div>(\s*<div class="deepdungeon__ranking__job">\s*<img src="(?<jobform>.{66}\.png)" width="52" height="60" alt="" title=".{1,40}" class="tooltip">\s*<\/div>)?\s*<div class="deepdungeon__ranking__name">\s*<div class="deepdungeon__ranking__result__name">\s*<h3>(?<name>.{1,40})<\/h3>\s*<\/div>\s*<span class="deepdungeon__ranking__result__world">(?<server>.{1,40})<\/span>\s*<\/div>\s*<div class="deepdungeon__ranking__data">\s*<p class="deepdungeon__ranking__data--score">(?<score>\d*)<\/p>\s*<p class="deepdungeon__ranking__data--reaching">(.{1,9} |B)(?<floor>\d*)<\/p>\s*<p class="deepdungeon__ranking__data--time"><span id="datetime-0\.\d*">-<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMDHM\'\);<\/script><\/p>\s*<\/div>\s*<div class="deepdungeon__ranking__icon">\s*<img src="(?<jobicon>.{66}\.png)" width="32" height="32" alt="" title="(?<job>.{1,40})" class="tooltip">\s*<\/div>\s*<\/li>/mi',
+            Regex::DEEPDUNGEON,
             $this->html,
             $characters,
             PREG_SET_ORDER
@@ -186,7 +502,7 @@ trait Parsers
     private function Feast()
     {
         preg_match_all(
-            '/<tr\s*data-href="\/lodestone\/character\/(?<id>\d*)\/"\s*>\s*<td class="wolvesden__ranking__td__order">\s*<p class="wolvesden__ranking__result__order">(?<rank>\d*)<\/p>\s*<\/td>\s*<td class="wolvesden__ranking__td__prev_order">(?<rank_previous>\d*)<\/td>\s*<td class="wolvesden__ranking__td__face">\s*<div class="wolvesden__ranking__result__face">\s*<img src="(?<avatar>.{109}\.jpg)\?\d*" width="50" height="50" alt="">\s*<\/div>\s*<\/td>\s*<td class="wolvesden__ranking__td__name">\s*<div class="wolvesden__ranking__result__name">\s*<h3>(?<name>.{1,40})<\/h3>\s*<\/div>\s*<span class="wolvesden__ranking__result__world">(?<server>.{1,40})<\/span>\s*<\/td>(\s*<td class="wolvesden__ranking__td__win_count">\s*<p class="wolvesden__ranking__result__win_count">(?<win_count>\d*)<\/p>\s*<p class="wolvesden__ranking__result__winning_rate">(?<win_rate>[0-9\.]*)%<\/p>\s*<\/td>\s*<td class="wolvesden__ranking__td__separator">	\s*<p class="wolvesden__ranking__result__separator">\/<\/p>\s*<\/td>\s*<td class="wolvesden__ranking__td__match_count">\s*<p class="wolvesden__ranking__result__match_count">(?<matches>\d*)<\/p>\s*<\/td>)?\s*<td class="wolvesden__ranking__td__match_rate">\s*<p class="wolvesden__ranking__result__match_rate">(?<rating>\d*)<\/p>\s*<\/td>\s*<td class="wolvesden__ranking__td__rank">\s*<img src="(?<league_image>.{66}\.png)" width="88" height="60" alt=".{1,20}" title="(?<league>.{1,20})" class="js--wolvesden-tooltip">\s*<\/td>\s*<\/tr>/mi',
+            Regex::FEAST,
             $this->html,
             $characters,
             PREG_SET_ORDER
@@ -205,7 +521,7 @@ trait Parsers
     private function Worlds()
     {
         preg_match_all(
-            '/<div class="item-list__worldstatus">\s*<h3 class="">(?<server>.*)<\/h3>\s*<p>\s*(?<status>.{1,10})\s*<\/p>/mi',
+            Regex::WORLDS,
             $this->html,
             $worlds,
             PREG_SET_ORDER
@@ -223,15 +539,15 @@ trait Parsers
     
     private function Notices()
     {
-        #required to skipp "special" notices
+        #required to skip "special" notices
         preg_match_all(
-            '/<ul>(<li class="news__list">.*<\/li>)*<\/ul>/im',
+            Regex::NOTICES,
             $this->html,
             $notices,
             PREG_SET_ORDER
         );
         preg_match_all(
-            '/<li class="news__list"><a href="(?<url>.{63})" class="news__list--link ic__info--list"><div class="clearfix"><p class="news__list--title">(<span class="news__list--tag">\[(?<tag>.{1,20})\]<\/span>)?(?<title>.{1,100})<\/p><time class="news__list--time"><span id="datetime-0\.\d*">-<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/div><\/a><\/li>/mi',
+            Regex::NOTICES2,
             $notices[0][0],
             $notices,
             PREG_SET_ORDER
@@ -252,7 +568,7 @@ trait Parsers
     private function News()
     {
         preg_match_all(
-            '/<li class="news__list--topics ic__topics--list( news__content__bottom-radius)?"><header class="news__list--header clearfix"><p class="news__list--title"><a href="(?<url>.{65})">(?<title>.{1,100})<\/a><\/p><time class="news__list--time"><span id="datetime-0\.\d*">.{1,20}<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/header><div class="news__list--banner"><a href=".{65}" class="news__list--img"><img src="(?<banner>.{74})\.(png|jpg)\?\d*" width="570"( height="149")? alt=""><\/a>(?<html>.{0,1200})<\/div><\/li>/im',
+            Regex::NEWS,
             $this->html,
             $news,
             PREG_SET_ORDER
@@ -276,9 +592,9 @@ trait Parsers
     
     private function Banners()
     {
-        preg_match('/<ul id="slider_bnr_area">(\s*<li.*><a href=".*".*><img src=".*".*><\/a><\/li>\s*)*<\/ul>/im', $this->html, $banners);
+        preg_match(Regex::BANNERS, $this->html, $banners);
         preg_match_all(
-            '/<li><a href="(?<url>.{19,19})"><img src="(?<banner>.{74,74}\.png)\?\d*" width="\d*" height="\d*"><\/a><\/li>/ims',
+            Regex::BANNERS2,
             $banners[0],
             $banners,
             PREG_SET_ORDER
@@ -297,7 +613,7 @@ trait Parsers
     private function CharacterList()
     {
         preg_match_all(
-            '/<(li|div) class="entry">\s*<a href="\/lodestone\/character\/(?<id>\d*)\/" class="entry__(bg|link)">(\s*<div class="entry__flex">)?\s*<div class="entry__chara__face">\s*<img src="(?<avatar>.{109}\.jpg)\?\d*" alt=".{0,40}">\s*<\/div>\s*<div class="(entry__freecompany__center|entry__box entry__box--world)">\s*<p class="entry__name">(?<name>.{1,40})<\/p>\s*<p class="entry__world">(?<server>.{1,40})<\/p>\s*<ul class="entry__(chara_|freecompany__)info">(\s*<li>\s*<img src="(?<rankicon>.{66}\.png)" width="20" height="20" alt=""><span>(?<rank>.{1,15})<\/span><\/li>)?\s*<li>\s*<i class="list__ic__class">\s*<img src=".{66}\.png" width="20" height="20" alt="">\s*<\/i>\s*<span>\d*<\/span>\s*<\/li>(\s*<li class="js__tooltip" data-tooltip="(?<gcname>.*) \/ (?<gcrank>.*)">\s*<img src="(?<gcrankicon>.{66}\.png)" width="20" height="20" alt="">\s*<\/li>)?(\s*<li>\s*<img src=".{66}\.png" width="20" height="20" class="entry__pvpteam__battle__icon js__tooltip" data-tooltip=".{1,40}">\s*<span>(?<feasts>\d*)<\/span>\s*<\/li>)?\s*<\/ul>(\s*<div class="entry__chara_info__linkshell">\s*<img src="(?<lsrankicon>.{66}\.png)" width="20" height="20" alt="">\s*<span>(?<lsrank>.{1,40})<\/span>\s*<\/div>)?\s*<\/div>(\s*<div class="entry__chara__lang">(?<language>.{1,40})<\/div>)?(\s*<\/div>)?\s*<\/a>(\s*<a href="\/lodestone\/freecompany\/(?<fcid>\d*)\/" class="entry__freecompany__link">\s*<i class="list__ic__crest">\s*<img src="(?<fccrestimg1>https:.{58,74}\.png)" width="18" height="18">(\s*<img src="(?<fccrestimg2>https:.{58,74}\.png)" width="18" height="18">)?(\s*<img src="(?<fccrestimg3>https:.{58,74}\.png)" width="18" height="18">)?\s*<\/i>\s*<span>(?<fcname>.{1,40})<\/span>\s*<\/a>)?\s*<\/(li|div)>/mi',
+            Regex::CHARACTERLIST,
             $this->html,
             $characters,
             PREG_SET_ORDER
@@ -346,7 +662,7 @@ trait Parsers
     private function FreeCompaniesList()
     {
         preg_match_all(
-            '/<div class="entry"><a href="\/lodestone\/freecompany\/(?<fcid>\d*)\/" class="entry__block"><div class="entry__freecompany__inner"><div class="entry__freecompany__crest"><div class="entry__freecompany__crest--position"><img src=".*" width="68" height="68" alt="" class="entry__freecompany__crest__base"><div class="entry__freecompany__crest__image"><img src="(?<fccrestimg1>https:.{58,74}\.png)" width="64" height="64"( alt=".*")?>(<img src="(?<fccrestimg2>https:.{58,74}\.png)" width="64" height="64"( alt=".*")?>)?(<img src="(?<fccrestimg3>https:.{58,74}\.png)" width="64" height="64"( alt=".*")?>)?<\/div><\/div><\/div><div class="entry__freecompany__box"><p class="entry__world">(?<gcname>.*)<\/p><p class="entry__name">(?<name>.*)<\/p><p class="entry__world">(?<server>.*)<\/p><\/div><div class="entry__freecompany__data">.*<\/div><\/div><ul class="entry__freecompany__fc-data clearix"><li class="entry__freecompany__fc-member">(?<members>\d*)<\/li><li class="entry__freecompany__fc-housing">(?<housing>.*)<\/li><li class="entry__freecompany__fc-day"><span id="datetime-.*">.*<\/span><script>document\.getElementById\(\'datetime-.*\'\)\.innerHTML = ldst_strftime\((?<found>.*), \'YMD\'\);<\/script><\/li><li class="entry__freecompany__fc-active">.*: (?<active>.*)<\/li><li class="entry__freecompany__fc-active">.*: (?<recruitment>.*)<\/li><\/ul><\/a><\/div>/mi',
+            Regex::FREECOMPANYLIST,
             $this->html,
             $freecompanies,
             PREG_SET_ORDER
@@ -357,12 +673,12 @@ trait Parsers
                     unset($freecompanies[$key][$key2]);
                 }
             }
-            $freecompanies[$key]['crest'][] = str_replace('64x64', '128x128', $freecompany['fccrestimg1']);
+            $freecompanies[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $freecompany['fccrestimg1']);
             if (!empty($freecompany['fccrestimg2'])) {
-                $freecompanies[$key]['crest'][] = str_replace('64x64', '128x128', $freecompany['fccrestimg2']);
+                $freecompanies[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $freecompany['fccrestimg2']);
             }
             if (!empty($freecompany['fccrestimg3'])) {
-                $freecompanies[$key]['crest'][] = str_replace('64x64', '128x128', $freecompany['fccrestimg3']);
+                $freecompanies[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $freecompany['fccrestimg3']);
             }
             unset($freecompanies[$key]['fccrestimg1'], $freecompanies[$key]['fccrestimg2'], $freecompanies[$key]['fccrestimg3']);
         }
@@ -373,7 +689,7 @@ trait Parsers
     private function LinkshellsList()
     {
         preg_match_all(
-            '/<div class="entry">\s*<a href="\/lodestone\/linkshell\/(?<id>\d*)\/" class="entry__link--line">\s*<div class="entry__linkshell__icon">\s*<i class="icon-menu__linkshell_40"><\/i>\s*<\/div>\s*<div class="entry__linkshell">\s*<p class="entry__name">(?<name>.*)<\/p>\s*<p class="entry__world">(?<server>.*)<\/p>\s*<\/div>\s*<div class="entry__linkshell__member">\s*.*: <span>(?<members>\d*)<\/span>\s*<\/div>\s*<\/a>\s*<\/div>/mi',
+            Regex::LINKSHELLLIST,
             $this->html,
             $linkshells,
             PREG_SET_ORDER
@@ -392,7 +708,7 @@ trait Parsers
     private function PvPTeamsList()
     {
         preg_match_all(
-            '/<div class="entry"><a href="\/lodestone\/pvpteam\/(?<id>.*)\/" class="entry__block"><div class="entry__pvpteam__search__inner"><div class="entry__pvpteam__search__crest"><div class="entry__pvpteam__search__crest--position"><img src=".*\.png" width="50" height="50" alt="" class="entry__pvpteam__search__crest__base"><div class="entry__pvpteam__search__crest__image"><img src="(?<crest1>https:.{58,74}\.png)" width="48" height="48">(<img src="(?<crest2>https:.{58,74}\.png)" width="48" height="48">)?(<img src="(?<crest3>https:.{58,74}\.png)" width="48" height="48">)?<\/div><\/div><\/div><div class="entry__freecompany__box"><p class="entry__name">(?<name>.*)<\/p><p class="entry__world">(?<dataCentre>.*)<\/p><\/div><\/div><\/a><\/div>/mi',
+            Regex::PVPTEAMLIST,
             $this->html,
             $pvpteams,
             PREG_SET_ORDER
@@ -403,12 +719,12 @@ trait Parsers
                     unset($pvpteams[$key][$key2]);
                 }
             }
-            $pvpteams[$key]['crest'][] = str_replace('64x64', '128x128', $pvpteam['crest1']);
+            $pvpteams[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pvpteam['crest1']);
             if (!empty($pvpteam['crest2'])) {
-                $pvpteams[$key]['crest'][] = str_replace('64x64', '128x128', $pvpteam['crest2']);
+                $pvpteams[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pvpteam['crest2']);
             }
             if (!empty($pvpteam['crest3'])) {
-                $pvpteams[$key]['crest'][] = str_replace('64x64', '128x128', $pvpteam['crest3']);
+                $pvpteams[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pvpteam['crest3']);
             }
             unset($pvpteams[$key]['crest1'], $pvpteams[$key]['crest2'], $pvpteams[$key]['crest3']);
         }
@@ -419,7 +735,7 @@ trait Parsers
     private function pageCount()
     {
         preg_match_all(
-            '/(<div class="entry__pvpteam__crest__image">\s*<img src="https:.{58,74}\.png" width="64" height="64">\s*<img src="(?<crest1>https:.{58,74}\.png)" width="64" height="64">(\s*<img src="(?<crest2>https:.{58,74}\.png)" width="64" height="64">)?(\s*<img src="(?<crest3>https:.{58,74}\.png)" width="64" height="64">)?\s*<\/div>\s*<\/div>\s*<\/div>\s*<div class="entry__pvpteam__name">\s*<h2 class="entry__pvpteam__name--team">(?<pvpname>.{1,40})<\/h2>\s*<p class="entry__pvpteam__name--dc">(?<server>.{1,40})<\/p>\s*<\/div>\s*<div class="entry__pvpteam__data">\s*<span class="entry__pvpteam__data--formed">\s*.{1,100}<span id="datetime-0\.\d*">-<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<formed>\d*), \'YMD\'\);<\/script>\s*<\/span>\s*<\/div>\s*<\/div>\s*<\/div>)|((<h3 class="heading__linkshell__name">(?<linkshellname>.{1,40})<\/h3>.{1,2000})?(<div class="parts__total">(?<total>\d*).{0,20}<\/div>.{1,3000})?<li class="btn__pager__current">(Page |Seite )*(?<pageCurrent>\d*)[^\d]*(?<pageTotal>\d*).{0,20}<\/li>)/mis',
+            Regex::PAGECOUNT,
             $this->html,
             $pages,
             PREG_SET_ORDER
@@ -444,12 +760,12 @@ trait Parsers
             if (!empty($pages[0]['formed'])) {
                 $this->result['formed'] = $pages[0]['formed'];
             }
-            $this->result['crest'][] = str_replace('64x64', '128x128', $pages[0]['crest1']);
-            if (!empty($pages[0]['crest2'])) {
-                $this->result['crest'][] = str_replace('64x64', '128x128', $pages[0]['crest2']);
+            $this->result['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest1']);
+            if (!empty($pages[0]['pvpcrest2'])) {
+                $this->result['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest2']);
             }
-            if (!empty($pages[0]['crest3'])) {
-                $this->result['crest'][] = str_replace('64x64', '128x128', $pages[0]['crest3']);
+            if (!empty($pages[0]['pvpcrest3'])) {
+                $this->result['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest3']);
             }
         }
         return $this;

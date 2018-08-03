@@ -4,8 +4,7 @@ namespace Lodestone\Parser\Html;
 
 use Lodestone\{
     Dom\Document,
-    Modules\Validator,
-    Entities\Character\CharacterSimple
+    Modules\Validator
 };
 
 /**
@@ -205,55 +204,5 @@ class ParserHelper
         $count = filter_var($count, FILTER_SANITIZE_NUMBER_INT);
         
         $this->results->setTotal($count);
-    }
-    
-    /**
-     * Parse character list
-     */
-    protected function parseCharacterList(string $listelement = 'div.entry')
-    {
-        if ($this->results->getTotal() == 0) {
-            return;
-        }
-        
-        $rows = $this->getDocumentFromClassname('.ldst__window');
-
-        // loop through the list of characters
-        foreach($rows->find($listelement) as $node) {
-            // create simple character
-            $character = new CharacterSimple();
-            $character
-                ->setId( explode('/', $node->find('a', 0)->getAttribute('href'))[3] )
-                ->setName( trim($node->find('.entry__name')->plaintext) )
-                ->setServer( trim($node->find('.entry__world')->plaintext) )
-                ->setAvatar( explode('?', $node->find('.entry__chara__face img', 0)->src)[0] );
-            if ($rank = $node->find('.entry__chara_info__linkshell')->plaintext) {
-                $character
-                    ->setRank($rank)
-                    ->setRankicon($this->getImageSource($node->find('.entry__chara_info__linkshell>img')));
-                $this->results->setServer( $character->getServer() );
-            }
-            if ($rank = @$node->find('.entry__freecompany__info')->find('span')[0]->plaintext) {
-                if (!is_numeric($rank)) {
-                    $character
-                        ->setRank($rank)
-                        ->setRankicon($this->getImageSource($node->find('.entry__freecompany__info')->find('img')[0]));
-                }
-            }
-            if ($listelement == '.pvpteam__member>div.entry') {
-                $feasts = $node->find('.entry__freecompany__info')->find('span');
-                $feasts = end($feasts)->plaintext;
-                $character->setFeasts($feasts);
-            } else {
-                unset($character->feasts);
-            }
-            
-            // add character to list
-            $this->results->addCharacter($character);
-            
-        }
-        if ($listelement == '.pvpteam__member>div.entry') {
-            unset($this->results->pageCurrent, $this->results->pagePrevious, $this->results->pageNext, $this->results->pageTotal);
-        }
     }
 }
