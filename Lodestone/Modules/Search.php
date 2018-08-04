@@ -2,7 +2,7 @@
 namespace Lodestone\Modules;
 
 use Lodestone\Modules\{
-    Logging\Logger, Routes
+    Routes
 };
 
 trait Search

@@ -2,7 +2,6 @@
 
 namespace Lodestone\Modules;
 
-use Lodestone\Modules\Logging\Logger;
 use Lodestone\Validator\Exceptions\ValidationException,
     Lodestone\Modules\Validator;
 
@@ -45,7 +44,6 @@ class HttpRequest
     public function get($url)
     {
         $url = str_ireplace(' ', '+', $url);
-        Logger::write(__CLASS__, __LINE__, 'GET: '. $url);
 
         // build handle
         $handle = curl_init();
@@ -60,8 +58,6 @@ class HttpRequest
 
         curl_close($handle);
         unset($handle);
-
-        Logger::write(__CLASS__, __LINE__, 'RESPONSE: '. $httpCode);
 
         // specific conditions to return code on
         Validator::getInstance()
@@ -78,3 +74,4 @@ class HttpRequest
         return $data;
     }
 }
+?>

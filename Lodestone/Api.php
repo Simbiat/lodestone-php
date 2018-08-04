@@ -4,12 +4,7 @@ namespace Lodestone;
 
 // use all the things
 use Lodestone\Modules\{
-    Logging\Benchmark, Logging\Logger, Routes, Regex, Validator, HttpRequest
-};
-
-use Lodestone\Parser\{
-    Character as CharacterParser,
-    Achievements as AchievementsParser
+    Routes, Regex, Validator, HttpRequest
 };
 
 /**
@@ -25,12 +20,14 @@ class Api
     use Modules\Parsers;
     use Modules\Search;
     use Modules\Special;
+    use Modules\Settings;
     
     const langallowed = ['na', 'jp', 'eu', 'fr', 'de'];
     
     private $useragent = '';
     private $language = 'https://na';
     private $lang = 'na';
+    private $benchmark = false;
     private $url = '';
     private $type = '';
     private $typesettings = [];
@@ -38,43 +35,14 @@ class Api
     public $result = null;
     
     /**
-     * Set optional useragent
-     *
-     * @test .
-     * @param string $useragent
-     * @return this
-     */
-    public function setUseragent(string $useragent = "")
-    {
-        $this->useragent = $useragent;
-        return $this;
-    }
-    
-    /**
-     * Set optional langauge
-     *
-     * @test .
-     * @param string $useragent
-     * @return this
-     */
-    public function setLanguage(string $language = "")
-    {
-        if (!in_array($language, self::langallowed)) {
-            $language = "na";
-        }
-        $this->lang = $language;
-        $this->language = 'https://'.$language;
-        return $this;
-    }
-    
-    /**
      * Parse the generated URL
      * @return array
      */
     private function parse()
     {
-        $started = Benchmark::milliseconds();
-        Benchmark::start(__METHOD__,__LINE__);
+        if ($this->benchmark) {
+            $started = microtime(true);
+        }
         if (empty($this->url) | empty($this->type) | empty($this->language)) {
             // return error;
         } else {
@@ -140,21 +108,18 @@ class Api
                     break;
             }
         }
-        Benchmark::finish(__METHOD__,__LINE__);
-        $finished = Benchmark::milliseconds();
-        $duration = $finished - $started;
-        Logger::write(__CLASS__, __LINE__, sprintf('PARSE DURATION: %s ms', $duration));
+        #Benchmarking
+        if ($this->benchmark) {
+            $finished = microtime(true);
+            $duration = $finished - $started;
+            $micro = sprintf("%06d", $duration * 1000000);
+            $d = new \DateTime(date('H:i:s.'.$micro, $duration));
+            $this->result['benchmark'] = [
+                'time'=>$d->format("H:i:s.u"),
+                'memory'=>$this->memory(memory_get_usage(true)),
+            ];
+        }
         return $this->result;
-    }
-
-    /**
-     * Get all entries in the log (Accessible
-     * even with log disabled)
-     * @return array
-     */
-    public function getLog()
-    {
-        return Logger::$log;
     }
 
     /**
@@ -324,3 +289,4 @@ class Api
         return '?'. implode('&', $query);
     }
 }
+?>
