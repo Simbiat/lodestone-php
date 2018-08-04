@@ -599,12 +599,10 @@ trait Parsers
             PREG_SET_ORDER
         );
         foreach ($worlds as $key=>$world) {
-            foreach ($world as $key2=>$details) {
-                if (is_numeric($key2) || empty($details)) {
-                    unset($worlds[$key][$key2]);
-                }
-            }
+            $worlds[$world['server']] = $world['status'];
+            unset($worlds[$key]);
         }
+        ksort($worlds);
         $this->result = $worlds;
         return $this;
     }
