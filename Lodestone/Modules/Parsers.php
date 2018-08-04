@@ -3,6 +3,78 @@ namespace Lodestone\Modules;
 
 trait Parsers
 {    
+    private function Achievement()
+    {
+        preg_match_all(
+            Regex::ACHIEVEMENT_DETAILS,
+            $this->html,
+            $characters,
+            PREG_SET_ORDER
+        );
+        foreach ($characters as $key=>$character) {
+            foreach ($character as $key2=>$details) {
+                if (is_numeric($key2) || empty($details)) {
+                    unset($characters[$key][$key2]);
+                }
+            }
+            $characters[$key]['name'] = htmlspecialchars_decode($character['name']);
+            if (empty($character['title'])) {
+                $characters[$key]['title'] = false;
+            } else {
+                $characters[$key]['title'] = htmlspecialchars_decode($character['title']);
+            }
+            if (empty($character['item'])) {
+                $characters[$key]['item'] = false;
+            }
+            if (!empty($character['itemname'])) {
+                $characters[$key]['item'] = [
+                    'id'=>$character['itemid'],
+                    'name'=>htmlspecialchars_decode($character['itemname']),
+                    'icon'=>$character['itemicon'],
+                ];
+                unset($characters[$key]['itemid'], $characters[$key]['itemname'], $characters[$key]['itemicon']);
+            }
+            if (empty($character['time'])) {
+                $characters[$key]['time'] = NULL;
+            }
+        }
+        $this->result = $characters[0];
+        return $this;
+    }
+    
+    private function Achievements()
+    {
+        preg_match_all(
+            Regex::ACHIEVEMENTS_LIST,
+            $this->html,
+            $characters,
+            PREG_SET_ORDER
+        );
+        foreach ($characters as $key=>$character) {
+            foreach ($character as $key2=>$details) {
+                if (is_numeric($key2) || empty($details)) {
+                    unset($characters[$key][$key2]);
+                }
+            }
+            $characters[$key]['name'] = htmlspecialchars_decode($character['name']);
+            if (!empty($character['title'])) {
+                $characters[$key]['title'] = true;
+            } else {
+                $characters[$key]['title'] = false;
+            }
+            if (!empty($character['item'])) {
+                $characters[$key]['item'] = true;
+            } else {
+                $characters[$key]['item'] = false;
+            }
+            if (empty($character['time'])) {
+                $characters[$key]['time'] = NULL;
+            }
+        }
+        $this->result = $characters;
+        return $this;
+    }
+    
     private function Character()
     {
         #General

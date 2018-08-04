@@ -102,15 +102,14 @@ class Api
                     $this->Character();
                     break;
                 case 'Achievements':
-                    if (!empty($this->typesettings)) {
-                        if ($this->typesettings['achievementId']) {
-                            $this->result = (new AchievementsParser($this->html, false, $this->typesettings['achievementId']))->results;
-                        } else {
-                            $this->result = (new AchievementsParser($this->html, $this->typesettings['includeUnobtained'], false))->results;
-                            if ($this->typesettings['details']) {
-                                foreach ($this->result->achievements as $key=>$ach) {
-                                    $this->result->achievements[$key] = (new Api)->setLanguage($this->lang)->setUseragent($this->useragent)->getCharacterAchievements($this->typesettings['id'], $ach->id, 1, false, false, true);
-                                }
+                    if ($this->typesettings['achievementId']) {
+                        $this->Achievement();
+                    } else {
+                        $this->Achievements();
+                        if ($this->typesettings['details']) {
+                            foreach ($this->result as $key=>$ach) {
+                                $this->result[$key] = (new Api)->setLanguage($this->lang)->setUseragent($this->useragent)->getCharacterAchievements($this->typesettings['id'], $ach['id'], 1, false, true);
+                                $this->result[$key]['id'] = $ach['id'];
                             }
                         }
                     }
@@ -166,7 +165,6 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_URL, $id);
         $this->type = 'Character';
-        $this->typesettings = ['id'=>$id];
         return $this->parse();
     }
 
@@ -203,7 +201,7 @@ class Api
      * @param bool $includeUnobtained = false
      * @param int $category = false
      */
-    public function getCharacterAchievements($id, $achievementId = false, int $kind = 1, bool $includeUnobtained = false, bool $category = false, bool $details = false)
+    public function getCharacterAchievements($id, $achievementId = false, int $kind = 1, bool $category = false, bool $details = false)
     {
         if ($details === true && $achievementId !== false) {
             $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_DET_URL, $id, $achievementId);
@@ -215,7 +213,6 @@ class Api
             }
         }
         $this->typesettings['id'] = $id;
-        $this->typesettings['includeUnobtained'] = $includeUnobtained;
         $this->typesettings['details'] = $details;
         $this->typesettings['achievementId'] = $achievementId;
         $this->type = 'Achievements';
