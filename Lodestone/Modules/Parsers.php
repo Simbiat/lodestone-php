@@ -84,31 +84,16 @@ trait Parsers
             $characters,
             PREG_SET_ORDER
         );
-        $this->html = str_replace($characters[0][0], '', $this->html);
-        #Race, grand/free company
-        preg_match_all(
-            Regex::CHARACTER_GROUPS,
-            $this->html,
-            $characters2,
-            PREG_SET_ORDER
-        );
-        $this->html = str_replace($characters2[0][0], '', $this->html);
-        #Profile text
-        preg_match_all(
-            Regex::CHARACTER_TEXT,
-            $this->html,
-            $characters3,
-            PREG_SET_ORDER
-        );
-        $this->html = str_replace($characters3[0][0], '', $this->html);
-        #Portrait
-        preg_match_all(
-            Regex::CHARACTER_PORTRAIT,
-            $this->html,
-            $characters4,
-            PREG_SET_ORDER
-        );
-        $characters[0] = array_merge ($characters[0], $characters2[0], $characters3[0], $characters4[0]);
+        foreach ($characters as $key=>$character) {
+            #Remove non-named groups
+            foreach ($character as $key2=>$details) {
+                if (is_numeric($key2) || empty($details)) {
+                    unset($characters[$key][$key2]);
+                }
+            }
+        }
+        $characters = array_merge ($characters[0], $characters[1], $characters[2]);
+        $characters = [$characters];
         foreach ($characters as $key=>$character) {
             #Remove non-named groups
             foreach ($character as $key2=>$details) {
@@ -122,7 +107,7 @@ trait Parsers
             if (!empty($character['uppertitle'])) {
                 $characters[$key]['title'] = htmlspecialchars_decode($character['uppertitle']);
             } elseif (!empty($character['undertitle'])) {
-                $characters[$key]['title'] = htmlspecialchars_decode($character['uppertitle']);
+                $characters[$key]['title'] = htmlspecialchars_decode($character['undertitle']);
             }
             #Gender to text
             $characters[$key]['gender'] = ($character['gender'] == '♂' ? 'male' : 'female');
@@ -136,6 +121,8 @@ trait Parsers
                 'name'=>htmlspecialchars_decode($character['city']),
                 'icon'=>$character['cityicon'],
             ];
+            #Portrait
+            $characters[$key]['portrait'] = str_replace('c0_96x96', 'l0_640x873', $character['avatar']);
             #Grand Company
             if (!empty($character['gcname'])) {
                 $characters[$key]['grandCompany'] = [
