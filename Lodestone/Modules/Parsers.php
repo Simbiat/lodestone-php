@@ -108,54 +108,7 @@ trait Parsers
             $characters4,
             PREG_SET_ORDER
         );
-        $this->html = str_replace($characters4[0][0], '', $this->html);
-        #Jobs
-        preg_match_all(
-            Regex::CHARACTER_JOBS,
-            $this->html,
-            $characters5,
-            PREG_SET_ORDER
-        );
-        $this->html = str_replace($characters5[0][0], '', $this->html);
-        #Mounts
-        preg_match_all(
-            Regex::CHARACTER_MOUNTS,
-            $this->html,
-            $mounts,
-            PREG_SET_ORDER
-        );
-        if (!empty($mounts[0][0])) {
-            $this->html = @str_replace($mounts[0][0], '', $this->html);
-            $mounts = $mounts[0];
-        }
-        #Minions
-        preg_match_all(
-            Regex::CHARACTER_MINIONS,
-            $this->html,
-            $minions,
-            PREG_SET_ORDER
-        );
-        if (!empty($minions[0][0])) {
-            $this->html = @str_replace($minions[0][0], '', $this->html);
-            $minions = $minions[0];
-        }
-        #Attributes
-        preg_match_all(
-            Regex::CHARACTER_ATTRIBUTES,
-            $this->html,
-            $characters8,
-            PREG_SET_ORDER
-        );
-        $this->html = str_replace($characters8[0][0], '', $this->html);
-        #HP/MP/TP
-        preg_match_all(
-            Regex::CHARACTER_HPMPTP,
-            $this->html,
-            $characters9,
-            PREG_SET_ORDER
-        );
-        $this->html = str_replace($characters9[0][0], '', $this->html);
-        $characters[0] = array_merge ($characters[0], $characters2[0], $characters3[0], $characters4[0], $characters5[0], $mounts, $minions, $characters8[0], $characters9[0]);
+        $characters[0] = array_merge ($characters[0], $characters2[0], $characters3[0], $characters4[0]);
         foreach ($characters as $key=>$character) {
             #Remove non-named groups
             foreach ($character as $key2=>$details) {
@@ -229,50 +182,73 @@ trait Parsers
             } else {
                 unset($characters[$key]['bio']);
             }
-            #Jobs
-            for ($i = 1; $i <= 26; $i++) {
-                $characters[$key]['jobs'][$character['jobname'.$i]] = [
-                    'level'=>(is_numeric($character['joblvl'.$i]) ? (int)$character['joblvl'.$i] : 0),
-                    'exp'=>(is_numeric($character['jobexpcur'.$i]) ? (int)$character['jobexpcur'.$i] : 0),
-                    'expmax'=>(is_numeric($character['jobexpmax'.$i]) ? (int)$character['jobexpmax'.$i] : 0),
-                    'icon'=>$character['jobicon'.$i],
-                ];
-                unset($characters[$key]['jobname'.$i], $characters[$key]['joblvl'.$i], $characters[$key]['jobexpcur'.$i], $characters[$key]['jobexpmax'.$i], $characters[$key]['jobicon'.$i]);
-            }
-            #Attributes
-            for ($i = 1; $i <= 20; $i++) {
-                $characters[$key]['attributes'][$character['attrname'.$i]] = $character['attrvalue'.$i];
-                unset($characters[$key]['attrname'.$i], $characters[$key]['attrvalue'.$i]);
-            }
-            #Mounts
-            unset($characters[$key]['mounts']);
-            if (!empty($character['mounts'])) {
-                preg_match_all(
-                    Regex::COLLECTIBLE,
-                    $character['mounts'],
-                    $mounts,
-                    PREG_SET_ORDER
-                );
-                $characters[$key]['mounts'] = [];
-                foreach ($mounts as $mount) {
-                    $characters[$key]['mounts'][$mount[1]] = $mount[2];
-                }
-            }
-            #Minions
-            unset($characters[$key]['minions']);
-            if (!empty($character['minions'])) {
-                preg_match_all(
-                    Regex::COLLECTIBLE,
-                    $character['minions'],
-                    $minions,
-                    PREG_SET_ORDER
-                );
-                $characters[$key]['minions'] = [];
-                foreach ($minions as $minion) {
-                    $characters[$key]['minions'][$minion[1]] = $minion[2];
-                }
-            }
             unset($characters[$key]['crest1'], $characters[$key]['crest2'], $characters[$key]['crest3'], $characters[$key]['cityicon'], $characters[$key]['guardianicon'], $characters[$key]['gcname'], $characters[$key]['gcrank'], $characters[$key]['gcicon'], $characters[$key]['fcid'], $characters[$key]['fcname'], $characters[$key]['uppertitle'], $characters[$key]['undertitle'], $characters[$key]['pvpid'], $characters[$key]['pvpname'], $characters[$key]['pvpcrest1'], $characters[$key]['pvpcrest2'], $characters[$key]['pvpcrest3']);
+        }
+        #Jobs
+        preg_match_all(
+            Regex::CHARACTER_JOBS,
+            $this->html,
+            $jobs,
+            PREG_SET_ORDER
+        );
+        foreach ($jobs as $job) {
+            $characters[$key]['jobs'][$job['name']] = [
+                'level'=>(is_numeric($job['level']) ? (int)$job['level'] : 0),
+                'specialist'=>(empty($job['specialist']) ? false : true),
+                'expcur'=>(is_numeric($job['expcur']) ? (int)$job['expcur'] : 0),
+                'expmax'=>(is_numeric($job['expmax']) ? (int)$job['expmax'] : 0),
+                'icon'=>$job['icon'],
+            ];
+        }
+        #Attributes
+        preg_match_all(
+            Regex::CHARACTER_ATTRIBUTES,
+            $this->html,
+            $attributes,
+            PREG_SET_ORDER
+        );
+        foreach ($attributes as $attribute) {
+            if (empty($attribute['name'])) {
+                $characters[0]['attributes'][$attribute['name2']] = $attribute['value2'];
+            } else {
+                $characters[0]['attributes'][$attribute['name']] = $attribute['value'];
+            }
+        }
+        #Mounts
+        preg_match_all(
+            Regex::CHARACTER_MOUNTS,
+            $this->html,
+            $mounts,
+            PREG_SET_ORDER
+        );
+        if (!empty($mounts[0][0])) {
+            preg_match_all(
+                Regex::COLLECTIBLE,
+                $mounts[0][0],
+                $mounts,
+                PREG_SET_ORDER
+            );
+            foreach ($mounts as $mount) {
+                $characters[0]['mounts'][$mount[1]] = $mount[2];
+            }
+        }
+        #Minions
+        preg_match_all(
+            Regex::CHARACTER_MINIONS,
+            $this->html,
+            $minions,
+            PREG_SET_ORDER
+        );
+        if (!empty($minions[0][0])) {
+            preg_match_all(
+                Regex::COLLECTIBLE,
+                $minions[0][0],
+                $minions,
+                PREG_SET_ORDER
+            );
+            foreach ($minions as $minion) {
+                $characters[0]['minions'][$minion[1]] = $minion[2];
+            }
         }
         #Items
         preg_match_all(
@@ -616,9 +592,10 @@ trait Parsers
             $notices,
             PREG_SET_ORDER
         );
+        $this->html = $notices[0][0];
         preg_match_all(
             Regex::NOTICES2,
-            $notices[0][0],
+            $this->html,
             $notices,
             PREG_SET_ORDER
         );
