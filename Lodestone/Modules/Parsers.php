@@ -607,9 +607,9 @@ trait Parsers
                 }
                 unset($characters[$key]['server']);
             }
-            unset($characters[$key]['gcname'], $characters[$key]['gcrank'], $characters[$key]['gcrankicon'], $characters[$key]['fcid'], $characters[$key]['fcname'], $characters[$key]['fccrestimg1'], $characters[$key]['fccrestimg2'], $characters[$key]['fccrestimg3'], $characters[$key]['lsrank'], $characters[$key]['lsrankicon']);
+            unset($characters[$key]['gcname'], $characters[$key]['gcrank'], $characters[$key]['gcrankicon'], $characters[$key]['fcid'], $characters[$key]['fcname'], $characters[$key]['fccrestimg1'], $characters[$key]['fccrestimg2'], $characters[$key]['fccrestimg3'], $characters[$key]['lsrank'], $characters[$key]['lsrankicon'], $characters[$key]['id']);
+            $this->result['characters'][$character['id']] = $characters[$key];
         }
-        $this->result['characters'] = $characters;
         return $this;
     }
     
@@ -634,9 +634,9 @@ trait Parsers
             if (!empty($freecompany['fccrestimg3'])) {
                 $freecompanies[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $freecompany['fccrestimg3']);
             }
-            unset($freecompanies[$key]['fccrestimg1'], $freecompanies[$key]['fccrestimg2'], $freecompanies[$key]['fccrestimg3']);
+            unset($freecompanies[$key]['fccrestimg1'], $freecompanies[$key]['fccrestimg2'], $freecompanies[$key]['fccrestimg3'], $freecompanies[$key]['id']);
+            $this->result['freecompanies'][$freecompany['id']] = $freecompanies[$key];
         }
-        $this->result['freeCompanies'] = $freecompanies;
         return $this;
     }
     
@@ -654,8 +654,9 @@ trait Parsers
                     unset($linkshells[$key][$key2]);
                 }
             }
+            unset($linkshells[$key]['id']);
+            $this->result['linkshells'][$linkshell['id']] = $linkshells[$key];
         }
-        $this->result['linkshells'] = $linkshells;
         return $this;
     }
     
@@ -680,9 +681,9 @@ trait Parsers
             if (!empty($pvpteam['crest3'])) {
                 $pvpteams[$key]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pvpteam['crest3']);
             }
-            unset($pvpteams[$key]['crest1'], $pvpteams[$key]['crest2'], $pvpteams[$key]['crest3']);
+            unset($pvpteams[$key]['crest1'], $pvpteams[$key]['crest2'], $pvpteams[$key]['crest3'], $pvpteams[$key]['id']);
+            $this->result['pvpteams'][$pvpteam['id']] = $pvpteams[$key];
         }
-        $this->result['PvPTeams'] = $pvpteams;
         return $this;
     }
     
