@@ -393,117 +393,37 @@ trait Parsers
                 $characters[$key]['estate']['greeting'] = $character['estate_greeting'];
             }
             #Grand companies reputation
-            $characters[$key]['reputation'] = [
-                $character['gcname1']=>$character['gcrepu1'],
-                $character['gcname2']=>$character['gcrepu2'],
-                $character['gcname3']=>$character['gcrepu3'],
-            ];
+            for ($i = 1; $i <= 3; $i++) {
+                if (!empty($character['gcname'.$i])) {
+                    $characters[$key]['reputation'][$character['gcname'.$i]] = $character['gcrepu'.$i];
+                    unset($characters[$key]['gcname'.$i], $characters[$key]['gcrepu'.$i]);
+                }
+            }
             #Focus
-            if (!empty($character['focusname1'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname1'],
-                    'enabled'=>($character['focusoff1'] ? 0 : 1),
-                    'icon'=>$character['focusicon1'],
-                ];
-            }
-            if (!empty($character['focusname2'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname2'],
-                    'enabled'=>($character['focusoff2'] ? 0 : 1),
-                    'icon'=>$character['focusicon2'],
-                ];
-            }
-            if (!empty($character['focusname3'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname3'],
-                    'enabled'=>($character['focusoff3'] ? 0 : 1),
-                    'icon'=>$character['focusicon3'],
-                ];
-            }
-            if (!empty($character['focusname4'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname4'],
-                    'enabled'=>($character['focusoff4'] ? 0 : 1),
-                    'icon'=>$character['focusicon4'],
-                ];
-            }
-            if (!empty($character['focusname5'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname5'],
-                    'enabled'=>($character['focusoff5'] ? 0 : 1),
-                    'icon'=>$character['focusicon5'],
-                ];
-            }
-            if (!empty($character['focusname6'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname6'],
-                    'enabled'=>($character['focusoff6'] ? 0 : 1),
-                    'icon'=>$character['focusicon6'],
-                ];
-            }
-            if (!empty($character['focusname7'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname7'],
-                    'enabled'=>($character['focusoff7'] ? 0 : 1),
-                    'icon'=>$character['focusicon7'],
-                ];
-            }
-            if (!empty($character['focusname8'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname8'],
-                    'enabled'=>($character['focusoff8'] ? 0 : 1),
-                    'icon'=>$character['focusicon8'],
-                ];
-            }
-            if (!empty($character['focusname9'])) {
-                $characters[$key]['focus'][] = [
-                    'name'=>$character['focusname9'],
-                    'enabled'=>($character['focusoff9'] ? 0 : 1),
-                    'icon'=>$character['focusicon9'],
-                ];
+            for ($i = 1; $i <= 9; $i++) {
+                if (!empty($character['focusname'.$i])) {
+                    $characters[$key]['focus'][] = [
+                        'name'=>$character['focusname'.$i],
+                        'enabled'=>($character['focusoff'.$i] ? 0 : 1),
+                        'icon'=>$character['focusicon'.$i],
+                    ];
+                    unset($characters[$key]['focusname'.$i], $characters[$key]['focusoff'.$i], $characters[$key]['focusicon'.$i]);
+                }
             }
             #Seeking
-            if (!empty($character['seekingname1'])) {
-                $characters[$key]['seeking'][] = [
-                    'name'=>$character['seekingname1'],
-                    'enabled'=>($character['seekingoff1'] ? 0 : 1),
-                    'icon'=>$character['seekingicon1'],
-                ];
-            }
-            if (!empty($character['seekingname2'])) {
-                $characters[$key]['seeking'][] = [
-                    'name'=>$character['seekingname2'],
-                    'enabled'=>($character['seekingoff2'] ? 0 : 1),
-                    'icon'=>$character['seekingicon2'],
-                ];
-            }
-            if (!empty($character['seekingname3'])) {
-                $characters[$key]['seeking'][] = [
-                    'name'=>$character['seekingname3'],
-                    'enabled'=>($character['seekingoff3'] ? 0 : 1),
-                    'icon'=>$character['seekingicon3'],
-                ];
-            }
-            if (!empty($character['seekingname4'])) {
-                $characters[$key]['seeking'][] = [
-                    'name'=>$character['seekingname4'],
-                    'enabled'=>($character['seekingoff4'] ? 0 : 1),
-                    'icon'=>$character['seekingicon4'],
-                ];
-            }
-            if (!empty($character['seekingname5'])) {
-                $characters[$key]['seeking'][] = [
-                    'name'=>$character['seekingname5'],
-                    'enabled'=>($character['seekingoff5'] ? 0 : 1),
-                    'icon'=>$character['seekingicon5'],
-                ];
+            for ($i = 1; $i <= 5; $i++) {
+                if (!empty($character['seekingname'.$i])) {
+                    $characters[$key]['seeking'][] = [
+                        'name'=>$character['seekingname'.$i],
+                        'enabled'=>($character['seekingoff'.$i] ? 0 : 1),
+                        'icon'=>$character['seekingicon'.$i],
+                    ];
+                    unset($characters[$key]['seekingname'.$i], $characters[$key]['seekingoff'.$i], $characters[$key]['seekingicon'.$i]);
+                }
             }
             #Trim slogan
             $characters[$key]['slogan'] = trim($character['slogan']);
-            unset($characters[$key]['crest1'], $characters[$key]['crest2'], $characters[$key]['crest3'], $characters[$key]['focusname1'], $characters[$key]['focusoff1'], $characters[$key]['focusicon1'], $characters[$key]['focusname2'], $characters[$key]['focusoff2'], $characters[$key]['focusicon2'], $characters[$key]['focusname3'], $characters[$key]['focusoff3'], $characters[$key]['focusicon3'], $characters[$key]['focusname4'], $characters[$key]['focusoff4'], $characters[$key]['focusicon4'], $characters[$key]['focusname5'], $characters[$key]['focusoff5'], $characters[$key]['focusicon5'], $characters[$key]['focusname6'], $characters[$key]['focusoff6'], $characters[$key]['focusicon6'], $characters[$key]['focusname7'], $characters[$key]['focusoff7'], $characters[$key]['focusicon7'], $characters[$key]['focusname8'], $characters[$key]['focusoff8'], $characters[$key]['focusicon8'], $characters[$key]['focusname9'], $characters[$key]['focusoff9'], $characters[$key]['focusicon9'], $characters[$key]['seekingname1'], $characters[$key]['seekingoff1'], $characters[$key]['seekingicon1'], $characters[$key]['seekingname2'], $characters[$key]['seekingoff2'], $characters[$key]['seekingicon2'], $characters[$key]['seekingname3'], $characters[$key]['seekingoff3'], $characters[$key]['seekingicon3'], $characters[$key]['seekingname4'], $characters[$key]['seekingoff4'], $characters[$key]['seekingicon4'], $characters[$key]['seekingname5'], $characters[$key]['seekingoff5'], $characters[$key]['seekingicon5'],
-            $characters[$key]['gcname1'], $characters[$key]['gcrepu1'],
-            $characters[$key]['gcname2'], $characters[$key]['gcrepu2'],
-            $characters[$key]['gcname3'], $characters[$key]['gcrepu3'], $characters[$key]['estate_greeting'],  $characters[$key]['estate_address'],  $characters[$key]['estate_name']);
+            unset($characters[$key]['crest1'], $characters[$key]['crest2'], $characters[$key]['crest3'], $characters[$key]['estate_greeting'],  $characters[$key]['estate_address'],  $characters[$key]['estate_name']);
         }
         $this->result = $characters[0];
         return $this;
