@@ -38,7 +38,7 @@ trait Parsers
                 $characters[$key]['time'] = NULL;
             }
         }
-        $this->result = $characters[0];
+        $this->result['characters'][$this->typesettings['id']]['achievements'][$this->typesettings['achievementId']] = $characters[0];
         return $this;
     }
     
@@ -70,8 +70,9 @@ trait Parsers
             if (empty($character['time'])) {
                 $characters[$key]['time'] = NULL;
             }
+            unset($characters[$key]['id']);
+            $this->result['characters'][$this->typesettings['id']]['achievements'][$character['id']] = $characters[$key];
         }
-        $this->result = $characters;
         return $this;
     }
     
@@ -350,7 +351,7 @@ trait Parsers
             unset($items[$key]['level'], $items[$key]['classes'], $items[$key]['price'], $items[$key]['unsellable'], $items[$key]['marketprohibited'], $items[$key]['repair'], $items[$key]['materials'], $items[$key]['desynthesizable'], $items[$key]['melding'], $items[$key]['advancedmelding'], $items[$key]['convertible'], $items[$key]['glamourname'], $items[$key]['glamourid'], $items[$key]['glamouricon'], $items[$key]['crestable'], $items[$key]['glamourable'], $items[$key]['projectable'], $items[$key]['dyeable'], $items[$key]['untradeable']);
             $characters[0]['gear'][] = $items[$key];
         }
-        $this->result = $characters[0];
+        $this->result['characters'][$this->typesettings['id']] = $characters[0];
         return $this;
     }
     
@@ -425,7 +426,7 @@ trait Parsers
             $characters[$key]['slogan'] = trim($character['slogan']);
             unset($characters[$key]['crest1'], $characters[$key]['crest2'], $characters[$key]['crest3'], $characters[$key]['estate_greeting'],  $characters[$key]['estate_address'],  $characters[$key]['estate_name']);
         }
-        $this->result = $characters[0];
+        $this->result['freecompanies'][$this->typesettings['id']] = $characters[0];
         return $this;
     }
     
@@ -450,7 +451,7 @@ trait Parsers
             ];
             unset($characters[$key]['jobicon'], $characters[$key]['jobform']);
         }
-        $this->result = $characters;
+        $this->result[$this->type] = $characters;
         return $this;
     }
     
@@ -469,7 +470,7 @@ trait Parsers
                 }
             }
         }
-        $this->result = $characters;
+        $this->result[$this->type] = $characters;
         return $this;
     }
     
@@ -486,7 +487,7 @@ trait Parsers
             unset($worlds[$key]);
         }
         ksort($worlds);
-        $this->result = $worlds;
+        $this->result[$this->type] = $worlds;
         return $this;
     }
     
@@ -514,8 +515,8 @@ trait Parsers
             }
             $notices[$key]['url'] = $this->language.Routes::LODESTONE_URL_BASE.$notice['url'];
         }
-        $this->result['notices'] = $notices;
-        unset($this->result['total']);
+        $this->result[$this->type] = $notices;
+        unset($this->result[$this->type]['total']);
         return $this;
     }
     
@@ -535,12 +536,10 @@ trait Parsers
             }
             $news[$key]['url'] = $this->language.Routes::LODESTONE_URL_BASE.$new['url'];
         }
-        if ($this->type == 'Topics') {
+        if ($this->type == 'topics') {
             unset($this->result['total']);
-            $this->result['topics'] = $news;
-        } else {
-            $this->result = $news;
         }
+        $this->result[$this->type] = $news;
         return $this;
     }
     
@@ -560,7 +559,7 @@ trait Parsers
                 }
             }
         }
-        $this->result = $banners;
+        $this->result[$this->type] = $banners;
         return $this;
     }
     
@@ -608,7 +607,20 @@ trait Parsers
                 unset($characters[$key]['server']);
             }
             unset($characters[$key]['gcname'], $characters[$key]['gcrank'], $characters[$key]['gcrankicon'], $characters[$key]['fcid'], $characters[$key]['fcname'], $characters[$key]['fccrestimg1'], $characters[$key]['fccrestimg2'], $characters[$key]['fccrestimg3'], $characters[$key]['lsrank'], $characters[$key]['lsrankicon'], $characters[$key]['id']);
-            $this->result['characters'][$character['id']] = $characters[$key];
+            switch($this->type) {
+                case 'searchCharacter':
+                    $this->result['characters'][$character['id']] = $characters[$key]; break;
+                case 'CharacterFriends':
+                    $this->result['characters'][$this->typesettings['id']]['friends'][$character['id']] = $characters[$key]; break;
+                case 'CharacterFollowing':
+                    $this->result['characters'][$this->typesettings['id']]['following'][$character['id']] = $characters[$key]; break;
+                case 'FreeCompanyMembers':
+                    $this->result['freecompanies'][$this->typesettings['id']]['members'][$character['id']] = $characters[$key]; break;
+                case 'LinkshellMembers':
+                    $this->result['linkshells'][$this->typesettings['id']]['members'][$character['id']] = $characters[$key]; break;
+                case 'PvPTeamMembers':
+                    $this->result['pvpteams'][$this->typesettings['id']]['members'][$character['id']] = $characters[$key]; break;
+            }
         }
         return $this;
     }
@@ -695,32 +707,78 @@ trait Parsers
             $pages,
             PREG_SET_ORDER
         );
+        #Set key for results
+        switch($this->type) {
+            case 'searchCharacter':
+                $resultkey = 'characters'; break;
+            case 'CharacterFriends':
+                $resultkey = 'characters'; $subkey = 'friends'; break;
+            case 'CharacterFollowing':
+                $resultkey = 'characters'; $subkey = 'following'; break;
+            case 'FreeCompanyMembers':
+                $resultkey = 'freecompanies'; $subkey = 'members'; break;
+            case 'LinkshellMembers':
+                $resultkey = 'linkshells'; $subkey = 'members'; break;
+            case 'PvPTeamMembers':
+                $resultkey = 'pvpteams'; $subkey = 'members'; break;
+            case 'searchFreeCompany':
+                $resultkey = 'freecompanies'; break;
+            case 'searchLinkshell':
+                $resultkey = 'linkshells'; break;
+            case 'searchPvPTeam':
+                $resultkey = 'pvpteams'; break;
+            case 'topics':
+            case 'notices':
+            case 'maintenance':
+            case 'updates':
+            case 'status':
+                $resultkey = $this->type; break;
+        }
         if (!empty($pages[0]['linkshellname'])) {
-            $this->result['name'] = $pages[0]['linkshellname'];
+            $this->result[$resultkey][$this->typesettings['id']]['name'] = $pages[0]['linkshellname'];
         }
-        if (!empty($pages[0]['pageCurrent'])) {
-            $this->result['pageCurrent'] = $pages[0]['pageCurrent'];
-        }
-        if (!empty($pages[0]['pageTotal'])) {
-            $this->result['pageTotal'] = $pages[0]['pageTotal'];
-        }
-        if (!empty($pages[0]['total'])) {
-            $this->result['total'] = $pages[0]['total'];
+        switch($this->type) {
+            case 'CharacterFriends':
+            case 'CharacterFollowing':
+            case 'FreeCompanyMembers':
+            case 'LinkshellMembers':
+            case 'PvPTeamMembers':
+                if (!empty($pages[0]['pageCurrent'])) {
+                    $this->result[$resultkey][$this->typesettings['id']][$subkey]['pageCurrent'] = $pages[0]['pageCurrent'];
+                }
+                if (!empty($pages[0]['pageTotal'])) {
+                    $this->result[$resultkey][$this->typesettings['id']][$subkey]['pageTotal'] = $pages[0]['pageTotal'];
+                }
+                if (!empty($pages[0]['total'])) {
+                    $this->result[$resultkey][$this->typesettings['id']][$subkey]['total'] = $pages[0]['total'];
+                }
+                break;
+            default:
+                if (!empty($pages[0]['pageCurrent'])) {
+                    $this->result[$resultkey]['pageCurrent'] = $pages[0]['pageCurrent'];
+                }
+                if (!empty($pages[0]['pageTotal'])) {
+                    $this->result[$resultkey]['pageTotal'] = $pages[0]['pageTotal'];
+                }
+                if (!empty($pages[0]['total'])) {
+                    $this->result[$resultkey]['total'] = $pages[0]['total'];
+                }
+                break;
         }
         if (!empty($pages[0]['pvpname'])) {
-            $this->result['name'] = $pages[0]['pvpname'];
+            $this->result[$resultkey][$this->typesettings['id']]['name'] = $pages[0]['pvpname'];
             if (!empty($pages[0]['server'])) {
-                $this->result['dataCenter'] = $pages[0]['server'];
+                $this->result[$resultkey][$this->typesettings['id']]['dataCenter'] = $pages[0]['server'];
             }
             if (!empty($pages[0]['formed'])) {
-                $this->result['formed'] = $pages[0]['formed'];
+                $this->result[$resultkey][$this->typesettings['id']]['formed'] = $pages[0]['formed'];
             }
-            $this->result['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest1']);
+            $this->result[$resultkey][$this->typesettings['id']]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest1']);
             if (!empty($pages[0]['pvpcrest2'])) {
-                $this->result['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest2']);
+                $this->result[$resultkey][$this->typesettings['id']]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest2']);
             }
             if (!empty($pages[0]['pvpcrest3'])) {
-                $this->result['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest3']);
+                $this->result[$resultkey][$this->typesettings['id']]['crest'][] = str_replace(['40x40', '64x64'], '128x128', $pages[0]['pvpcrest3']);
             }
         }
         return $this;

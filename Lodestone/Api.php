@@ -75,9 +75,8 @@ class Api
                     } else {
                         $this->Achievements();
                         if ($this->typesettings['details']) {
-                            foreach ($this->result as $key=>$ach) {
-                                $this->result[$key] = (new Api)->setLanguage($this->lang)->setUseragent($this->useragent)->getCharacterAchievements($this->typesettings['id'], $ach['id'], 1, false, true);
-                                $this->result[$key]['id'] = $ach['id'];
+                            foreach ($this->result['characters'][$this->typesettings['id']]['achievements'] as $key=>$ach) {
+                                $this->getCharacterAchievements($this->typesettings['id'], $key, 1, false, true);
                             }
                         }
                     }
@@ -85,25 +84,28 @@ class Api
                 case 'FreeCompany':
                     $this->FreeCompany();
                     break;
-                case 'Banners':
+                case 'banners':
                     $this->Banners();
                     break;
-                case 'News':
+                case 'news':
                     $this->News();
                     break;
-                case 'Topics':
+                case 'topics':
                     $this->pageCount()->News();
                     break;
-                case 'Notices':
+                case 'notices':
+                case 'maintenance':
+                case 'updates':
+                case 'status':
                     $this->pageCount()->Notices();
                     break;
-                case 'WorldStatus':
+                case 'worlds':
                     $this->Worlds();
                     break;
-                case 'Feast':
+                case 'feast':
                     $this->Feast();
                     break;
-                case 'DeepDungeon':
+                case 'deepdungeon':
                     $this->DeepDungeon();
                     break;
             }
@@ -130,6 +132,7 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_URL, $id);
         $this->type = 'Character';
+        $this->typesettings['id'] = $id;
         return $this->parse();
     }
 
@@ -143,6 +146,7 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FRIENDS_URL.'/?page='.$page, $id);
         $this->type = 'CharacterFriends';
+        $this->typesettings['id'] = $id;
         return $this->parse();
     }
 
@@ -156,6 +160,7 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FOLLOWING_URL.'/?page='.$page, $id);
         $this->type = 'CharacterFollowing';
+        $this->typesettings['id'] = $id;
         return $this->parse();
     }
 
@@ -192,6 +197,7 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_URL, $id);
         $this->type = 'FreeCompany';
+        $this->typesettings['id'] = $id;
         return $this->parse();
     }
 
@@ -204,6 +210,7 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'FreeCompanyMembers';
+        $this->typesettings['id'] = $id;
         return $this->parse();
     }
 
@@ -216,6 +223,7 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'LinkshellMembers';
+        $this->typesettings['id'] = $id;
         return $this->parse();
     }
     
@@ -227,6 +235,7 @@ class Api
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_PVPTEAM_MEMBERS_URL, $id);
         $this->type = 'PvPTeamMembers';
+        $this->typesettings['id'] = $id;
         return $this->parse();
     }
     

@@ -10,7 +10,7 @@ trait Special
     public function getLodestoneBanners()
     {
         $this->url = $this->language.Routes::LODESTONE_BANNERS;
-        $this->type = 'Banners';
+        $this->type = 'banners';
         return $this->parse();
     }
 
@@ -21,7 +21,7 @@ trait Special
     public function getLodestoneNews()
     {
         $this->url = $this->language.Routes::LODESTONE_NEWS;
-        $this->type = 'News';
+        $this->type = 'news';
         return $this->parse();
     }
 
@@ -32,7 +32,7 @@ trait Special
     public function getLodestoneTopics(int $page = 1)
     {
         $this->url = $this->language.Routes::LODESTONE_TOPICS.'?page='.$page;
-        $this->type = 'Topics';
+        $this->type = 'topics';
         return $this->parse();
     }
 
@@ -43,7 +43,7 @@ trait Special
     public function getLodestoneNotices(int $page = 1)
     {
         $this->url = $this->language.Routes::LODESTONE_NOTICES.'?page='.$page;
-        $this->type = 'Notices';
+        $this->type = 'notices';
         return $this->parse();
     }
 
@@ -54,7 +54,7 @@ trait Special
     public function getLodestoneMaintenance(int $page = 1)
     {
         $this->url = $this->language.Routes::LODESTONE_MAINTENANCE.'?page='.$page;
-        $this->type = 'Notices';
+        $this->type = 'maintenance';
         return $this->parse();
     }
 
@@ -65,7 +65,7 @@ trait Special
     public function getLodestoneUpdates(int $page = 1)
     {
         $this->url = $this->language.Routes::LODESTONE_UPDATES.'?page='.$page;
-        $this->type = 'Notices';
+        $this->type = 'updates';
         return $this->parse();
     }
 
@@ -76,7 +76,7 @@ trait Special
     public function getLodestoneStatus(int $page = 1)
     {
         $this->url = $this->language.Routes::LODESTONE_STATUS.'?page='.$page;
-        $this->type = 'Notices';
+        $this->type = 'status';
         return $this->parse();
     }
 
@@ -87,7 +87,7 @@ trait Special
     public function getWorldStatus()
     {
         $this->url = $this->language.Routes::LODESTONE_WORLD_STATUS;
-        $this->type = 'WorldStatus';
+        $this->type = 'worlds';
         return $this->parse();
     }
 
@@ -109,7 +109,7 @@ trait Special
             'rank_type' => $rank_type,
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_FEAST, strval($season)).$query;
-        $this->type = 'Feast';
+        $this->type = 'feast';
         return $this->parse();
     }
 
@@ -134,7 +134,7 @@ trait Special
             'subtype' => $subtype,
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_DEEP_DUNGEON, strval($id)).$query;
-        $this->type = 'DeepDungeon';
+        $this->type = 'deepdungeon';
         return $this->parse();
     }
 }
