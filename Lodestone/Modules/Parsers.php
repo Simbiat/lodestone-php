@@ -449,9 +449,13 @@ trait Parsers
                 'icon'=>$character['jobicon'],
                 'form'=>$character['jobform'],
             ];
-            unset($characters[$key]['jobicon'], $characters[$key]['jobform']);
+            unset($characters[$key]['jobicon'], $characters[$key]['jobform'], $characters[$key]['id']);
+            if ($this->typesettings['solo_party'] == 'solo') {
+                $this->result[$this->type][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$this->typesettings['class']][$character['id']] = $characters[$key];
+            } else {
+                $this->result[$this->type][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$character['id']] = $characters[$key];
+            }
         }
-        $this->result[$this->type] = $characters;
         return $this;
     }
     
@@ -469,8 +473,9 @@ trait Parsers
                     unset($characters[$key][$key2]);
                 }
             }
+            unset($characters[$key]['id']);
+            $this->result[$this->type][$this->typesettings['season']][$character['id']] = $characters[$key];
         }
-        $this->result[$this->type] = $characters;
         return $this;
     }
     

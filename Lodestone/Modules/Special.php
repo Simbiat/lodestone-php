@@ -110,6 +110,7 @@ trait Special
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_FEAST, strval($season)).$query;
         $this->type = 'feast';
+        $this->typesettings['season'] = $season;
         return $this->parse();
     }
 
@@ -120,7 +121,7 @@ trait Special
      * @param array $params
      * @return array
      */
-    public function getDeepDungeon(int $id = 1, string $dcgroup = '', string $solo_party = 'party', string $subtype = '')
+    public function getDeepDungeon(int $id = 1, string $dcgroup = '', string $solo_party = 'party', string $subtype = 'PLD')
     {
         if ($id == 1) {
             $id = '';
@@ -134,7 +135,19 @@ trait Special
             'subtype' => $subtype,
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_DEEP_DUNGEON, strval($id)).$query;
+        if (empty($id)) {
+            $id = 1;
+        }
+        if (empty($solo_party)) {
+            $solo_party = 'party';
+        }
+        if (empty($subtype)) {
+            $subtype = $this->getDeepDungeonClassId('PLD');
+        }
         $this->type = 'deepdungeon';
+        $this->typesettings['dungeon'] = $id;
+        $this->typesettings['solo_party'] = $solo_party;
+        $this->typesettings['class'] = $subtype;
         return $this->parse();
     }
 }
