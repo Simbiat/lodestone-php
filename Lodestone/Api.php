@@ -117,7 +117,7 @@ class Api
      * @param $id
      * @param bool $page
      */
-    public function getFreeCompanyMembers($id, $page = 1)
+    public function getFreeCompanyMembers($id, int $page = 1)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'FreeCompanyMembers';
@@ -130,7 +130,7 @@ class Api
      * @param $id
      * @param bool $page
      */
-    public function getLinkshell($id, $page = 1)
+    public function getLinkshell($id, int $page = 1)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'LinkshellMembers';
