@@ -81,7 +81,7 @@ class Api
      * @param bool $includeUnobtained = false
      * @param int $category = false
      */
-    public function getCharacterAchievements($id, $achievementId = false, int $kind = 1, bool $category = false, bool $details = false)
+    public function getCharacterAchievements($id, $achievementId = false, $kind = 1, bool $category = false, bool $details = false)
     {
         if ($details === true && $achievementId !== false) {
             $this->type = 'AchievementDetails';
