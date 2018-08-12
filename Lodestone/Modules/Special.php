@@ -99,10 +99,10 @@ trait Special
      * @param array $params
      * @return array
      */
-    public function getFeast(int $season = 0, string $dcgroup = '', string $rank_type = 'all')
+    public function getFeast(int $season = 1, string $dcgroup = '', string $rank_type = 'all')
     {
-        if ($season == 0) {
-            $season = '';
+        if ($season <= 0) {
+            $season = 1;
         }
         $query = $this->queryBuilder([
             'dcgroup' => $dcgroup,
