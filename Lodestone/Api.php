@@ -142,7 +142,7 @@ class Api
      * @test c7a8e4e6fbb5aa2a9488015ed46a3ec3d97d7d0d
      * @param $id
      */
-    public function getPvPTeam($id)
+    public function getPvPTeam(string $id)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_PVPTEAM_MEMBERS_URL, $id);
         $this->type = 'PvPTeamMembers';
