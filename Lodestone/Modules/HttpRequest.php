@@ -60,15 +60,13 @@ class HttpRequest
         unset($handle);
 
         // specific conditions to return code on
-        Validator::getInstance()
-            ->check($httpCode, 'HTTP Response Code', $url)
+        Validator::check($httpCode, 'HTTP Response Code', $url)
             ->isFound()
             ->isNotMaintenance()
             ->isNotHttpError();
             
         // check that data is not empty
-        Validator::getInstance()
-            ->check($data, "HTML")
+        Validator::check($data, "HTML")
             ->isNotEmpty();
 
         return $data;

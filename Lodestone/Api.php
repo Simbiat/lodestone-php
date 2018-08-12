@@ -152,9 +152,6 @@ class Api
     
     private function queryBuilder(array $params): string
     {
-        Validator::getInstance()
-            ->check($params, "Query params provided to the API")
-            ->isArray();
         $query = [];
         foreach($params as $param => $value) {
             if (empty($value) && $value !== '0') {

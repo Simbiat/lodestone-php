@@ -6,8 +6,6 @@ use Lodestone\Modules\Exceptions;
 
 class Validator
 {
-    const URL_REGEX = '/^https?:\/\//';
-    const VALID_CHARACTER_REGEX = '/^([a-zA-Z\' \-]|\&[^\s]*\;)+\s?$/';
     const HTTP_OK = 200;
     const HTTP_PERM_REDIRECT = 308;
     const HTTP_SERVICE_NOT_AVAILABLE = 503;
@@ -20,16 +18,6 @@ class Validator
      * @var int
      */
     public $id;
-    
-    private static $instance = null;
-
-    public static function getInstance() {
-        if (null === self::$instance) {
-            self::$instance = new Validator();
-        }
-
-        return self::$instance;
-    }
 
     /**
      * Is not allowed for a singleton
@@ -57,102 +45,6 @@ class Validator
     {
         if (empty($this->object)) {
             throw Exceptions::emptyValidation($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function isInteger()
-    {
-        if (!is_int($this->object)) {
-            throw Exceptions::integerValidation($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function isNumeric()
-    {
-        if (!is_numeric($this->object)) {
-            throw Exceptions::numericValidation($this);
-        }
-
-        return $this;
-    }
-    
-    /**
-     * @return $this
-     */
-    public function isString()
-    {
-        if (!is_string($this->object)) {
-            throw Exceptions::stringValidation($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function isStringOrEmpty()
-    {
-        if (empty($this->object)) {
-            return $this;
-        }
-
-       return $this->isString();
-    }
-
-    /**
-     * @return $this
-     */
-    public function isArray()
-    {
-        if (!is_array($this->object)) {
-            throw Exceptions::arrayValidation($this);
-        }
-
-        return $this;
-    }
-    
-    /**
-     * @return $this
-     */
-    public function isObject()
-    {
-        if (!is_object($this->object)) {
-            throw Exceptions::objectValidation($this);
-        }
-        
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function isRelativeUrl()
-    {
-        if (preg_match(self::URL_REGEX, $this->object)) {
-            throw Exceptions::relativeUrlValidation($this);
-        }
-
-        return $this;
-    }
-    
-    /**
-     * @return $this
-     */
-    public function isValidCharacterName()
-    {
-        if (!preg_match(self::VALID_CHARACTER_REGEX, $this->object)) {
-            throw new Exceptions($this->object . ' is not a valid character name.');
         }
 
         return $this;
