@@ -52,7 +52,7 @@ class Api
      * @param $id
      * @param $page
      */
-    public function getCharacterFriends($id, $page = 1)
+    public function getCharacterFriends($id, int $page = 1)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FRIENDS_URL.'/?page='.$page, $id);
         $this->type = 'CharacterFriends';
@@ -66,7 +66,7 @@ class Api
      * @param $id
      * @param $page
      */
-    public function getCharacterFollowing($id, $page = 1)
+    public function getCharacterFollowing($id, int $page = 1)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FOLLOWING_URL.'/?page='.$page, $id);
         $this->type = 'CharacterFollowing';
