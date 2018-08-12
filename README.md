@@ -18,7 +18,9 @@ This is what's different from original library from [@viion](https://github.com/
 
 ## Settings
 It's possible to set your own UserAgent used by CURL: simply use `->setUseragent('useragent')`
+
 It's also possible to change LodeStone language by `->setLanguage('na')`. Accepted langauge values are `na`, `eu`, `jp`, `fr`, `de`
+
 It's possible to utilize Benchmarking to get parsing times for each iterration by `->setBenchmark(true)`
 
 
