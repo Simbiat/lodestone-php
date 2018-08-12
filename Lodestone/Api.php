@@ -35,96 +35,6 @@ class Api
     public $result = null;
     
     /**
-     * Parse the generated URL
-     * @return array
-     */
-    private function parse()
-    {
-        if ($this->benchmark) {
-            $started = microtime(true);
-        }
-        if (empty($this->url) | empty($this->type) | empty($this->language)) {
-            // return error;
-        } else {
-            $http = new HttpRequest($this->useragent);
-            $this->html = $http->get($this->url);
-            switch($this->type) {
-                case 'searchCharacter':
-                case 'CharacterFriends':
-                case 'CharacterFollowing':
-                case 'FreeCompanyMembers':
-                case 'LinkshellMembers':
-                case 'PvPTeamMembers':
-                    $this->pageCount()->CharacterList();
-                    break;
-                case 'searchFreeCompany':
-                    $this->pageCount()->FreeCompaniesList();
-                    break;
-                case 'searchLinkshell':
-                    $this->pageCount()->LinkshellsList();
-                    break;
-                case 'searchPvPTeam':
-                    $this->pageCount()->PvPTeamsList();
-                    break;
-                case 'Character':
-                    $this->Character();
-                    break;
-                case 'Achievements':
-                    if ($this->typesettings['achievementId']) {
-                        $this->Achievement();
-                    } else {
-                        $this->Achievements();
-                        if ($this->typesettings['details']) {
-                            foreach ($this->result['characters'][$this->typesettings['id']]['achievements'] as $key=>$ach) {
-                                $this->getCharacterAchievements($this->typesettings['id'], $key, 1, false, true);
-                            }
-                        }
-                    }
-                    break;
-                case 'FreeCompany':
-                    $this->FreeCompany();
-                    break;
-                case 'banners':
-                    $this->Banners();
-                    break;
-                case 'news':
-                    $this->News();
-                    break;
-                case 'topics':
-                    $this->pageCount()->News();
-                    break;
-                case 'notices':
-                case 'maintenance':
-                case 'updates':
-                case 'status':
-                    $this->pageCount()->Notices();
-                    break;
-                case 'worlds':
-                    $this->Worlds();
-                    break;
-                case 'feast':
-                    $this->Feast();
-                    break;
-                case 'deepdungeon':
-                    $this->DeepDungeon();
-                    break;
-            }
-        }
-        #Benchmarking
-        if ($this->benchmark) {
-            $finished = microtime(true);
-            $duration = $finished - $started;
-            $micro = sprintf("%06d", $duration * 1000000);
-            $d = new \DateTime(date('H:i:s.'.$micro, $duration));
-            $this->result['benchmark'] = [
-                'time'=>$d->format("H:i:s.u"),
-                'memory'=>$this->memory(memory_get_usage(true)),
-            ];
-        }
-        return $this->result;
-    }
-
-    /**
      * @test 730968
      * @param $id
      */
@@ -174,8 +84,10 @@ class Api
     public function getCharacterAchievements($id, $achievementId = false, int $kind = 1, bool $category = false, bool $details = false)
     {
         if ($details === true && $achievementId !== false) {
+            $this->type = 'AchievementDetails';
             $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_DET_URL, $id, $achievementId);
         } else {
+            $this->type = 'Achievements';
             if ($category === false) {
                 $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_URL, $id, $this->getAchKindId($kind));
             } else {
@@ -185,7 +97,6 @@ class Api
         $this->typesettings['id'] = $id;
         $this->typesettings['details'] = $details;
         $this->typesettings['achievementId'] = $achievementId;
-        $this->type = 'Achievements';
         return $this->parse();
     }
 
