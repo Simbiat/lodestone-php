@@ -2,9 +2,6 @@
 
 namespace Lodestone\Modules;
 
-use Lodestone\Validator\Exceptions\ValidationException,
-    Lodestone\Modules\Validator;
-
 /**
  * Class HttpRequest
  * @package src\Modules
@@ -28,6 +25,11 @@ class HttpRequest
         CURLOPT_ENCODING => '',
         CURLOPT_SSL_VERIFYPEER => false,
     ];
+    
+    const HTTP_OK = 200;
+    const HTTP_PERM_REDIRECT = 308;
+    const HTTP_SERVICE_NOT_AVAILABLE = 503;
+    const HTTP_NOT_FOUND = 404;
     
     public function __construct($useragent = "")
     {
@@ -60,16 +62,41 @@ class HttpRequest
         unset($handle);
 
         // specific conditions to return code on
-        Validator::check($httpCode, 'HTTP Response Code', $url)
-            ->isFound()
-            ->isNotMaintenance()
-            ->isNotHttpError();
-            
+        if ($httpCode == self::HTTP_NOT_FOUND) {
+            throw new \Exception(sprintf('Page %s was not found (404)', $url), $httpCode);
+        } elseif ($httpCode == self::HTTP_SERVICE_NOT_AVAILABLE) {
+            throw new \Exception('Lodestone not available', $httpCode);
+        } elseif ($httpCode < self::HTTP_OK || $httpCode > self::HTTP_PERM_REDIRECT) {
+            throw new \Exception('Requested page '.$url.' is not available', $httpCode);
+        }
+        
+         
         // check that data is not empty
-        Validator::check($data, "HTML")
-            ->isNotEmpty();
+        if (empty($data)) {
+            throw new \Exception('Requested page '.$url.' is empty');
+        }
 
         return $data;
+    }
+    
+    public function check($object, $name, $id = null)
+    {
+        $this->object = $object;
+        $this->name = $name;
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function isNotEmpty()
+    {
+        if (empty($this->object)) {
+            throw Exceptions::emptyValidation($this);
+        }
+
+        return $this;
     }
 }
 ?>
