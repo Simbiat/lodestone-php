@@ -23,6 +23,8 @@ It's also possible to change LodeStone language by `->setLanguage('na')`. Accept
 
 It's possible to utilize Benchmarking to get parsing times for each iteration by `->setBenchmark(true)`
 
+## Error handling
+In the new concept fatal errors generally can happen only during HTTP requests. In order not to break "linking" function, they are handled softly in the code itself and are reported to `->errors` and `->lasterror` arrays. In essense, when an error occurs you will simply get an empty result for specific entity and it will not be added to output.
 
 ## Parsers
 <table>

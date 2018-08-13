@@ -4,7 +4,7 @@ namespace Lodestone;
 
 // use all the things
 use Lodestone\Modules\{
-    Routes, Regex, Validator, HttpRequest
+    Routes, Regex, HttpRequest
 };
 
 /**
@@ -33,6 +33,8 @@ class Api
     private $typesettings = [];
     private $html = '';
     public $result = null;
+    public $errors = [];
+    public $lasterror = NULL;
     
     /**
      * @test 730968

@@ -63,17 +63,17 @@ class HttpRequest
 
         // specific conditions to return code on
         if ($httpCode == self::HTTP_NOT_FOUND) {
-            throw new \Exception(sprintf('Page %s was not found (404)', $url), $httpCode);
+            throw new \Exception('Requested page was not found', $httpCode);
         } elseif ($httpCode == self::HTTP_SERVICE_NOT_AVAILABLE) {
             throw new \Exception('Lodestone not available', $httpCode);
         } elseif ($httpCode < self::HTTP_OK || $httpCode > self::HTTP_PERM_REDIRECT) {
-            throw new \Exception('Requested page '.$url.' is not available', $httpCode);
+            throw new \Exception('Requested page is not available', $httpCode);
         }
         
          
         // check that data is not empty
         if (empty($data)) {
-            throw new \Exception('Requested page '.$url.' is empty');
+            throw new \Exception('Requested page is empty');
         }
 
         return $data;
