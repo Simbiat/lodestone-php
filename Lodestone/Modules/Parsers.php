@@ -120,6 +120,8 @@ trait Parsers
                     $regex = Regex::WORLDS; break;
                 case 'feast':
                     $regex = Regex::FEAST; break;
+                case 'frontline':
+                    $regex = Regex::FRONTLINE; break;
                 case 'deepdungeon':
                     $regex = Regex::DEEPDUNGEON; break;
                 case 'FreeCompany':
@@ -188,6 +190,15 @@ trait Parsers
                                 $this->result['server'] = $tempresult['server'];
                             }
                         }
+                        break;
+                    case 'frontline':
+                        if (!empty($tempresult['gcname'])) {
+                            $tempresults[$key]['grandCompany'] = $this->grandcompany($tempresult);
+                        }
+                        if (!empty($tempresult['fcid'])) {
+                            $tempresults[$key]['freeCompany'] = $this->freecompany($tempresult);
+                        }
+                        $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
                         break;
                     case 'topics':
                     case 'news':
@@ -343,7 +354,7 @@ trait Parsers
                 }
                 
                 #Unset stuff for cleaner look. Since it does not trigger warnings if variable is missing, no need to "switch" it
-                unset($tempresults[$key]['crest1'], $tempresults[$key]['crest2'], $tempresults[$key]['crest3'], $tempresults[$key]['fccrestimg1'], $tempresults[$key]['fccrestimg2'], $tempresults[$key]['fccrestimg3'], $tempresults[$key]['gcname'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcrankicon'], $tempresults[$key]['fcid'], $tempresults[$key]['fcname'], $tempresults[$key]['lsrank'], $tempresults[$key]['lsrankicon'], $tempresults[$key]['jobicon'], $tempresults[$key]['jobform'], $tempresults[$key]['estate_greeting'],  $tempresults[$key]['estate_address'],  $tempresults[$key]['estate_name'], $tempresults[$key]['cityicon'], $tempresults[$key]['guardianicon'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcicon'], $tempresults[$key]['uppertitle'], $tempresults[$key]['undertitle'], $tempresults[$key]['pvpid'], $tempresults[$key]['pvpname'], $tempresults[$key]['pvpcrest1'], $tempresults[$key]['pvpcrest2'], $tempresults[$key]['pvpcrest3'], $tempresults[$key]['id']);
+                unset($tempresults[$key]['crest1'], $tempresults[$key]['crest2'], $tempresults[$key]['crest3'], $tempresults[$key]['fccrestimg1'], $tempresults[$key]['fccrestimg2'], $tempresults[$key]['fccrestimg3'], $tempresults[$key]['gcname'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcrankicon'], $tempresults[$key]['fcid'], $tempresults[$key]['fcname'], $tempresults[$key]['lsrank'], $tempresults[$key]['lsrankicon'], $tempresults[$key]['jobicon'], $tempresults[$key]['jobform'], $tempresults[$key]['estate_greeting'],  $tempresults[$key]['estate_address'],  $tempresults[$key]['estate_name'], $tempresults[$key]['cityicon'], $tempresults[$key]['guardianicon'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcicon'], $tempresults[$key]['uppertitle'], $tempresults[$key]['undertitle'], $tempresults[$key]['pvpid'], $tempresults[$key]['pvpname'], $tempresults[$key]['pvpcrest1'], $tempresults[$key]['pvpcrest2'], $tempresults[$key]['pvpcrest3'], $tempresults[$key]['rank1'], $tempresults[$key]['rank2'], $tempresults[$key]['id']);
                 
                 #Adding to results
                 switch($this->type) {
@@ -376,6 +387,8 @@ trait Parsers
                         $this->result[$resultkey][$tempresult['server']] = $tempresult['status']; break;
                     case 'feast':
                         $this->result[$resultkey][$this->typesettings['season']][$tempresult['id']] = $tempresults[$key]; break;
+                    case 'frontline':
+                        $this->result[$resultkey][$this->typesettings['week_month']][$this->typesettings['week']][$tempresult['id']] = $tempresults[$key]; break;
                     case 'deepdungeon':
                         if ($this->typesettings['solo_party'] == 'solo') {
                             $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$this->typesettings['class']][$tempresult['id']] = $tempresults[$key];
@@ -478,11 +491,14 @@ trait Parsers
     
     private function grandcompany(array $tempresult): array
     {
-        return [
-                    'name'=>htmlspecialchars_decode($tempresult['gcname']),
-                    'rank'=>htmlspecialchars_decode($tempresult['gcrank']),
-                    'icon'=>$tempresult['gcrankicon'],
-                ];
+        $gc['name'] = htmlspecialchars_decode($tempresult['gcname']);
+        if (!empty($tempresult['gcrank'])) {
+            $gc['rank'] = htmlspecialchars_decode($tempresult['gcrank']);
+        }
+        if (!empty($tempresult['gcrankicon'])) {
+            $gc['icon'] = $tempresult['gcrankicon'];
+        }
+        return $gc;
     }
     
     private function freecompany(array $tempresult): array

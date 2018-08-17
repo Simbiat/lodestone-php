@@ -613,6 +613,36 @@ trait Converters {
         return $id;
     }
     
+    private function matchesCount(int $count): string
+    {
+        if ($count >= 1 && $count <= 29) {
+            $count = '1';
+        } elseif ($count >= 30 && $count <= 49) {
+            $count = '2';
+        } elseif ($count >= 50) {
+            $count = '3';
+        } else {
+            $count = '';
+        }
+        return $count;
+    }
+    
+    private function pvpRank(int $count): string
+    {
+        if ($count >= 1 && $count <= 10) {
+            $count = '1';
+        } elseif ($count >= 11 && $count <= 20) {
+            $count = '2';
+        } elseif ($count >= 21 && $count <= 30) {
+            $count = '3';
+        } elseif ($count >= 31) {
+            $count = '4';
+        } else {
+            $count = '';
+        }
+        return $count;
+    }
+    
     private function membersCount(int $count): string
     {
         if ($count >= 1 && $count <= 10) {

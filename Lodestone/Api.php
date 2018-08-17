@@ -20,6 +20,7 @@ class Api
     use Modules\Parsers;
     use Modules\Search;
     use Modules\Special;
+    use Modules\Ranking;
     use Modules\Settings;
     
     const langallowed = ['na', 'jp', 'eu', 'fr', 'de'];
@@ -200,6 +201,15 @@ class Api
             }
             if ($param == 'rank_type') {
                 $value = $this->getFeastRankId($value);
+            }
+            if ($param == 'gcid') {
+                $value = $this->getSearchGCId($value);
+            }
+            if ($param == 'match') {
+                $value = $this->matchesCount($value);
+            }
+            if ($param == 'pvp_rank') {
+                $value = $this->pvpRank($value);
             }
             if (!empty($value) || $value === '0') {
                 $query[] = $param .'='. $value;
