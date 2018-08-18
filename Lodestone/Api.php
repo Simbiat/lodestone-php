@@ -211,7 +211,7 @@ class Api
             if ($param == 'pvp_rank') {
                 $value = $this->pvpRank($value);
             }
-            if (!empty($value) || $value === '0') {
+            if ($param != 'q' && (!empty($value) || $value === '0')) {
                 $query[] = $param .'='. $value;
             }
         }

@@ -64,6 +64,10 @@ trait Parsers
                     $resultkey = 'linkshells'; $resultsubkey = ''; break;
                 case 'searchPvPTeam':
                     $resultkey = 'pvpteams'; $resultsubkey = ''; break;
+                case 'frontline':
+                case 'GrandCompanyRanking':
+                case 'FreeCompanyRanking':
+                    $resultkey = $this->type; $resultsubkey = $this->typesettings['week_month']; break;
                 default:
                     $resultkey = $this->type; $resultsubkey = ''; break;
             }
@@ -85,6 +89,10 @@ trait Parsers
                 'status',
             ])) {
                 preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER);
+                $this->pages($pages, $resultkey, $resultsubkey);
+            }
+            if (in_array($this->type, ['GrandCompanyRanking', 'FreeCompanyRanking'])) {
+                preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER);
                 $this->pages($pages, $resultkey, $resultsubkey);
             }
             
@@ -122,6 +130,10 @@ trait Parsers
                     $regex = Regex::FEAST; break;
                 case 'frontline':
                     $regex = Regex::FRONTLINE; break;
+                case 'GrandCompanyRanking':
+                    $regex = Regex::GCRANKING; break;
+                case 'FreeCompanyRanking':
+                    $regex = Regex::FCRANKING; break;
                 case 'deepdungeon':
                     $regex = Regex::DEEPDUNGEON; break;
                 case 'FreeCompany':
@@ -192,12 +204,17 @@ trait Parsers
                         }
                         break;
                     case 'frontline':
+                    case 'GrandCompanyRanking':
                         if (!empty($tempresult['gcname'])) {
                             $tempresults[$key]['grandCompany'] = $this->grandcompany($tempresult);
                         }
                         if (!empty($tempresult['fcid'])) {
                             $tempresults[$key]['freeCompany'] = $this->freecompany($tempresult);
                         }
+                        $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
+                        break;
+                    case 'FreeCompanyRanking':
+                        $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
                         $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
                         break;
                     case 'topics':
@@ -388,7 +405,9 @@ trait Parsers
                     case 'feast':
                         $this->result[$resultkey][$this->typesettings['season']][$tempresult['id']] = $tempresults[$key]; break;
                     case 'frontline':
-                        $this->result[$resultkey][$this->typesettings['week_month']][$this->typesettings['week']][$tempresult['id']] = $tempresults[$key]; break;
+                    case 'GrandCompanyRanking':
+                    case 'FreeCompanyRanking':
+                        $this->result[$resultkey][$resultsubkey][$this->typesettings['week']][$tempresult['id']] = $tempresults[$key]; break;
                     case 'deepdungeon':
                         if ($this->typesettings['solo_party'] == 'solo') {
                             $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$this->typesettings['class']][$tempresult['id']] = $tempresults[$key];
@@ -441,9 +460,29 @@ trait Parsers
                 }
                 if (!empty($pages[0]['pageTotal'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $pages[0]['pageTotal'];
+                } else {
+                    if (!empty($pages[0]['pageCurrent'])) {
+                        $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $pages[0]['pageCurrent'];
+                    }
                 }
                 if (!empty($pages[0]['total'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['total'] = $pages[0]['total'];
+                }
+                break;
+            case 'GrandCompanyRanking':
+            case 'FreeCompanyRanking':
+                if (!empty($pages[0]['pageCurrent'])) {
+                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = $pages[0]['pageCurrent'];
+                }
+                if (!empty($pages[0]['pageTotal'])) {
+                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageTotal'];
+                } else {
+                    if (!empty($pages[0]['pageCurrent'])) {
+                        $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageCurrent'];
+                    }
+                }
+                if (!empty($pages[0]['total'])) {
+                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['total'] = $pages[0]['total'];
                 }
                 break;
             default:
@@ -452,6 +491,10 @@ trait Parsers
                 }
                 if (!empty($pages[0]['pageTotal'])) {
                     $this->result[$resultkey]['pageTotal'] = $pages[0]['pageTotal'];
+                } else {
+                    if (!empty($pages[0]['pageCurrent'])) {
+                        $this->result[$resultkey]['pageTotal'] = $pages[0]['pageCurrent'];
+                    }
                 }
                 if (!empty($pages[0]['total'])) {
                     $this->result[$resultkey]['total'] = $pages[0]['total'];

@@ -66,6 +66,7 @@ trait Ranking
             }
         }
         $query = $this->queryBuilder([
+            'filter' => 1,
             'sort' => $sort,
             'dcgroup' => $dcgroup,
             'worldname' => $worldname,
@@ -75,6 +76,61 @@ trait Ranking
         ]);
         $this->url = $this->language.Routes::LODESTONE_FRONTLINE.$week_month.'/'.$week.'/'.$query;
         $this->type = 'frontline';
+        $this->typesettings['week'] = $week;
+        $this->typesettings['week_month'] = $week_month;
+        return $this->parse();
+    }
+    
+    public function getGrandCompanyRanking(string $week_month = 'weekly', int $week = 0, string $worldname = '', string $gcid = '', int $page = 1)
+    {
+        if (!in_array($week_month, ['weekly','monthly'])) {
+            $week_month = 'weekly';
+        }
+        if ($week_month == 'weekly') {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', $week)) {
+                $week = 0;
+            }
+        } else {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', $week)) {
+                $week = 0;
+            }
+        }
+        $query = $this->queryBuilder([
+            'filter' => 1,
+            'worldname' => $worldname,
+            'gcid' => $gcid,
+            'page' => $page,
+        ]);
+        $this->url = $this->language.Routes::LODESTONE_GCRANKING.$week_month.'/'.$week.'/'.$query;
+        $this->type = 'GrandCompanyRanking';
+        $this->typesettings['week'] = $week;
+        $this->typesettings['week_month'] = $week_month;
+        return $this->parse();
+    }
+    
+    public function getFreeCompanyRanking(string $week_month = 'weekly', int $week = 0, string $worldname = '', string $gcid = '', int $page = 1)
+    {
+        if (!in_array($week_month, ['weekly','monthly'])) {
+            $week_month = 'weekly';
+        }
+        if ($week_month == 'weekly') {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', $week)) {
+                $week = 0;
+            }
+        } else {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', $week)) {
+                $week = 0;
+            }
+        }
+        $query = $this->queryBuilder([
+            'filter' => 1,
+            'worldname' => $worldname,
+            'gcid' => $gcid,
+            'page' => $page,
+        ]);
+        $this->url = $this->language.Routes::LODESTONE_FCRANKING.$week_month.'/'.$week.'/'.$query;
+        var_dump($this->url);
+        $this->type = 'FreeCompanyRanking';
         $this->typesettings['week'] = $week;
         $this->typesettings['week_month'] = $week_month;
         return $this->parse();

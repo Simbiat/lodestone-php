@@ -52,4 +52,7 @@ class Routes
     const LODESTONE_DEEP_DUNGEON = self::LODESTONE_URL_BASE .'/ranking/deepdungeon%s/';
     // frontline
     const LODESTONE_FRONTLINE = self::LODESTONE_URL_BASE .'/ranking/frontline/';
+    // company rankings
+    const LODESTONE_GCRANKING = self::LODESTONE_URL_BASE .'/ranking/gc/';
+    const LODESTONE_FCRANKING = self::LODESTONE_URL_BASE .'/ranking/fc/';
 }

@@ -107,7 +107,19 @@ In the new concept fatal errors generally can happen only during HTTP requests. 
 		<td><code>getFrontline</code></td>
 		<td><ul><li><code>string $week_month = 'weekly'</code> - type of ranking. Defaults to <code>'weekly'</code>.</li><li><code>int $week = 0</code> - number of week (YYYYNN format) or month (YYYYMM format). Defaults to <code>0</code>, that is current week or month.</li><li><code>string $dcgroup = ''</code> - data center name to filter. Defaults to empty string, meaning no filtering.</li><li><code>string $worldname = ''</code> - server name to filter. Defaults to empty string, meaning no filtering.</li><li><code>int $pvp_rank = 0</code> - minimum PvP rank to filter. Defaults to <code>0</code>, meaning no filtering.</li><li><code>int $match = 0</code> - minimum number of matches to filter. Defaults to <code>0</code>, meaning no filtering.</li><li><code>string $gcid = ''</code> - Grand Company to filter. Defaults to empty string, meaning no filtering. Multilingual</li><li><code>string $sort = 'win'</code> - sorting order. Accepts <code>'win'</win> (sort by number of won matches), <code>'match'</code> (sort by total number of matches) and <code>'rate'</code> (sort by winning rate). Defaults to <code>'win'</code>.</li></ul></td>
 		<td><code>frontline['weekly'][$week][$character]</code> or <code>frontline['monthly'][$month][$character]</code>, where <code>$week</code> and <code>$month</code> is identification of request week or month and <code>$character</code> is id of each character returned with respective details as an array.</td>
-		<td>Returns ranking of respective Deep Dungeon.</td>
+		<td>Returns Frontline rankings for selected period.</td>
+	</tr>
+	<tr>
+		<td><code>getGrandCompanyRanking</code></td>
+		<td><ul><li><code>string $week_month = 'weekly'</code> - type of ranking. Defaults to <code>'weekly'</code>.</li><li><code>int $week = 0</code> - number of week (YYYYNN format) or month (YYYYMM format). Defaults to <code>0</code>, that is current week or month.</li><li><code>string $worldname = ''</code> - server name to filter. Defaults to empty string, meaning no filtering.</li><li><code>string $gcid = ''</code> - Grand Company to filter. Defaults to empty string, meaning no filtering. Multilingual</li><li><code>int $page = 1</code> - number of the page to parse. Defaults to <code>1</code>.</li></ul></td>
+		<td><code>GrandCompanyRanking['weekly'][$week][$character]</code> or <code>GrandCompanyRanking['monthly'][$month][$character]</code>, where <code>$week</code> and <code>$month</code> is identification of request week or month and <code>$character</code> is id of each character returned with respective details as an array.</td>
+		<td>Returns Grand Company rankings for selected period.</td>
+	</tr>
+	<tr>
+		<td><code>getFreeCompanyRanking</code></td>
+		<td><ul><li><code>string $week_month = 'weekly'</code> - type of ranking. Defaults to <code>'weekly'</code>.</li><li><code>int $week = 0</code> - number of week (YYYYNN format) or month (YYYYMM format). Defaults to <code>0</code>, that is current week or month.</li><li><code>string $worldname = ''</code> - server name to filter. Defaults to empty string, meaning no filtering.</li><li><code>string $gcid = ''</code> - Free Company to filter. Defaults to empty string, meaning no filtering. Multilingual</li><li><code>int $page = 1</code> - number of the page to parse. Defaults to <code>1</code>.</li></ul></td>
+		<td><code>FreeCompanyRanking['weekly'][$week][$character]</code> or <code>FreeCompanyRanking['monthly'][$month][$character]</code>, where <code>$week</code> and <code>$month</code> is identification of request week or month and <code>$character</code> is id of each character returned with respective details as an array.</td>
+		<td>Returns Free Company rankings for selected period.</td>
 	</tr>
 	<tr>
 		<th colspan="4">Search</th>
