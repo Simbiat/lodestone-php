@@ -160,58 +160,7 @@ class Api
             if (empty($value) && $value !== '0') {
                 continue;
             }
-            if (in_array($param, ['class_job', 'subtype'])) {
-                $param = 'subtype';
-                $value = $this->getDeepDungeonClassId($value);
-            }
-            if ($param == 'solo_party') {
-                if (!in_array($value, ['party', 'solo'])) {
-                    $value = '';
-                }
-            }
-            if ($param == 'classjob') {
-                $value = $this->getSearchClassId($value);
-            }
-            if ($param == 'race_tribe') {
-                $value = $this->getSearchClanId($value);
-            }
-            if ($param == 'order') {
-                $value = $this->getSearchOrderId($value);
-            }
-            if ($param == 'blog_lang') {
-                $value = $this->languageConvert($value);
-            }
-            if ($param == 'character_count') {
-                $value = $this->membersCount($value);
-            }
-            if ($param == 'activetime') {
-                $value = $this->getSearchActiveTimeId($value);
-            }
-            if ($param == 'join') {
-                $value = $this->getSearchJoinId($value);
-            }
-            if ($param == 'house') {
-                $value = $this->getSearchHouseId($value);
-            }
-            if ($param == 'activities') {
-                $value = $this->getSearchActivitiesId($value);
-            }
-            if ($param == 'roles') {
-                $value = $this->getSearchRolesId($value);
-            }
-            if ($param == 'rank_type') {
-                $value = $this->getFeastRankId($value);
-            }
-            if ($param == 'gcid') {
-                $value = $this->getSearchGCId($value);
-            }
-            if ($param == 'match') {
-                $value = $this->matchesCount($value);
-            }
-            if ($param == 'pvp_rank') {
-                $value = $this->pvpRank($value);
-            }
-            if ($param != 'q' && (!empty($value) || $value === '0')) {
+            if ($param == 'q' || !empty($value) || $value === '0') {
                 $query[] = $param .'='. $value;
             }
         }

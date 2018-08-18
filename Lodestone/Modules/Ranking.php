@@ -10,7 +10,7 @@ trait Ranking
         }
         $query = $this->queryBuilder([
             'dcgroup' => $dcgroup,
-            'rank_type' => $rank_type,
+            'rank_type' => $this->getFeastRankId($rank_type),
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_FEAST, strval($season)).$query;
         $this->type = 'feast';
@@ -26,17 +26,17 @@ trait Ranking
         if ($subtype) {
             $solo_party = 'solo';
         }
+        if (!in_array($value, ['party', 'solo'])) {
+            $solo_party = 'party';
+        }
         $query = $this->queryBuilder([
             'dcgroup' => $dcgroup,
             'solo_party' => $solo_party,
-            'subtype' => $subtype,
+            'subtype' => $this->getDeepDungeonClassId($subtype),
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_DEEP_DUNGEON, strval($id)).$query;
         if (empty($id)) {
             $id = 1;
-        }
-        if (empty($solo_party)) {
-            $solo_party = 'party';
         }
         if (empty($subtype)) {
             $subtype = $this->getDeepDungeonClassId('PLD');
@@ -70,9 +70,9 @@ trait Ranking
             'sort' => $sort,
             'dcgroup' => $dcgroup,
             'worldname' => $worldname,
-            'pvp_rank' => $pvp_rank,
-            'match' => $match,
-            'gcid' => $gcid,
+            'pvp_rank' => $this->pvpRank($pvp_rank),
+            'match' => $this->matchesCount($match),
+            'gcid' => $this->getSearchGCId($gcid),
         ]);
         $this->url = $this->language.Routes::LODESTONE_FRONTLINE.$week_month.'/'.$week.'/'.$query;
         $this->type = 'frontline';
@@ -98,7 +98,7 @@ trait Ranking
         $query = $this->queryBuilder([
             'filter' => 1,
             'worldname' => $worldname,
-            'gcid' => $gcid,
+            'gcid' => $this->getSearchGCId($gcid),
             'page' => $page,
         ]);
         $this->url = $this->language.Routes::LODESTONE_GCRANKING.$week_month.'/'.$week.'/'.$query;
@@ -125,7 +125,7 @@ trait Ranking
         $query = $this->queryBuilder([
             'filter' => 1,
             'worldname' => $worldname,
-            'gcid' => $gcid,
+            'gcid' => $this->getSearchGCId($gcid),
             'page' => $page,
         ]);
         $this->url = $this->language.Routes::LODESTONE_FCRANKING.$week_month.'/'.$week.'/'.$query;

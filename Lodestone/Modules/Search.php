@@ -19,11 +19,11 @@ trait Search
         $query = $this->queryBuilder([
             'q' => str_ireplace(' ', '+', $name),
             'worldname' => $server,
-            'classjob' => $classjob,
-            'race_tribe' => $race_tribe,
-            'gcid' => $gcid,
-            'blog_lang' => $blog_lang,
-            'order' => $order,
+            'classjob' => $this->getSearchClassId($classjob),
+            'race_tribe' => $this->getSearchClanId($race_tribe),
+            'gcid' => $this->getSearchGCId($gcid),
+            'blog_lang' => $this->languageConvert($blog_lang),
+            'order' => $this->getSearchOrderId($order),
             'page' => $page,
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_SEARCH_URL.$query);
@@ -43,14 +43,14 @@ trait Search
         $query = $this->queryBuilder([
             'q' => str_ireplace(' ', '+', $name),
             'worldname' => $server,
-            'character_count' => $character_count,
-            'activities' => $activities,
-            'roles' => $roles,
-            'activetime' => $activetime,
-            'join' => $join,
-            'house' => $house,
-            'gcid' => $gcid,
-            'order' => $order,
+            'character_count' => $this->membersCount($character_count),
+            'activities' => $this->getSearchActivitiesId($activities),
+            'roles' => $this->getSearchRolesId($roles),
+            'activetime' => $this->getSearchActiveTimeId($activetime),
+            'join' => $this->getSearchJoinId($join),
+            'house' => $this->getSearchHouseId($house),
+            'gcid' => $this->getSearchGCId($gcid),
+            'order' => $this->getSearchOrderId($order),
             'page' => $page,
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_SEARCH_URL.$query);
@@ -70,8 +70,8 @@ trait Search
         $query = $this->queryBuilder([
             'q' => str_ireplace(' ', '+', $name),
             'worldname' => $server,
-            'character_count' => $character_count,
-            'order' => $order,
+            'character_count' => $this->membersCount($character_count),
+            'order' => $this->getSearchOrderId($order),
             'page' => $page,
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_SEARCH_URL.$query);
@@ -91,7 +91,7 @@ trait Search
         $query = $this->queryBuilder([
             'q' => str_ireplace(' ', '+', $name),
             'worldname' => $server,
-            'order' => $order,
+            'order' => $this->getSearchOrderId($order),
             'page' => $page,
         ]);
         $this->url = sprintf($this->language.Routes::LODESTONE_PVPTEAM_SEARCH_URL.$query);
