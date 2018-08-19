@@ -26,7 +26,7 @@ It's possible to utilize Benchmarking to get parsing times for each iteration by
 ## Error handling
 In the new concept fatal errors generally can happen only during HTTP requests. In order not to break "linking" function, they are handled softly in the code itself and are reported to `->errors` and `->lasterror` arrays. In essense, when an error occurs you will simply get an empty result for specific entity and it will not be added to output.
 
-##Test script
+## Test script
 There is a `\Lodestone\Test` class to test run all of the available functions in some general scenarios. Run it to get samples of output formatting and timings for each type of test in a table format. Note, that the last 2 tests are 'error tests', so their results are purposefully reversed for the report's consistency. Additionally achievements' test is purposefully ran with `details` set to true, becuase of this benchamrk results will be presented as list of timings.
 
 ## Parsers
