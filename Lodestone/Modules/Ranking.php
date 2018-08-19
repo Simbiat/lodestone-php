@@ -26,7 +26,7 @@ trait Ranking
         if ($subtype) {
             $solo_party = 'solo';
         }
-        if (!in_array($value, ['party', 'solo'])) {
+        if (!in_array($solo_party, ['party', 'solo'])) {
             $solo_party = 'party';
         }
         $query = $this->queryBuilder([
@@ -129,7 +129,6 @@ trait Ranking
             'page' => $page,
         ]);
         $this->url = $this->language.Routes::LODESTONE_FCRANKING.$week_month.'/'.$week.'/'.$query;
-        var_dump($this->url);
         $this->type = 'FreeCompanyRanking';
         $this->typesettings['week'] = $week;
         $this->typesettings['week_month'] = $week_month;

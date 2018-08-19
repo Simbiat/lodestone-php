@@ -50,7 +50,7 @@ class Regex
     
     const NOTICES = '/<ul>(<li class="news__list">.*<\/li>)*<\/ul>/im';
     
-    const NOTICES2 = '/<li class="news__list"><a href="(?<url>.{63})" class="news__list--link ic__info--list"><div class="clearfix"><p class="news__list--title">(<span class="news__list--tag">\[(?<tag>.{1,20})\]<\/span>)?(?<title>.{1,100})<\/p><time class="news__list--time"><span id="datetime-0\.\d*">-<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/div><\/a><\/li>/mi';
+    const NOTICES2 = '/<li class="news__list"><a href="(?<url>.{63})" class="news__list--link ic__.{1,20}--list"><div class="clearfix"><p class="news__list--title">(<span class="news__list--tag">\[(?<tag>.{1,20})\]<\/span>)?(?<title>.{1,100})<\/p><time class="news__list--time"><span id="datetime-0\.\d*">-<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/div><\/a><\/li>/mi';
     
     const WORLDS = '/<div class="item-list__worldstatus">\s*<h3 class="">(?<server>'.self::SERVER.')<\/h3>\s*<p>\s*(?<status>.{1,10})\s*<\/p>/mi';
     

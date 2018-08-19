@@ -229,8 +229,10 @@ trait Parsers
                         $tempresults[$key]['job'] = [
                             'name'=>$tempresult['job'],
                             'icon'=>$tempresult['jobicon'],
-                            'form'=>$tempresult['jobform'],
                         ];
+                        if (!empty($tempresult['jobform'])) {
+                            $tempresults[$key]['job']['form'] = $tempresult['jobform'];
+                        }
                         break;
                     case 'FreeCompany':
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
@@ -514,7 +516,7 @@ trait Parsers
             if (!empty($pages[0]['formed'])) {
                 $this->result[$resultkey][$this->typesettings['id']]['formed'] = $pages[0]['formed'];
             }
-            $this->result[$resultkey][$this->typesettings['id']]['crest'] = $this->crest($pages, 'pvpcrest');
+            $this->result[$resultkey][$this->typesettings['id']]['crest'] = $this->crest($pages[0], 'pvpcrest');
         }
         return $this;
     }
