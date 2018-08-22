@@ -15,7 +15,9 @@ namespace Lodestone\Modules;
 class Regex
 {
     const CREST = 'https:\/\/[\.a-zA-Z0-9\/_\-]{56,72}\.png';
-    const CHARNAME = '([a-zA-Z\' \-]|\&[^\s]*\;).{1,50}';
+    #Original limit as a backup. Length limit does not properly work in case of multiple HTML entities
+    #const CHARNAME = '([a-zA-Z\' \-]|\&[^\s]*\;).{1,50}';
+    const CHARNAME = '[a-zA-Z\' \-\&;].{1,450}';
     #Names of free companies, linkshells, PvP teams
     const NONSENAME = '[^<]*';
     const SERVER = '[a-zA-Z]{1,15}';
@@ -46,11 +48,11 @@ class Regex
     
     const BANNERS2 = '/<li><a href="(?<url>.{19})"><img src="(?<banner>.{74}\.png)\?\d*" '.self::DIMENSIONS.'><\/a><\/li>/ims';
     
-    const NEWS = '/<li class="news__list--topics ic__topics--list( news__content__bottom-radius)?"><header class="news__list--header clearfix"><p class="news__list--title"><a href="(?<url>.{65})">(?<title>.{1,100})<\/a><\/p><time class="news__list--time"><span id="datetime-0\.\d*">.{1,20}<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/header><div class="news__list--banner"><a href=".{65}" class="news__list--img"><img src="(?<banner>.{74})\.(png|jpg)\?\d*" width="\d*"( height="\d*")? alt=""><\/a>(?<html>.{0,1200})<\/div><\/li>/im';
+    const NEWS = '/<li class="news__list--topics ic__topics--list( news__content__bottom-radius)?"><header class="news__list--header clearfix"><p class="news__list--title"><a href="(?<url>.{65})">(?<title>.'.self::NONSENAME.')<\/a><\/p><time class="news__list--time"><span id="datetime-0\.\d*">.{1,20}<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/header><div class="news__list--banner"><a href=".{65}" class="news__list--img"><img src="(?<banner>.{74})\.(png|jpg)\?\d*" width="\d*"( height="\d*")? alt=""><\/a>(?<html>.{0,1200})<\/div><\/li>/im';
     
     const NOTICES = '/<ul>(<li class="news__list">.*<\/li>)*<\/ul>/im';
     
-    const NOTICES2 = '/<li class="news__list"><a href="(?<url>.{63})" class="news__list--link ic__.{1,20}--list"><div class="clearfix"><p class="news__list--title">(<span class="news__list--tag">\[(?<tag>.{1,20})\]<\/span>)?(?<title>.{1,100})<\/p><time class="news__list--time"><span id="datetime-0\.\d*">-<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/div><\/a><\/li>/mi';
+    const NOTICES2 = '/<li class="news__list"><a href="(?<url>.{63})" class="news__list--link ic__.{1,20}--list"><div class="clearfix"><p class="news__list--title">(<span class="news__list--tag">\[(?<tag>.{1,20})\]<\/span>)?(?<title>'.self::NONSENAME.')<\/p><time class="news__list--time"><span id="datetime-0\.\d*">-<\/span><script>document\.getElementById\(\'datetime-0\.\d*\'\)\.innerHTML = ldst_strftime\((?<time>\d*), \'YMD\'\);<\/script><\/time><\/div><\/a><\/li>/mi';
     
     const WORLDS = '/<div class="item-list__worldstatus">\s*<h3 class="">(?<server>'.self::SERVER.')<\/h3>\s*<p>\s*(?<status>.{1,10})\s*<\/p>/mi';
     

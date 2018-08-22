@@ -33,6 +33,7 @@ class Api
     private $type = '';
     private $typesettings = [];
     private $html = '';
+    private $allpages = false;
     public $result = null;
     public $errors = [];
     public $lasterror = NULL;
@@ -57,6 +58,10 @@ class Api
      */
     public function getCharacterFriends($id, int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FRIENDS_URL.'/?page='.$page, $id);
         $this->type = 'CharacterFriends';
         $this->typesettings['id'] = $id;
@@ -71,6 +76,10 @@ class Api
      */
     public function getCharacterFollowing($id, int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FOLLOWING_URL.'/?page='.$page, $id);
         $this->type = 'CharacterFollowing';
         $this->typesettings['id'] = $id;
@@ -122,6 +131,10 @@ class Api
      */
     public function getFreeCompanyMembers($id, int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'FreeCompanyMembers';
         $this->typesettings['id'] = $id;
@@ -133,8 +146,12 @@ class Api
      * @param $id
      * @param bool $page
      */
-    public function getLinkshell($id, int $page = 1)
+    public function getLinkshellMembers($id, int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'/?page='.$page, $id);
         $this->type = 'LinkshellMembers';
         $this->typesettings['id'] = $id;

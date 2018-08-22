@@ -31,6 +31,10 @@ trait Special
      */
     public function getLodestoneTopics(int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = $this->language.Routes::LODESTONE_TOPICS.'?page='.$page;
         $this->type = 'topics';
         return $this->parse();
@@ -42,6 +46,10 @@ trait Special
      */
     public function getLodestoneNotices(int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = $this->language.Routes::LODESTONE_NOTICES.'?page='.$page;
         $this->type = 'notices';
         return $this->parse();
@@ -53,6 +61,10 @@ trait Special
      */
     public function getLodestoneMaintenance(int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = $this->language.Routes::LODESTONE_MAINTENANCE.'?page='.$page;
         $this->type = 'maintenance';
         return $this->parse();
@@ -64,6 +76,10 @@ trait Special
      */
     public function getLodestoneUpdates(int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = $this->language.Routes::LODESTONE_UPDATES.'?page='.$page;
         $this->type = 'updates';
         return $this->parse();
@@ -75,6 +91,10 @@ trait Special
      */
     public function getLodestoneStatus(int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         $this->url = $this->language.Routes::LODESTONE_STATUS.'?page='.$page;
         $this->type = 'status';
         return $this->parse();

@@ -181,6 +181,7 @@ trait Parsers
                 switch($this->type) {
                     case 'searchPvPTeam':
                     case 'searchFreeCompany':
+                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest'); break;
                     case 'searchCharacter':
                     case 'CharacterFriends':
@@ -188,6 +189,7 @@ trait Parsers
                     case 'FreeCompanyMembers':
                     case 'LinkshellMembers':
                     case 'PvPTeamMembers':
+                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
                         if (!empty($tempresult['gcname'])) {
                             $tempresults[$key]['grandCompany'] = $this->grandcompany($tempresult);
                         }
@@ -199,12 +201,13 @@ trait Parsers
                             $tempresults[$key]['rankicon'] = $tempresult['lsrankicon'];
                             #Specific for linkshell members
                             if (empty($this->result['server'])) {
-                                $this->result['server'] = $tempresult['server'];
+                                $this->result[$resultkey][$this->typesettings['id']]['server'] = $tempresult['server'];
                             }
                         }
                         break;
                     case 'frontline':
                     case 'GrandCompanyRanking':
+                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
                         if (!empty($tempresult['gcname'])) {
                             $tempresults[$key]['grandCompany'] = $this->grandcompany($tempresult);
                         }
@@ -214,6 +217,7 @@ trait Parsers
                         $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
                         break;
                     case 'FreeCompanyRanking':
+                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
                         $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
                         break;
@@ -235,6 +239,7 @@ trait Parsers
                         }
                         break;
                     case 'FreeCompany':
+                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
                         #Ranking checks for --
                         if ($tempresult['weekly_rank'] == '--') {
@@ -317,6 +322,7 @@ trait Parsers
                         break;
                     case 'Character':
                         #Decode html entities
+                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
                         $tempresults[$key]['race'] = htmlspecialchars_decode($tempresult['race']);
                         $tempresults[$key]['clan'] = htmlspecialchars_decode($tempresult['clan']);
                         if (!empty($tempresult['uppertitle'])) {
@@ -401,7 +407,7 @@ trait Parsers
                     case 'maintenance':
                     case 'updates':
                     case 'status':
-                        $this->result[$resultkey][$key] = $tempresults[$key]; break;
+                        $this->result[$resultkey][] = $tempresults[$key]; break;
                     case 'worlds':
                         $this->result[$resultkey][$tempresult['server']] = $tempresult['status']; break;
                     case 'feast':
@@ -427,7 +433,6 @@ trait Parsers
         } catch (\Exception $e) {
             $this->errors[] = $this->lasterror = ['type'=>$this->type, 'id'=>($this->typesettings['id'] ?? NULL), 'error'=>$e->getMessage(),'url'=>$this->url];
         }
-            
         #Benchmarking
         if ($this->benchmark) {
             $finished = microtime(true);
@@ -445,7 +450,108 @@ trait Parsers
                 $this->getCharacterAchievements($this->typesettings['id'], $key, 1, false, true);
             }
         }
+        
+        $this->allpages($resultkey, $resultsubkey);
+        
         return $this;
+    }
+    
+    #Function to check if we need to grab all pages and there are still pages left
+    private function allpages(string $resultkey, string $resultsubkey): bool
+    {
+        if ($this->allpages == true && in_array($this->type, [
+                'searchCharacter',
+                'CharacterFriends',
+                'CharacterFollowing',
+                'FreeCompanyMembers',
+                'LinkshellMembers',
+                'searchFreeCompany',
+                'searchLinkshell',
+                'searchPvPTeam',
+                'topics',
+                'notices',
+                'maintenance',
+                'updates',
+                'status',
+                'GrandCompanyRanking',
+                'FreeCompanyRanking',
+            ])) {
+            switch($this->type) {
+                case 'CharacterFriends':
+                case 'CharacterFollowing':
+                case 'FreeCompanyMembers':
+                case 'LinkshellMembers':
+                    $current_page = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'];
+                    $total_page = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'];
+                    break;
+                case 'GrandCompanyRanking':
+                case 'FreeCompanyRanking':
+                    $current_page = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'];
+                    $total_page = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'];
+                    break;
+                default:
+                    $current_page = $this->result[$resultkey]['pageCurrent'];
+                    $total_page = $this->result[$resultkey]['pageTotal'];
+                    break;
+            }
+            if ($current_page == $total_page) {
+                return false;
+            } else {
+                $current_page++;
+            }
+            ini_set("max_execution_time", "6000");
+            $this->allpages = false;
+            switch($this->type) {
+                case 'CharacterFriends':
+                case 'CharacterFollowing':
+                case 'FreeCompanyMembers':
+                case 'LinkshellMembers':
+                    $function_to_call = "get".$this->type;
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->$function_to_call($this->typesettings['id'], $i);
+                    }
+                    break;
+                case 'GrandCompanyRanking':
+                case 'FreeCompanyRanking':
+                    $function_to_call = "get".$this->type;
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->$function_to_call($this->typesettings['week_month'], $this->typesettings['week'], $this->typesettings['worldname'], $this->typesettings['gcid'], $i);
+                    }
+                    break;
+                case 'searchCharacter':
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->searchCharacter($this->typesettings['name'], $this->typesettings['server'], $this->typesettings['classjob'], $this->typesettings['race_tribe'], $this->typesettings['gcid'], $this->typesettings['blog_lang'], $this->typesettings['order'], $i);
+                    }
+                    break;
+                case 'searchFreeCompany':
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->searchFreeCompany($this->typesettings['name'], $this->typesettings['server'], $this->typesettings['character_count'], $this->typesettings['activities'], $this->typesettings['roles'], $this->typesettings['activetime'], $this->typesettings['join'], $this->typesettings['house'], $this->typesettings['gcid'], $this->typesettings['order'], $i);
+                    }
+                    break;
+                case 'searchLinkshell':
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->searchLinkshell($this->typesettings['name'], $this->typesettings['server'] = $server, $this->typesettings['character_count'], $this->typesettings['order'], $i);
+                    }
+                    break;
+                case 'searchPvPTeam':
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->searchPvPTeam($this->typesettings['name'], $this->typesettings['server'], $this->typesettings['order'], $i);
+                    }
+                    break;
+                case 'topics':
+                case 'notices':
+                case 'maintenance':
+                case 'updates':
+                case 'status':
+                    $function_to_call = "getLodestone".ucfirst($this->type);
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->$function_to_call($i);
+                    }
+                    break;
+            }
+            return true;
+        }
+        return false;
     }
     
     #Function to parse pages
@@ -459,13 +565,13 @@ trait Parsers
             case 'PvPTeamMembers':
                 if (!empty($pages[0]['pageCurrent'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = $pages[0]['pageCurrent'];
+                } else {
+                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = 1;
                 }
                 if (!empty($pages[0]['pageTotal'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
-                    if (!empty($pages[0]['pageCurrent'])) {
-                        $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $pages[0]['pageCurrent'];
-                    }
+                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'];
                 }
                 if (!empty($pages[0]['total'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['total'] = $pages[0]['total'];
@@ -475,13 +581,13 @@ trait Parsers
             case 'FreeCompanyRanking':
                 if (!empty($pages[0]['pageCurrent'])) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = $pages[0]['pageCurrent'];
+                } else {
+                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = 1;
                 }
                 if (!empty($pages[0]['pageTotal'])) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
-                    if (!empty($pages[0]['pageCurrent'])) {
-                        $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageCurrent'];
-                    }
+                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'];
                 }
                 if (!empty($pages[0]['total'])) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['total'] = $pages[0]['total'];
@@ -490,13 +596,13 @@ trait Parsers
             default:
                 if (!empty($pages[0]['pageCurrent'])) {
                     $this->result[$resultkey]['pageCurrent'] = $pages[0]['pageCurrent'];
+                } else {
+                    $this->result[$resultkey]['pageCurrent'] = 1;
                 }
                 if (!empty($pages[0]['pageTotal'])) {
                     $this->result[$resultkey]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
-                    if (!empty($pages[0]['pageCurrent'])) {
-                        $this->result[$resultkey]['pageTotal'] = $pages[0]['pageCurrent'];
-                    }
+                    $this->result[$resultkey]['pageTotal'] = $this->result[$resultkey]['pageCurrent'];
                 }
                 if (!empty($pages[0]['total'])) {
                     $this->result[$resultkey]['total'] = $pages[0]['total'];

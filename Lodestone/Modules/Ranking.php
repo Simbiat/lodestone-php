@@ -83,6 +83,10 @@ trait Ranking
     
     public function getGrandCompanyRanking(string $week_month = 'weekly', int $week = 0, string $worldname = '', string $gcid = '', int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         if (!in_array($week_month, ['weekly','monthly'])) {
             $week_month = 'weekly';
         }
@@ -105,11 +109,17 @@ trait Ranking
         $this->type = 'GrandCompanyRanking';
         $this->typesettings['week'] = $week;
         $this->typesettings['week_month'] = $week_month;
+        $this->typesettings['worldname'] = $worldname;
+        $this->typesettings['gcid'] = $gcid;
         return $this->parse();
     }
     
     public function getFreeCompanyRanking(string $week_month = 'weekly', int $week = 0, string $worldname = '', string $gcid = '', int $page = 1)
     {
+        if ($page == 0) {
+            $page = 1;
+            $this->allpages = true;
+        }
         if (!in_array($week_month, ['weekly','monthly'])) {
             $week_month = 'weekly';
         }
@@ -132,6 +142,8 @@ trait Ranking
         $this->type = 'FreeCompanyRanking';
         $this->typesettings['week'] = $week;
         $this->typesettings['week_month'] = $week_month;
+        $this->typesettings['worldname'] = $worldname;
+        $this->typesettings['gcid'] = $gcid;
         return $this->parse();
     }
 }

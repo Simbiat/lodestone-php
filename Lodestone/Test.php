@@ -34,13 +34,13 @@ class Test
         #Checking groups
         $this->Lodestone->getFreeCompany('9234631035923213559');
         $this->tableline('Free company (regular)', $this->Lodestone->result['freecompanies']['9234631035923213559']);
-        $this->Lodestone->getFreeCompanyMembers('9234631035923213559', 1);
-        $this->tableline('Free company members', $this->Lodestone->result['freecompanies']['9234631035923213559']['members']);
+        $this->Lodestone->getFreeCompanyMembers('9234631035923202551', 0);
+        $this->tableline('Free company members', $this->Lodestone->result['freecompanies']['9234631035923202551']['members']);
         $this->Lodestone->getFreeCompany('9234631035923243608');
         $this->tableline('Free company (no estate, ranking and greeting)', $this->Lodestone->result['freecompanies']['9234631035923243608']);
         $this->Lodestone->getFreeCompany('9234631035923203676');
         $this->tableline('Free company (no plot, focus and recruitment)', $this->Lodestone->result['freecompanies']['9234631035923203676']);
-        $this->Lodestone->getLinkshell('19984723346535274', 1);
+        $this->Lodestone->getLinkshellMembers('19984723346535274', 1);
         $this->tableline('Linkshell', $this->Lodestone->result['linkshells']['19984723346535274']);
         $this->Lodestone->getPvPTeam('fd58c424bce8697a0a56bbc38fa5c4966067a9d5');
         $this->tableline('PvP team', $this->Lodestone->result['pvpteams']['fd58c424bce8697a0a56bbc38fa5c4966067a9d5']);
