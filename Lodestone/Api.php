@@ -23,7 +23,7 @@ class Api
     use Modules\Ranking;
     use Modules\Settings;
     
-    const langallowed = ['na', 'jp', 'eu', 'fr', 'de'];
+    const langallowed = ['na', 'jp', 'ja', 'eu', 'fr', 'de'];
     
     private $useragent = '';
     private $language = 'https://na';

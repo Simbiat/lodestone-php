@@ -14,22 +14,40 @@ trait Search
      * @param bool $page
      * @return SearchCharacter
      */
-    public function searchCharacter(string $name = '', string $server = '', string $classjob = '', string $race_tribe = '', string $gcid = '', string $blog_lang = '', string $order = '', int $page = 1)
+    public function searchCharacter(string $name = '', string $server = '', string $classjob = '', string $race_tribe = '', $gcid = '', $blog_lang = '', string $order = '', int $page = 1)
     {
         if ($page == 0) {
             $page = 1;
             $this->allpages = true;
         }
-        $query = $this->queryBuilder([
+        if (is_array($gcid)) {
+            foreach ($gcid as $key=>$item) {
+                $gcid[$key] = $this->getSearchGCId($item);
+            }
+        } elseif (is_string($gcid)) {
+            $gcid = $this->getSearchGCId($gcid);
+        } else {
+            $gcid = '';
+        }
+        if (is_array($blog_lang)) {
+            foreach ($blog_lang as $key=>$item) {
+                $blog_lang[$key] = $this->languageConvert($item);
+            }
+        } elseif (is_string($gcid)) {
+            $blog_lang = $this->languageConvert($blog_lang);
+        } else {
+            $blog_lang = '';
+        }
+        $query = str_replace(['&blog_lang=&', '&gcid=&'], '&', $this->queryBuilder([
             'q' => str_ireplace(' ', '+', $name),
             'worldname' => $server,
             'classjob' => $this->getSearchClassId($classjob),
             'race_tribe' => $this->getSearchClanId($race_tribe),
-            'gcid' => $this->getSearchGCId($gcid),
-            'blog_lang' => $this->languageConvert($blog_lang),
+            'gcid' => (is_array($gcid) ? implode('&gcid=', $gcid) : $gcid),
+            'blog_lang' => (is_array($blog_lang) ? implode('&blog_lang=', $blog_lang) : $blog_lang),
             'order' => $this->getSearchOrderId($order),
             'page' => $page,
-        ]);
+        ]));
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_SEARCH_URL.$query);
         $this->type = 'searchCharacter';
         $this->typesettings['name'] = $name;
@@ -49,25 +67,52 @@ trait Search
      * @param bool $page
      * @return SearchFreeCompany
      */
-    public function searchFreeCompany(string $name = '', string $server = '', int $character_count = 0, string $activities = '', string $roles = '', string $activetime = '', string $join = '', string $house = '', string $gcid = '', string $order = '', int $page = 1)
+    public function searchFreeCompany(string $name = '', string $server = '', int $character_count = 0, $activities = '', $roles = '', string $activetime = '', string $join = '', string $house = '', $gcid = '', string $order = '', int $page = 1)
     {
         if ($page == 0) {
             $page = 1;
             $this->allpages = true;
         }
-        $query = $this->queryBuilder([
+        if (is_array($gcid)) {
+            foreach ($gcid as $key=>$item) {
+                $gcid[$key] = $this->getSearchGCId($item);
+            }
+        } elseif (is_string($gcid)) {
+            $gcid = $this->getSearchGCId($gcid);
+        } else {
+            $gcid = '';
+        }
+        if (is_array($activities)) {
+            foreach ($activities as $key=>$item) {
+                $activities[$key] = $this->getSearchActivitiesId($item);
+            }
+        } elseif (is_string($gcid)) {
+            $activities = $this->getSearchActivitiesId($activities);
+        } else {
+            $activities = '';
+        }
+        if (is_array($roles)) {
+            foreach ($roles as $key=>$item) {
+                $roles[$key] = $this->getSearchRolesId($item);
+            }
+        } elseif (is_string($gcid)) {
+            $roles = $this->getSearchRolesId($roles);
+        } else {
+            $roles = '';
+        }
+        $query = str_replace(['&activities=&', '&roles=&', '&gcid=&'], '&', $this->queryBuilder([
             'q' => str_ireplace(' ', '+', $name),
             'worldname' => $server,
             'character_count' => $this->membersCount($character_count),
-            'activities' => $this->getSearchActivitiesId($activities),
-            'roles' => $this->getSearchRolesId($roles),
+            'activities' => (is_array($activities) ? implode('&activities=', $activities) : $activities),
+            'roles' => (is_array($roles) ? implode('&roles=', $roles) : $roles),
             'activetime' => $this->getSearchActiveTimeId($activetime),
             'join' => $this->getSearchJoinId($join),
             'house' => $this->getSearchHouseId($house),
-            'gcid' => $this->getSearchGCId($gcid),
+            'gcid' => (is_array($gcid) ? implode('&gcid=', $gcid) : $gcid),
             'order' => $this->getSearchOrderId($order),
             'page' => $page,
-        ]);
+        ]));
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_SEARCH_URL.$query);
         $this->type = 'searchFreeCompany';
         $this->typesettings['name'] = $name;

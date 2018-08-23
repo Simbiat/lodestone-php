@@ -661,10 +661,15 @@ trait Converters {
     
     private function languageConvert(string $lang): string
     {
-        if (!in_array($lang, self::langallowed)) {
-            $lang = "na";
+        if (!empty($lang)) {
+            if (!in_array($lang, self::langallowed)) {
+                $lang = "na";
+            }
+            if (in_array($lang, ['jp', 'ja'])) {$lang = 'ja';}
+            if (in_array($lang, ['na', 'eu'])) {$lang = 'en';}
+        } else {
+            $lang = '';
         }
-        if (in_array($lang, ['na', 'eu'])) {$lang = 'en';}
         return $lang;
     }
     

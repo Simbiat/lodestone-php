@@ -28,6 +28,7 @@ trait Settings
         if (!in_array($language, self::langallowed)) {
             $language = "na";
         }
+        if (in_array($language, ['jp', 'ja'])) {$language = 'jp';}
         $this->lang = $language;
         $this->language = 'https://'.$language;
         return $this;
