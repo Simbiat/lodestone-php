@@ -3,9 +3,9 @@
 
 namespace Lodestone\Modules;
 
-trait Converters {
+class Converters {
     
-    private function imageToBool(string $img): bool
+    public function imageToBool(string $img): bool
     {
         switch(strtolower($img)) {
             case 'Yes':
@@ -22,7 +22,7 @@ trait Converters {
         return $bool;
     }
     
-    private function getAchKindId(string $kind): string
+    public function getAchKindId(string $kind): string
     {
         switch(strtolower($kind)) {
             case '1':
@@ -86,7 +86,7 @@ trait Converters {
         return $id;
     }
     
-    private function getAchCatId(string $cat): string
+    public function getAchCatId(string $cat): string
     {
         switch(strtolower($cat)) {
             case '1':
@@ -403,7 +403,7 @@ trait Converters {
         return $id;
     }
     
-    private function getFeastRankId(string $rank): string
+    public function getFeastRankId(string $rank): string
     {
         switch(strtolower($rank)) {
             case '1':
@@ -434,7 +434,7 @@ trait Converters {
         return $id;
     }
     
-    private function getSearchRolesId(string $role): string
+    public function getSearchRolesId(string $role): string
     {
         switch(strtolower($role)) {
             case '0':
@@ -473,7 +473,7 @@ trait Converters {
         return $id;
     }
     
-    private function getSearchActivitiesId(string $act): string
+    public function getSearchActivitiesId(string $act): string
     {
         switch(strtolower($act)) {
             case '0':
@@ -536,7 +536,7 @@ trait Converters {
         return $id;
     }
     
-    private function getSearchHouseId(string $house): string
+    public function getSearchHouseId(string $house): string
     {
         switch(strtolower($house)) {
             case '2':
@@ -563,7 +563,7 @@ trait Converters {
         return $id;
     }
     
-    private function getSearchJoinId(string $join): string
+    public function getSearchJoinId(string $join): string
     {
         switch(strtolower($join)) {
             case '1':
@@ -584,7 +584,7 @@ trait Converters {
         return $id;
     }
     
-    private function getSearchActiveTimeId(string $active): string
+    public function getSearchActiveTimeId(string $active): string
     {
         switch(strtolower($active)) {
             case '1':
@@ -613,7 +613,7 @@ trait Converters {
         return $id;
     }
     
-    private function matchesCount(int $count): string
+    public function matchesCount(int $count): string
     {
         if ($count >= 1 && $count <= 29) {
             $count = '1';
@@ -627,7 +627,7 @@ trait Converters {
         return $count;
     }
     
-    private function pvpRank(int $count): string
+    public function pvpRank(int $count): string
     {
         if ($count >= 1 && $count <= 10) {
             $count = '1';
@@ -643,7 +643,7 @@ trait Converters {
         return $count;
     }
     
-    private function membersCount(int $count): string
+    public function membersCount(int $count): string
     {
         if ($count >= 1 && $count <= 10) {
             $count = '1-10';
@@ -659,7 +659,7 @@ trait Converters {
         return $count;
     }
     
-    private function languageConvert(string $lang): string
+    public function languageConvert(string $lang): string
     {
         if (!empty($lang)) {
             if (!in_array($lang, self::langallowed)) {
@@ -673,7 +673,7 @@ trait Converters {
         return $lang;
     }
     
-    private function getSearchOrderId(string $order): string
+    public function getSearchOrderId(string $order): string
     {
 	    switch(strtolower($order)) {
             case '1':
@@ -712,7 +712,7 @@ trait Converters {
         return $id;
     }
     
-    private function getSearchGCId(string $gc): string
+    public function getSearchGCId(string $gc): string
     {
 	    switch(strtolower($gc)) {
             case '1':
@@ -745,7 +745,7 @@ trait Converters {
         return $id;
     }
     
-    private function getSearchClanId(string $clan): string
+    public function getSearchClanId(string $clan): string
     {
 	    switch(strtolower($clan)) {
             case 'hyur':
@@ -831,7 +831,7 @@ trait Converters {
         return $id;
     }
 
-    private function getSearchClassId(string $classname): string
+    public function getSearchClassId(string $classname): string
     {
 	    switch(strtolower($classname)) {
             case 'tnk':
@@ -920,7 +920,7 @@ trait Converters {
         return $id;
     }
 
-    private function getDeepDungeonClassId(string $classname): string
+    public function getDeepDungeonClassId(string $classname): string
     {
         switch(strtolower($classname)) {
             case 'gla':
@@ -968,7 +968,7 @@ trait Converters {
         return $id;
     }
     
-    private function memory($bytes): string
+    public function memory($bytes): string
     {
         $unit=array('b','kb','mb','gb','tb','pb');
         return @round($bytes/pow(1024,($i=floor(log($bytes,1024)))),2).' '.$unit[$i];

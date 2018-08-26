@@ -3,30 +3,15 @@ namespace Lodestone\Modules;
 
 trait Parsers
 {    
-    private function parse()
+    protected function parse()
     {
-        if ($this->benchmark) {
-            $started = microtime(true);
-        }
+        $started = microtime(true);
         try {
             $this->lasterror = NULL;
             $http = new HttpRequest($this->useragent);
             $this->html = $http->get($this->url);
         } catch (\Exception $e) {
-            $this->errors[] = $this->lasterror = ['type'=>$this->type, 'id'=>($this->typesettings['id'] ?? NULL), 'error'=>$e->getMessage(),'url'=>$this->url];
-            if ($this->benchmark) {
-                $finished = microtime(true);
-                $duration = $finished - $started;
-                $micro = sprintf("%06d", $duration * 1000000);
-                $d = new \DateTime(date('H:i:s.'.$micro, $duration));
-                $this->result['benchmark']['httptime'][] = $d->format("H:i:s.u");
-                $duration = 0;
-                $micro = sprintf("%06d", $duration * 1000000);
-                $d = new \DateTime(date('H:i:s.'.$micro, $duration));
-                $this->result['benchmark']['parsetime'][] = $d->format("H:i:s.u");
-                $this->result['benchmark']['memory'] = $this->memory(memory_get_usage(true));
-                $this->result['benchmark']['memorypeak'] = $this->memory(memory_get_peak_usage(true));
-            }
+            $this->errorRegister($e->getMessage(), 'http', $started);
             return $this;
         }
         if ($this->benchmark) {
@@ -35,8 +20,8 @@ trait Parsers
             $micro = sprintf("%06d", $duration * 1000000);
             $d = new \DateTime(date('H:i:s.'.$micro, $duration));
             $this->result['benchmark']['httptime'][] = $d->format("H:i:s.u");
-            $started = microtime(true);
         }
+        $started = microtime(true);
         try {
             $this->lasterror = NULL;
             #Set array key for results
@@ -88,17 +73,17 @@ trait Parsers
                 'updates',
                 'status',
             ])) {
-                preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER);
+                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
                 $this->pages($pages, $resultkey, $resultsubkey);
             }
             if (in_array($this->type, ['GrandCompanyRanking', 'FreeCompanyRanking'])) {
-                preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER);
+                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
                 $this->pages($pages, $resultkey, $resultsubkey);
             }
             
             #Banners special precut
             if ($this->type == 'banners') {
-                preg_match(Regex::BANNERS, $this->html, $banners);
+                if (!$this->regexfail(preg_match(Regex::BANNERS, $this->html, $banners), preg_last_error(), $started)) {return $this;}
                 $this->html = $banners[0];
             }
             
@@ -109,7 +94,7 @@ trait Parsers
                 'updates',
                 'status',
             ])) {
-                preg_match_all(Regex::NOTICES, $this->html, $notices, PREG_SET_ORDER);
+                if (!$this->regexfail(preg_match_all(Regex::NOTICES, $this->html, $notices, PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
                 $this->html = $notices[0][0];
             }
             
@@ -155,7 +140,7 @@ trait Parsers
                 default:
                     $regex = Regex::CHARACTERLIST; break;
             }
-            preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER);
+            if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
             
             #Character results update
             if ($this->type == 'Character') {
@@ -431,7 +416,8 @@ trait Parsers
                 ksort($this->result[$resultkey]);
             }
         } catch (\Exception $e) {
-            $this->errors[] = $this->lasterror = ['type'=>$this->type, 'id'=>($this->typesettings['id'] ?? NULL), 'error'=>$e->getMessage(),'url'=>$this->url];
+            $this->errorRegister($e->getMessage(), 'parse', $started);
+            return $this;
         }
         #Benchmarking
         if ($this->benchmark) {
@@ -440,8 +426,8 @@ trait Parsers
             $micro = sprintf("%06d", $duration * 1000000);
             $d = new \DateTime(date('H:i:s.'.$micro, $duration));
             $this->result['benchmark']['parsetime'][] = $d->format("H:i:s.u");
-            $this->result['benchmark']['memory'] = $this->memory(memory_get_usage(true));
-            $this->result['benchmark']['memorypeak'] = $this->memory(memory_get_peak_usage(true));
+            $this->result['benchmark']['memory'] = $this->converters->memory(memory_get_usage(true));
+            $this->result['benchmark']['memorypeak'] = $this->converters->memory(memory_get_peak_usage(true));
         }
         
         #Doing achievements details last to get proper order of timeings for benchmarking
@@ -451,13 +437,13 @@ trait Parsers
             }
         }
         
-        $this->allpages($resultkey, $resultsubkey);
+        $this->allpagesproc($resultkey, $resultsubkey);
         
         return $this;
     }
     
     #Function to check if we need to grab all pages and there are still pages left
-    private function allpages(string $resultkey, string $resultsubkey): bool
+    protected function allpagesproc(string $resultkey, string $resultsubkey): bool
     {
         if ($this->allpages == true && in_array($this->type, [
                 'searchCharacter',
@@ -555,7 +541,7 @@ trait Parsers
     }
     
     #Function to parse pages
-    private function pages(array $pages, string $resultkey, string $resultsubkey)
+    protected function pages(array $pages, string $resultkey, string $resultsubkey)
     {
         switch($this->type) {
             case 'CharacterFriends':
@@ -628,7 +614,7 @@ trait Parsers
     }
     
     #Getting crest from array based on "keybase" identifying numbered keys in the array
-    private function crest(array $tempresult, string $keybase): array
+    protected function crest(array $tempresult, string $keybase): array
     {
         $crest[] = str_replace(['40x40', '64x64'], '128x128', $tempresult[$keybase.'1']);
         if (!empty($tempresult[$keybase.'2'])) {
@@ -640,7 +626,7 @@ trait Parsers
         return $crest;
     }
     
-    private function grandcompany(array $tempresult): array
+    protected function grandcompany(array $tempresult): array
     {
         $gc['name'] = htmlspecialchars_decode($tempresult['gcname']);
         if (!empty($tempresult['gcrank'])) {
@@ -652,7 +638,7 @@ trait Parsers
         return $gc;
     }
     
-    private function freecompany(array $tempresult): array
+    protected function freecompany(array $tempresult): array
     {
         return [
                     'id'=>$tempresult['fcid'],
@@ -661,9 +647,9 @@ trait Parsers
                 ];
     }
     
-    private function jobs(): array
+    protected function jobs(): array
     {
-        preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER);
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER), preg_last_error())) {return $this;}
         foreach ($jobs as $job) {
             $tempjobs[$job['name']] = [
                 'level'=>(is_numeric($job['level']) ? (int)$job['level'] : 0),
@@ -676,9 +662,9 @@ trait Parsers
         return $tempjobs;
     }
     
-    private function attributes(): array
+    protected function attributes(): array
     {
-        preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER);
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER), preg_last_error())) {return $this;}
         foreach ($attributes as $attribute) {
             if (empty($attribute['name'])) {
                 $tempattrs[$attribute['name2']] = $attribute['value2'];
@@ -689,7 +675,7 @@ trait Parsers
         return $tempattrs;
     }
     
-    private function collectibales(string $type): array
+    protected function collectibales(string $type): array
     {
         $colls = array();
         if ($type == 'mounts') {
@@ -706,9 +692,9 @@ trait Parsers
         return $colls;
     }
     
-    private function items(): array
+    protected function items(): array
     {
-        preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER);
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {return $this;}
         #Remove duplicates
         $half = count($tempresults);
         for ($i = count($tempresults)/2; $i <= $half; $i++) {
@@ -721,7 +707,7 @@ trait Parsers
                     unset($tempresults[$key][$key2]);
                 }
             }
-            $tempresults[$key]['armoireable'] = $this->imageToBool($tempresult['armoireable']);
+            $tempresults[$key]['armoireable'] = $this->converters->imageToBool($tempresult['armoireable']);
             $tempresults[$key]['hq'] = !empty($tempresult['hq']);
             $tempresults[$key]['unique'] = !empty($tempresult['unique']);
             #Requirements
@@ -762,7 +748,7 @@ trait Parsers
                     $tempresults[$key]['crafting']['melding'] = $tempresult['melding'];
                     $tempresults[$key]['crafting']['advancedmelding'] = empty($tempresult['advancedmelding']);
                 }
-                $tempresults[$key]['crafting']['convertible'] = $this->imageToBool($tempresult['convertible']);
+                $tempresults[$key]['crafting']['convertible'] = $this->converters->imageToBool($tempresult['convertible']);
             }
             #Trading
             if (empty($tempresult['price'])) {
@@ -775,10 +761,10 @@ trait Parsers
             $tempresults[$key]['trading']['tradeable'] = empty($tempresult['untradeable']);
             #Customization
             $tempresults[$key]['customization'] = [
-                'crestable'=>$this->imageToBool($tempresult['crestable']),
-                'glamourable'=>$this->imageToBool($tempresult['glamourable']),
-                'projectable'=>$this->imageToBool($tempresult['projectable']),
-                'dyeable'=>$this->imageToBool($tempresult['dyeable']),
+                'crestable'=>$this->converters->imageToBool($tempresult['crestable']),
+                'glamourable'=>$this->converters->imageToBool($tempresult['glamourable']),
+                'projectable'=>$this->converters->imageToBool($tempresult['projectable']),
+                'dyeable'=>$this->converters->imageToBool($tempresult['dyeable']),
             ];
             #Glamour
             if (!empty($tempresult['glamourname'])) {
@@ -791,6 +777,48 @@ trait Parsers
             unset($tempresults[$key]['level'], $tempresults[$key]['classes'], $tempresults[$key]['price'], $tempresults[$key]['unsellable'], $tempresults[$key]['marketprohibited'], $tempresults[$key]['repair'], $tempresults[$key]['materials'], $tempresults[$key]['desynthesizable'], $tempresults[$key]['melding'], $tempresults[$key]['advancedmelding'], $tempresults[$key]['convertible'], $tempresults[$key]['glamourname'], $tempresults[$key]['glamourid'], $tempresults[$key]['glamouricon'], $tempresults[$key]['crestable'], $tempresults[$key]['glamourable'], $tempresults[$key]['projectable'], $tempresults[$key]['dyeable'], $tempresults[$key]['untradeable']);
         }
         return $tempresults;
+    }
+    
+    #Function to return error in case regex resulted in 0 or error
+    protected function regexfail($matchescount, $errorcode, $started = 0): bool
+    {
+        if ($matchescount === 0) {
+            $this->errorRegister('No matches found for regex', 'parse');
+            return false;
+        } elseif ($matchescount === false) {
+            $this->errorRegister(array_flip(get_defined_constants(true)['pcre'])[$errorcode], 'parse');
+            return false;
+        }
+        return true;
+    }
+    
+    #Function to save error
+    protected function errorRegister(string $errormessage, string $type = 'parse', $started = 0): void
+    {
+        $this->errors[] = $this->lasterror = ['type'=>$this->type, 'id'=>($this->typesettings['id'] ?? NULL), 'error'=>$errormessage,'url'=>$this->url];
+        if ($this->benchmark) {
+            if ($started == 0) {
+                $duration = 0;
+            } else {
+                $finished = microtime(true);
+                $duration = $finished - $started;
+            }
+            if ($type == 'http') {
+                $micro = sprintf("%06d", $duration * 1000000);
+                $d = new \DateTime(date('H:i:s.'.$micro, $duration));
+                $this->result['benchmark']['httptime'][] = $d->format("H:i:s.u");
+                $duration = 0;
+                $micro = sprintf("%06d", $duration * 1000000);
+                $d = new \DateTime(date('H:i:s.'.$micro, $duration));
+            } else {
+                $micro = sprintf("%06d", $duration * 1000000);
+                $d = new \DateTime(date('H:i:s.'.$micro, $duration));
+                $this->result['benchmark']['parsetime'][] = $d->format("H:i:s.u");
+            }
+            $this->result['benchmark']['parsetime'][] = $d->format("H:i:s.u");
+            $this->result['benchmark']['memory'] = $this->converters->memory(memory_get_usage(true));
+            $this->result['benchmark']['memorypeak'] = $this->converters->memory(memory_get_peak_usage(true));
+        }
     }
 }
 ?>
