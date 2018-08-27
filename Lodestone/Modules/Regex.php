@@ -16,8 +16,8 @@ class Regex
 {
     const CREST = 'https:\/\/[\.a-zA-Z0-9\/_\-]{56,72}\.png';
     #Original limit as a backup. Length limit does not properly work in case of multiple HTML entities
-    #const CHARNAME = '([a-zA-Z\' \-]|\&[^\s]*\;).{1,50}';
-    const CHARNAME = '[a-zA-Z\' \-\&;].{1,450}';
+    #const CHARNAME = '([a-zA-Z\' \-]|\&[^\s]*\;){1,50}';
+    const CHARNAME = '[a-zA-Z\' \-\&;]{1,450}';
     #Names of free companies, linkshells, PvP teams
     const NONSENAME = '[^<]*';
     const SERVER = '[a-zA-Z]{1,15}';
