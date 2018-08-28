@@ -310,6 +310,7 @@ trait Parsers
                         $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
                         $tempresults[$key]['race'] = htmlspecialchars_decode($tempresult['race']);
                         $tempresults[$key]['clan'] = htmlspecialchars_decode($tempresult['clan']);
+                        $tempresults[$key]['nameday'] = str_replace("32st", "32nd", $tempresults[$key]['nameday']);
                         if (!empty($tempresult['uppertitle'])) {
                             $tempresults[$key]['title'] = htmlspecialchars_decode($tempresult['uppertitle']);
                         } elseif (!empty($tempresult['undertitle'])) {
