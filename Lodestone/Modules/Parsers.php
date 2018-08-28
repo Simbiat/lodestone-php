@@ -382,7 +382,9 @@ trait Parsers
                     case 'LinkshellMembers':
                     case 'PvPTeamMembers':
                     case 'Achievements':
-                        $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$tempresult['id']] = $tempresults[$key];
+                        if ($this->typesettings['only_owned'] === false || ($this->typesettings['only_owned'] === true && $tempresult['time'] != NULL)) {
+                            $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$tempresult['id']] = $tempresults[$key];
+                        }
                         break;
                     case 'AchievementDetails':
                         $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$this->typesettings['achievementId']] = $tempresults[$key]; break;
@@ -435,6 +437,12 @@ trait Parsers
         if ($this->type == 'Achievements' && $this->typesettings['details']) {
             foreach ($this->result[$resultkey][$this->typesettings['id']][$resultsubkey] as $key=>$ach) {
                 $this->getCharacterAchievements($this->typesettings['id'], $key, 1, false, true);
+            }
+        }
+        if ($this->type == 'Achievements' && $this->typesettings['allachievements']) {
+            $this->typesettings['allachievements'] = false;
+            foreach (self::achkinds as $kindid) {
+                $this->getCharacterAchievements($this->typesettings['id'], false, $kindid, false, $this->typesettings['details'], $this->typesettings['only_owned']);
             }
         }
         

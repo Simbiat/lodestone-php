@@ -19,6 +19,8 @@ class Api
     use Modules\Parsers;
     
     const langallowed = ['na', 'jp', 'ja', 'eu', 'fr', 'de'];
+    #List of achievements categories' ids excluding 1
+    const achkinds = [2, 3, 4, 5, 6, 8, 11, 12, 13];
     
     protected $useragent = '';
     protected $language = 'https://na';
@@ -104,8 +106,20 @@ class Api
         return $this->parse();
     }
 
-    public function getCharacterAchievements($id, $achievementId = false, $kind = 1, bool $category = false, bool $details = false)
+    public function getCharacterAchievements($id, $achievementId = false, $kind = 1, bool $category = false, bool $details = false, bool $only_owned = false)
     {
+        if ($kind == 0) {
+            $category = false;
+            $kind = 1;
+            $this->typesettings['allachievements'] = true;
+        } else {
+            $this->typesettings['allachievements'] = false;
+        }
+        if ($only_owned) {
+            $this->typesettings['only_owned'] = true;
+        } else {
+            $this->typesettings['only_owned'] = false;
+        }
         if ($details === true && $achievementId !== false) {
             $this->type = 'AchievementDetails';
             $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_DET_URL, $id, $achievementId);
