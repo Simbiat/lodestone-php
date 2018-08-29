@@ -381,6 +381,8 @@ trait Parsers
                     case 'FreeCompanyMembers':
                     case 'LinkshellMembers':
                     case 'PvPTeamMembers':
+                        $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$tempresult['id']] = $tempresults[$key];
+                        break;
                     case 'Achievements':
                         if ($this->typesettings['only_owned'] === false || ($this->typesettings['only_owned'] === true && $tempresult['time'] != NULL)) {
                             $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$tempresult['id']] = $tempresults[$key];
