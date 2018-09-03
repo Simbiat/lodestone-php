@@ -830,7 +830,81 @@ class Converters {
         }
         return $id;
     }
-
+    
+    public function classToJob(string $class): string
+    {
+        switch(strtolower($class)) {
+            case 'gladiator':
+            case 'gladiateur':
+                $job = 'Paladin'; break;
+            case 'marauder':
+                $job = 'Warrior'; break;
+            case 'conjurer':
+                $job = 'White Mage'; break;
+            case 'pugilist':
+                $job = 'Monk'; break;
+            case 'lancer':
+            case 'Pikenier':
+                $job = 'Dragoon'; break;
+            case 'archer':
+                $job = 'Bard'; break;
+            case 'rogue':
+            case 'surineur':
+            case 'schurke':
+                $job = 'Ninja'; break;
+            case 'thaumaturge':
+                $job = 'Black Mage'; break;
+            case 'arcanist':
+                $job = 'Summoner'; break;
+            case '剣術士':
+                $job = 'ナイト'; break;
+            case '斧術士':
+                $job = '戦士'; break;
+            case '幻術士':
+                $job = '白魔道士'; break;
+            case '格闘士':
+                $job = 'モンク'; break;
+            case '槍術士':
+                $job = '竜騎士'; break;
+            case '弓術士':
+                $job = '吟遊詩人'; break;
+            case '双剣士':
+                $job = '忍者'; break;
+            case '呪術士':
+                $job = '黒魔道士'; break;
+            case '巴術士':
+                $job = '召喚士'; break;
+            case 'maraudeur':
+                $job = 'Guerrier'; break;
+            case 'élémentaliste':
+                $job = 'Mage blanc'; break;
+            case 'pugiliste':
+                $job = 'Moine'; break;
+            case 'maître d\'hast':
+                $job = 'Chevalier dragon'; break;
+            case 'archer':
+            case 'waldläufer':
+                $job = 'Barde'; break;
+            case 'occultiste':
+                $job = 'Mage noir'; break;
+            case 'arcaniste':
+                $job = 'Invocateur'; break;
+            case 'marodeur':
+                $job = 'Krieger'; break;
+            case 'druide':
+                $job = 'Weißmagier'; break;
+            case 'faustkämpfer':
+                $job = 'Mönch'; break;
+            case 'thaumaturg':
+                $job = 'Schwarzmagier'; break;
+            case 'hermetiker':
+                $job = 'Beschwörer'; break;
+            default:
+                $job = $class;
+        }
+        return $job;
+    }
+    
     public function getSearchClassId(string $classname): string
     {
 	    switch(strtolower($classname)) {

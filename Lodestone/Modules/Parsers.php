@@ -668,7 +668,7 @@ trait Parsers
     {
         if (!$this->regexfail(preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER), preg_last_error())) {return $this;}
         foreach ($jobs as $job) {
-            $tempjobs[$job['name']] = [
+            $tempjobs[$this->converters->classToJob($job['name'])] = [
                 'level'=>(is_numeric($job['level']) ? (int)$job['level'] : 0),
                 'specialist'=>(empty($job['specialist']) ? false : true),
                 'expcur'=>(is_numeric($job['expcur']) ? (int)$job['expcur'] : 0),
