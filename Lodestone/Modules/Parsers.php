@@ -282,6 +282,9 @@ trait Parsers
                         if (empty($tempresult['time'])) {
                             $tempresults[$key]['time'] = NULL;
                         }
+                        if (empty($tempresult['points'])) {
+                            $tempresults[$key]['points'] = 0;
+                        }
                         break;
                     case 'AchievementDetails':
                         $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
@@ -303,6 +306,9 @@ trait Parsers
                         }
                         if (empty($character['time'])) {
                             $tempresults[$key]['time'] = NULL;
+                        }
+                        if (empty($tempresult['points'])) {
+                            $tempresults[$key]['points'] = 0;
                         }
                         break;
                     case 'Character':
