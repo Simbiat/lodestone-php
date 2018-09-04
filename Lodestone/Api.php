@@ -120,7 +120,7 @@ class Api
         } else {
             $this->typesettings['only_owned'] = false;
         }
-        if ($details === true && $achievementId !== false) {
+        if ($achievementId !== false) {
             $this->type = 'AchievementDetails';
             $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_DET_URL, $id, $achievementId);
         } else {
