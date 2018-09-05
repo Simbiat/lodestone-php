@@ -166,7 +166,7 @@ trait Parsers
                 switch($this->type) {
                     case 'searchPvPTeam':
                     case 'searchFreeCompany':
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest'); break;
                     case 'searchCharacter':
                     case 'CharacterFriends':
@@ -174,7 +174,7 @@ trait Parsers
                     case 'FreeCompanyMembers':
                     case 'LinkshellMembers':
                     case 'PvPTeamMembers':
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         if (!empty($tempresult['gcname'])) {
                             $tempresults[$key]['grandCompany'] = $this->grandcompany($tempresult);
                         }
@@ -192,7 +192,7 @@ trait Parsers
                         break;
                     case 'frontline':
                     case 'GrandCompanyRanking':
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         if (!empty($tempresult['gcname'])) {
                             $tempresults[$key]['grandCompany'] = $this->grandcompany($tempresult);
                         }
@@ -202,7 +202,7 @@ trait Parsers
                         $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
                         break;
                     case 'FreeCompanyRanking':
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
                         $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
                         break;
@@ -224,7 +224,7 @@ trait Parsers
                         }
                         break;
                     case 'FreeCompany':
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
                         #Ranking checks for --
                         if ($tempresult['weekly_rank'] == '--') {
@@ -276,7 +276,7 @@ trait Parsers
                         $tempresults[$key]['slogan'] = trim($tempresult['slogan']);
                         break;
                     case 'Achievements':
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['title'] = !empty($tempresult['title']);
                         $tempresults[$key]['item'] = !empty($tempresult['item']);
                         if (empty($tempresult['time'])) {
@@ -287,11 +287,11 @@ trait Parsers
                         }
                         break;
                     case 'AchievementDetails':
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         if (empty($tempresult['title'])) {
                             $tempresults[$key]['title'] = false;
                         } else {
-                            $tempresults[$key]['title'] = htmlspecialchars_decode($tempresult['title']);
+                            $tempresults[$key]['title'] = html_entity_decode($tempresult['title'], ENT_QUOTES | ENT_HTML5);
                         }
                         if (empty($tempresult['item'])) {
                             $tempresults[$key]['item'] = false;
@@ -299,7 +299,7 @@ trait Parsers
                         if (!empty($tempresult['itemname'])) {
                             $tempresults[$key]['item'] = [
                                 'id'=>$tempresult['itemid'],
-                                'name'=>htmlspecialchars_decode($tempresult['itemname']),
+                                'name'=>html_entity_decode($tempresult['itemname'], ENT_QUOTES | ENT_HTML5),
                                 'icon'=>$tempresult['itemicon'],
                             ];
                             unset($tempresults[$key]['itemid'], $tempresults[$key]['itemname'], $tempresults[$key]['itemicon']);
@@ -313,25 +313,27 @@ trait Parsers
                         break;
                     case 'Character':
                         #Decode html entities
-                        $tempresults[$key]['name'] = htmlspecialchars_decode($tempresult['name']);
-                        $tempresults[$key]['race'] = htmlspecialchars_decode($tempresult['race']);
-                        $tempresults[$key]['clan'] = htmlspecialchars_decode($tempresult['clan']);
+                        $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
+                        $tempresults[$key]['race'] = html_entity_decode($tempresult['race'], ENT_QUOTES | ENT_HTML5);
+                        $tempresults[$key]['clan'] = html_entity_decode($tempresult['clan'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['nameday'] = str_replace("32st", "32nd", $tempresults[$key]['nameday']);
                         if (!empty($tempresult['uppertitle'])) {
-                            $tempresults[$key]['title'] = htmlspecialchars_decode($tempresult['uppertitle']);
+                            $tempresults[$key]['title'] = html_entity_decode($tempresult['uppertitle'], ENT_QUOTES | ENT_HTML5);
                         } elseif (!empty($tempresult['undertitle'])) {
-                            $tempresults[$key]['title'] = htmlspecialchars_decode($tempresult['undertitle']);
+                            $tempresults[$key]['title'] = html_entity_decode($tempresult['undertitle'], ENT_QUOTES | ENT_HTML5);
+                        } else {
+                            $tempresults[$key]['title'] = ''; 
                         }
                         #Gender to text
                         $tempresults[$key]['gender'] = ($tempresult['gender'] == '♂' ? 'male' : 'female');
                         #Guardian
                         $tempresults[$key]['guardian'] = [
-                            'name'=>htmlspecialchars_decode($tempresult['guardian']),
+                            'name'=>html_entity_decode($tempresult['guardian'], ENT_QUOTES | ENT_HTML5),
                             'icon'=>$tempresult['guardianicon'],
                         ];
                         #City
                         $tempresults[$key]['city'] = [
-                            'name'=>htmlspecialchars_decode($tempresult['city']),
+                            'name'=>html_entity_decode($tempresult['city'], ENT_QUOTES | ENT_HTML5),
                             'icon'=>$tempresult['cityicon'],
                         ];
                         #Portrait
@@ -348,7 +350,7 @@ trait Parsers
                         if (!empty($tempresult['pvpid'])) {
                             $tempresults[$key]['pvp'] = [
                                 'id'=>$tempresult['pvpid'],
-                                'name'=>htmlspecialchars_decode($tempresult['pvpname']),
+                                'name'=>html_entity_decode($tempresult['pvpname'], ENT_QUOTES | ENT_HTML5),
                             ];
                             $tempresults[$key]['pvp']['crest'] = $this->crest($tempresult, 'pvpcrest');
                         }
@@ -360,7 +362,7 @@ trait Parsers
                         if (!empty($tempresult['bio'])) {
                             $tempresults[$key]['bio'] = strip_tags($tempresult['bio'], '<br>');
                         } else {
-                            unset($tempresults[$key]['bio']);
+                            $tempresults[$key]['bio'] = '';
                         }
                         $tempresults[$key]['jobs'] = $this->jobs();
                         $tempresults[$key]['attributes'] = $this->attributes();
@@ -645,9 +647,9 @@ trait Parsers
     
     protected function grandcompany(array $tempresult): array
     {
-        $gc['name'] = htmlspecialchars_decode($tempresult['gcname']);
+        $gc['name'] = html_entity_decode($tempresult['gcname'], ENT_QUOTES | ENT_HTML5);
         if (!empty($tempresult['gcrank'])) {
-            $gc['rank'] = htmlspecialchars_decode($tempresult['gcrank']);
+            $gc['rank'] = html_entity_decode($tempresult['gcrank'], ENT_QUOTES | ENT_HTML5);
         }
         if (!empty($tempresult['gcrankicon'])) {
             $gc['icon'] = $tempresult['gcrankicon'];
@@ -659,7 +661,7 @@ trait Parsers
     {
         return [
                     'id'=>$tempresult['fcid'],
-                    'name'=>htmlspecialchars_decode($tempresult['fcname']),
+                    'name'=>html_entity_decode($tempresult['fcname'], ENT_QUOTES | ENT_HTML5),
                     'crest'=>$this->crest($tempresult, 'fccrestimg'),
                 ];
     }
@@ -684,9 +686,9 @@ trait Parsers
         if (!$this->regexfail(preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER), preg_last_error())) {return $this;}
         foreach ($attributes as $attribute) {
             if (empty($attribute['name'])) {
-                $tempattrs[$attribute['name2']] = $attribute['value2'];
+                $tempattrs[html_entity_decode($attribute['name2'], ENT_QUOTES | ENT_HTML5)] = $attribute['value2'];
             } else {
-                $tempattrs[$attribute['name']] = $attribute['value'];
+                $tempattrs[html_entity_decode($attribute['name'], ENT_QUOTES | ENT_HTML5)] = $attribute['value'];
             }
         }
         return $tempattrs;
@@ -703,7 +705,7 @@ trait Parsers
         if (!empty($results[0][0])) {
             preg_match_all(Regex::COLLECTIBLE, $results[0][0], $results, PREG_SET_ORDER);
             foreach ($results as $result) {
-                $colls[$result[1]] = $result[2];
+                $colls[html_entity_decode($result[1], ENT_QUOTES | ENT_HTML5)] = $result[2];
             }
         }
         return $colls;
@@ -735,7 +737,7 @@ trait Parsers
             #Attributes
             for ($i = 1; $i <= 15; $i++) {
                 if (!empty($tempresult['attrname'.$i])) {
-                    $tempresults[$key]['attributes'][htmlspecialchars_decode($tempresult['attrname'.$i])] = $tempresult['attrvalue'.$i];
+                    $tempresults[$key]['attributes'][html_entity_decode($tempresult['attrname'.$i], ENT_QUOTES | ENT_HTML5)] = $tempresult['attrvalue'.$i];
                     unset($tempresults[$key]['attrname'.$i], $tempresults[$key]['attrvalue'.$i]);
                 }
             }
@@ -743,7 +745,7 @@ trait Parsers
             for ($i = 1; $i <= 5; $i++) {
                 if (!empty($tempresult['materianame'.$i])) {
                     $tempresults[$key]['materia'][] = [
-                        'name'=>htmlspecialchars_decode($tempresult['materianame'.$i]),
+                        'name'=>html_entity_decode($tempresult['materianame'.$i], ENT_QUOTES | ENT_HTML5),
                         'attribute'=>$tempresult['materiaattr'.$i],
                         'bonus'=>$tempresult['materiaval'.$i],
                     ];
@@ -787,7 +789,7 @@ trait Parsers
             if (!empty($tempresult['glamourname'])) {
                 $tempresults[$key]['customization']['glamour'] = [
                     'id'=>$tempresult['glamourid'],
-                    'name'=>htmlspecialchars_decode($tempresult['glamourname']),
+                    'name'=>html_entity_decode($tempresult['glamourname'], ENT_QUOTES | ENT_HTML5),
                     'icon'=>$tempresult['glamouricon'],
                 ];
             }
