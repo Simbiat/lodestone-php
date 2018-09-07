@@ -228,10 +228,10 @@ trait Parsers
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
                         #Ranking checks for --
                         if ($tempresult['weekly_rank'] == '--') {
-                            unset($tempresults[$key]['weekly_rank']);
+                            $tempresults[$key]['weekly_rank'] = NULL;
                         }
                         if ($tempresult['monthly_rank'] == '--') {
-                            unset($tempresults[$key]['monthly_rank']);
+                            $tempresults[$key]['monthly_rank'] = NULL;
                         }
                         #Estates
                         if (!empty($tempresult['estate_name'])) {
