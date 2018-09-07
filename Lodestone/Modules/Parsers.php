@@ -713,7 +713,7 @@ trait Parsers
     
     protected function items(): array
     {
-        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {return array()}
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {return array();}
         #Remove duplicates
         $half = count($tempresults);
         for ($i = count($tempresults)/2; $i <= $half; $i++) {
