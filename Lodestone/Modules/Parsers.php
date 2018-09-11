@@ -181,8 +181,11 @@ trait Parsers
                         if (!empty($tempresult['fcid'])) {
                             $tempresults[$key]['freeCompany'] = $this->freecompany($tempresult);
                         }
+                        if (!empty($tempresult['rank'])) {
+                            $tempresults[$key]['rank'] = html_entity_decode($tempresult['rank']);
+                        }
                         if (!empty($tempresult['lsrank'])) {
-                            $tempresults[$key]['rank'] = $tempresult['lsrank'];
+                            $tempresults[$key]['rank'] = html_entity_decode($tempresult['lsrank']);
                             $tempresults[$key]['rankicon'] = $tempresult['lsrankicon'];
                             #Specific for linkshell members
                             if (empty($this->result['server'])) {
@@ -199,12 +202,12 @@ trait Parsers
                         if (!empty($tempresult['fcid'])) {
                             $tempresults[$key]['freeCompany'] = $this->freecompany($tempresult);
                         }
-                        $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
+                        $tempresults[$key]['rank'] = ($tempresult['rank2'] ? html_entity_decode($tempresult['rank2']) : html_entity_decode($tempresult['rank1']));
                         break;
                     case 'FreeCompanyRanking':
                         $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['crest'] = $this->crest($tempresult, 'crest');
-                        $tempresults[$key]['rank'] = ($tempresult['rank2'] ? $tempresult['rank2'] : $tempresult['rank1']);
+                        $tempresults[$key]['rank'] = ($tempresult['rank2'] ? html_entity_decode($tempresult['rank2']) : html_entity_decode($tempresult['rank1']));
                         break;
                     case 'topics':
                     case 'news':
