@@ -182,10 +182,10 @@ trait Parsers
                             $tempresults[$key]['freeCompany'] = $this->freecompany($tempresult);
                         }
                         if (!empty($tempresult['rank'])) {
-                            $tempresults[$key]['rank'] = html_entity_decode($tempresult['rank']);
+                            $tempresults[$key]['rank'] = html_entity_decode($tempresult['rank'], ENT_QUOTES | ENT_HTML5);
                         }
                         if (!empty($tempresult['lsrank'])) {
-                            $tempresults[$key]['rank'] = html_entity_decode($tempresult['lsrank']);
+                            $tempresults[$key]['rank'] = html_entity_decode($tempresult['lsrank'], ENT_QUOTES | ENT_HTML5);
                             $tempresults[$key]['rankicon'] = $tempresult['lsrankicon'];
                             #Specific for linkshell members
                             if (empty($this->result['server'])) {
