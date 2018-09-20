@@ -6,12 +6,47 @@ trait Parsers
     protected function parse()
     {
         $started = microtime(true);
+        #Set array key for results
+        switch($this->type) {
+            case 'searchCharacter':
+            case 'Character':
+                $resultkey = 'characters'; $resultsubkey = ''; break;
+            case 'CharacterFriends':
+                $resultkey = 'characters'; $resultsubkey = 'friends'; break;
+            case 'CharacterFollowing':
+                $resultkey = 'characters'; $resultsubkey = 'following'; break;
+            case 'Achievements':
+            case 'AchievementDetails':
+                $resultkey = 'characters'; $resultsubkey = 'achievements'; break;
+            case 'FreeCompanyMembers':
+                $resultkey = 'freecompanies'; $resultsubkey = 'members'; break;
+            case 'LinkshellMembers':
+                $resultkey = 'linkshells'; $resultsubkey = 'members'; break;
+            case 'PvPTeamMembers':
+                $resultkey = 'pvpteams'; $resultsubkey = 'members'; break;
+            case 'searchFreeCompany':
+            case 'FreeCompany':
+                $resultkey = 'freecompanies'; $resultsubkey = ''; break;
+            case 'searchLinkshell':
+                $resultkey = 'linkshells'; $resultsubkey = ''; break;
+            case 'searchPvPTeam':
+                $resultkey = 'pvpteams'; $resultsubkey = ''; break;
+            case 'frontline':
+            case 'GrandCompanyRanking':
+            case 'FreeCompanyRanking':
+                $resultkey = $this->type; $resultsubkey = $this->typesettings['week_month']; break;
+            default:
+                $resultkey = $this->type; $resultsubkey = ''; break;
+        }
         try {
             $this->lasterror = NULL;
             $http = new HttpRequest($this->useragent);
             $this->html = $http->get($this->url);
         } catch (\Exception $e) {
             $this->errorRegister($e->getMessage(), 'http', $started);
+            if ($e->getMessage() == 'Requested page was not found') {
+                $this->addToResults($resultkey, $resultsubkey, 404, null);
+            }
             return $this;
         }
         if ($this->benchmark) {
@@ -24,38 +59,6 @@ trait Parsers
         $started = microtime(true);
         try {
             $this->lasterror = NULL;
-            #Set array key for results
-            switch($this->type) {
-                case 'searchCharacter':
-                case 'Character':
-                    $resultkey = 'characters'; $resultsubkey = ''; break;
-                case 'CharacterFriends':
-                    $resultkey = 'characters'; $resultsubkey = 'friends'; break;
-                case 'CharacterFollowing':
-                    $resultkey = 'characters'; $resultsubkey = 'following'; break;
-                case 'Achievements':
-                case 'AchievementDetails':
-                    $resultkey = 'characters'; $resultsubkey = 'achievements'; break;
-                case 'FreeCompanyMembers':
-                    $resultkey = 'freecompanies'; $resultsubkey = 'members'; break;
-                case 'LinkshellMembers':
-                    $resultkey = 'linkshells'; $resultsubkey = 'members'; break;
-                case 'PvPTeamMembers':
-                    $resultkey = 'pvpteams'; $resultsubkey = 'members'; break;
-                case 'searchFreeCompany':
-                case 'FreeCompany':
-                    $resultkey = 'freecompanies'; $resultsubkey = ''; break;
-                case 'searchLinkshell':
-                    $resultkey = 'linkshells'; $resultsubkey = ''; break;
-                case 'searchPvPTeam':
-                    $resultkey = 'pvpteams'; $resultsubkey = ''; break;
-                case 'frontline':
-                case 'GrandCompanyRanking':
-                case 'FreeCompanyRanking':
-                    $resultkey = $this->type; $resultsubkey = $this->typesettings['week_month']; break;
-                default:
-                    $resultkey = $this->type; $resultsubkey = ''; break;
-            }
             #Parsing of pages
             if (in_array($this->type, [
                 'searchCharacter',
@@ -379,52 +382,7 @@ trait Parsers
                 unset($tempresults[$key]['crest1'], $tempresults[$key]['crest2'], $tempresults[$key]['crest3'], $tempresults[$key]['fccrestimg1'], $tempresults[$key]['fccrestimg2'], $tempresults[$key]['fccrestimg3'], $tempresults[$key]['gcname'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcrankicon'], $tempresults[$key]['fcid'], $tempresults[$key]['fcname'], $tempresults[$key]['lsrank'], $tempresults[$key]['lsrankicon'], $tempresults[$key]['jobicon'], $tempresults[$key]['jobform'], $tempresults[$key]['estate_greeting'],  $tempresults[$key]['estate_address'],  $tempresults[$key]['estate_name'], $tempresults[$key]['cityicon'], $tempresults[$key]['guardianicon'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcicon'], $tempresults[$key]['uppertitle'], $tempresults[$key]['undertitle'], $tempresults[$key]['pvpid'], $tempresults[$key]['pvpname'], $tempresults[$key]['pvpcrest1'], $tempresults[$key]['pvpcrest2'], $tempresults[$key]['pvpcrest3'], $tempresults[$key]['rank1'], $tempresults[$key]['rank2'], $tempresults[$key]['id']);
                 
                 #Adding to results
-                switch($this->type) {
-                    case 'searchPvPTeam':
-                    case 'searchLinkshell':
-                    case 'searchFreeCompany':
-                    case 'searchCharacter':
-                    case 'FreeCompany':
-                    case 'Character':
-                        $this->result[$resultkey][$tempresult['id']] = $tempresults[$key]; break;
-                    case 'CharacterFriends':
-                    case 'CharacterFollowing':
-                    case 'FreeCompanyMembers':
-                    case 'LinkshellMembers':
-                    case 'PvPTeamMembers':
-                        $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$tempresult['id']] = $tempresults[$key];
-                        break;
-                    case 'Achievements':
-                        if ($this->typesettings['only_owned'] === false || ($this->typesettings['only_owned'] === true && $tempresult['time'] != NULL)) {
-                            $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$tempresult['id']] = $tempresults[$key];
-                        }
-                        break;
-                    case 'AchievementDetails':
-                        $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$this->typesettings['achievementId']] = $tempresults[$key]; break;
-                    case 'banners':
-                    case 'topics':
-                    case 'news':
-                    case 'notices':
-                    case 'maintenance':
-                    case 'updates':
-                    case 'status':
-                        $this->result[$resultkey][] = $tempresults[$key]; break;
-                    case 'worlds':
-                        $this->result[$resultkey][$tempresult['server']] = $tempresult['status']; break;
-                    case 'feast':
-                        $this->result[$resultkey][$this->typesettings['season']][$tempresult['id']] = $tempresults[$key]; break;
-                    case 'frontline':
-                    case 'GrandCompanyRanking':
-                    case 'FreeCompanyRanking':
-                        $this->result[$resultkey][$resultsubkey][$this->typesettings['week']][$tempresult['id']] = $tempresults[$key]; break;
-                    case 'deepdungeon':
-                        if ($this->typesettings['solo_party'] == 'solo') {
-                            $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$this->typesettings['class']][$tempresult['id']] = $tempresults[$key];
-                        } else {
-                            $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$tempresult['id']] = $tempresults[$key];
-                        }
-                        break;
-                }
+                $this->addToResults($resultkey, $resultsubkey, $tempresults[$key], @$tempresult['id']);
             }
             
             #Worlds sort
@@ -462,6 +420,90 @@ trait Parsers
         $this->allpagesproc($resultkey, $resultsubkey);
         
         return $this;
+    }
+    
+    protected function addToResults(string $resultkey, string $resultsubkey, $result, $id = null): void
+    {
+        switch($this->type) {
+            case 'searchPvPTeam':
+            case 'searchLinkshell':
+            case 'searchFreeCompany':
+            case 'searchCharacter':
+                if ($result != 404) {
+                    $this->result[$resultkey][$id] = $result;
+                }
+                break;
+            case 'FreeCompany':
+            case 'Character':
+                $this->result[$resultkey][$this->typesettings['id']] = $result; break;
+            case 'CharacterFriends':
+            case 'CharacterFollowing':
+            case 'FreeCompanyMembers':
+            case 'LinkshellMembers':
+            case 'PvPTeamMembers':
+                if ($result == 404) {
+                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey] = $result;
+                } else {
+                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$id] = $result;
+                }
+                break;
+            case 'Achievements':
+                if ($result != 404 && ($this->typesettings['only_owned'] === false || ($this->typesettings['only_owned'] === true && $result['time'] != NULL))) {
+                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$id] = $result;
+                }
+                break;
+            case 'AchievementDetails':
+                if ($result != 404 || empty($this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$this->typesettings['achievementId']])) {
+                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$this->typesettings['achievementId']] = $result;
+                }
+                break;
+            case 'banners':
+            case 'topics':
+            case 'news':
+            case 'notices':
+            case 'maintenance':
+            case 'updates':
+            case 'status':
+                if ($result != 404) {
+                    $this->result[$resultkey][] = $result;
+                }
+                break;
+            case 'worlds':
+                if ($result != 404) {
+                    $this->result[$resultkey][$result['server']] = $result['status']; break;
+                }
+            case 'feast':
+                if ($result == 404) {
+                    $this->result[$resultkey][$this->typesettings['season']] = $result;
+                } else {
+                    $this->result[$resultkey][$this->typesettings['season']][$id] = $result;
+                }
+                break;
+            case 'frontline':
+            case 'GrandCompanyRanking':
+            case 'FreeCompanyRanking':
+                if ($result == 404) {
+                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']] = $result;
+                } else {
+                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']][$id] = $result;
+                }
+                break;
+            case 'deepdungeon':
+                if ($this->typesettings['solo_party'] == 'solo') {
+                    if ($result == 404) {
+                        $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$this->typesettings['class']] = $result;
+                    } else {
+                        $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$this->typesettings['class']][$id] = $result;
+                    }
+                } else {
+                    if ($result == 404) {
+                        $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']] = $result;
+                    } else {
+                        $this->result[$resultkey][$this->typesettings['dungeon']][$this->typesettings['solo_party']][$id] = $result;
+                    }
+                }
+                break;
+        }
     }
     
     #Function to check if we need to grab all pages and there are still pages left

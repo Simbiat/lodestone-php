@@ -92,8 +92,12 @@ class Test
         #Checking Errors
         $this->Lodestone->getFreeCompany('1');
         $this->tableline('Non existing free company', @$this->Lodestone->getResult()['freecompanies']['1'], true);
+        $this->Lodestone->getLinkshellMembers('1', 1);
+        $this->tableline('Non existing linkshell', @$this->Lodestone->getResult()['linkshells']['1'], true);
+        $this->Lodestone->getCharacter('9234631035923213559');
+        $this->tableline('Non existing character', @$this->Lodestone->getResult()['characters']['9234631035923213559'], true);
         $this->Lodestone->getCharacterAchievements(4339591, false, 39, false, true);
-        $this->tableline('Character with private achievments', @$this->Lodestone->getResult()['characters']['4339591']['achievements'], true);
+        $this->tableline('Character with private achievements', @$this->Lodestone->getResult()['characters']['4339591']['achievements'], true);
         
         echo '</table>';
     }
