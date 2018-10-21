@@ -5,6 +5,44 @@ namespace Lodestone\Modules;
 
 class Converters {
     
+    public function FCRankID(string $image): string
+    {
+    	if (strpos($image, 'W5a6yeRyN2eYiaV-AGU7mJKEhs') !== false) {
+    		$rank = '0';
+    	} elseif (strpos($image, 'SO2DiXPE4vb5ZquxK9qZzaS2FI') !== false) {
+    		$rank = '12';
+    	} elseif (strpos($image, 'hOa5rExOnxaN1WNnQqZYe3Vb7c') !== false) {
+    		$rank = '8';
+    	} elseif (strpos($image, 'eWQ8n_shMm6W0LoRN9KodNZ8tw') !== false) {
+    		$rank = '14';
+    	} elseif (strpos($image, 'p94F1j-5xhM2ySM16VNrA08qjU') !== false) {
+    		$rank = '1';
+    	} elseif (strpos($image, 'nw6rom1Gt5lCuBPbSsRUeFEAYo') !== false) {
+    		$rank = '9';
+    	} elseif (strpos($image, 'qm0y-fW7o2TvgYFH-vvcL-IH8s') !== false) {
+    		$rank = '10';
+    	} elseif (strpos($image, 'hU1Eoa9YXYljYZSLr_PDKlS9rA') !== false) {
+    		$rank = '11';
+    	} elseif (strpos($image, 'cliLaxMGlva579Q7-BGQofaHoU') !== false) {
+    		$rank = '3';
+    	} elseif (strpos($image, 'zXxmuKQfvR0_XbK-Q9tGafCvZQ') !== false) {
+    		$rank = '4';
+    	} elseif (strpos($image, 'ZgBF9xaOv1cXJ5hpqJk775gPnU') !== false) {
+    		$rank = '7';
+    	} elseif (strpos($image, 'MORWKTwHdU9RwJjwTjA8Goqczg') !== false) {
+    		$rank = '13';
+    	} elseif (strpos($image, 'uIrHic2MOYHNS316SWOpAFgMKM') !== false) {
+    		$rank = '6';
+    	} elseif (strpos($image, 'wy6luU_yTtJcSMjKaq-g7_uxX0') !== false) {
+    		$rank = '2';
+    	} elseif (strpos($image, 'IjnNzh88h17r2k16noer9mUzZo') !== false) {
+    		$rank = '5';
+    	} else {
+    	    $rank = '';
+    	}
+    	return $rank;
+    }
+    
     public function imageToBool(string $img): bool
     {
         switch(strtolower($img)) {
@@ -663,7 +701,7 @@ class Converters {
     {
         if (!empty($lang)) {
             if (!in_array($lang, self::langallowed)) {
-                $lang = "na";
+                $lang = 'na';
             }
             if (in_array($lang, ['jp', 'ja'])) {$lang = 'ja';}
             if (in_array($lang, ['na', 'eu'])) {$lang = 'en';}

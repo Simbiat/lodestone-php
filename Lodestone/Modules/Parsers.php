@@ -178,6 +178,9 @@ trait Parsers
                     case 'LinkshellMembers':
                     case 'PvPTeamMembers':
                         $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
+                        if ($this->type == 'FreeCompanyMembers') {
+                            $tempresults[$key]['rankid'] = $this->converters->FCRankID($tempresult['rankicon']);
+                        }
                         if (!empty($tempresult['gcname'])) {
                             $tempresults[$key]['grandCompany'] = $this->grandcompany($tempresult);
                         }
