@@ -44,7 +44,7 @@ trait Parsers
             $this->html = $http->get($this->url);
         } catch (\Exception $e) {
             $this->errorRegister($e->getMessage(), 'http', $started);
-            if ($e->getMessage() == 'Requested page was not found') {
+            if ($e->getMessage() == 'Requested page was not found, 404') {
                 $this->addToResults($resultkey, $resultsubkey, 404, null);
             }
             return $this;

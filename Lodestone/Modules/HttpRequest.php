@@ -66,11 +66,11 @@ class HttpRequest
 
         // specific conditions to return code on
         if ($httpCode == self::HTTP_NOT_FOUND) {
-            throw new \Exception('Requested page was not found', $httpCode);
+            throw new \Exception('Requested page was not found, '.$httpCode, $httpCode);
         } elseif ($httpCode == self::HTTP_SERVICE_NOT_AVAILABLE) {
-            throw new \Exception('Lodestone not available', $httpCode);
+            throw new \Exception('Lodestone not available, '.$httpCode, $httpCode);
         } elseif ($httpCode < self::HTTP_OK || $httpCode > self::HTTP_PERM_REDIRECT) {
-            throw new \Exception('Requested page is not available', $httpCode);
+            throw new \Exception('Requested page is not available, '.$httpCode, $httpCode);
         }
         
          
