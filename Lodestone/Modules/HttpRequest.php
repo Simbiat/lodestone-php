@@ -57,10 +57,11 @@ class HttpRequest
 
         // handle response
         $response = curl_exec($handle);
+        $curlerror = curl_error($handle);
         $hlength = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
         $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
         $data = substr($response, $hlength);
-
+        
         curl_close($handle);
         unset($handle);
 
@@ -69,6 +70,8 @@ class HttpRequest
             throw new \Exception('Requested page was not found, '.$httpCode, $httpCode);
         } elseif ($httpCode == self::HTTP_SERVICE_NOT_AVAILABLE) {
             throw new \Exception('Lodestone not available, '.$httpCode, $httpCode);
+        } elseif ($httpCode == 0) {
+            throw new \Exception($curlerror, $httpCode);
         } elseif ($httpCode < self::HTTP_OK || $httpCode > self::HTTP_PERM_REDIRECT) {
             throw new \Exception('Requested page is not available, '.$httpCode, $httpCode);
         }
