@@ -80,7 +80,7 @@ class Api
     #############
     #Character functions
     #############
-    public function getCharacter($id)
+    public function getCharacter(string $id)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_URL, $id);
         $this->type = 'Character';
@@ -88,7 +88,7 @@ class Api
         return $this->parse();
     }
 
-    public function getCharacterFriends($id, int $page = 1)
+    public function getCharacterFriends(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FRIENDS_URL.'/?page='.$page, $id);
@@ -97,7 +97,7 @@ class Api
         return $this->parse();
     }
 
-    public function getCharacterFollowing($id, int $page = 1)
+    public function getCharacterFollowing(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
         $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FOLLOWING_URL.'/?page='.$page, $id);
@@ -106,7 +106,7 @@ class Api
         return $this->parse();
     }
 
-    public function getCharacterAchievements($id, $achievementId = false, $kind = 1, bool $category = false, bool $details = false, bool $only_owned = false)
+    public function getCharacterAchievements(string $id, $achievementId = false, $kind = 1, bool $category = false, bool $details = false, bool $only_owned = false)
     {
         if ($kind == 0) {
             $category = false;
@@ -126,9 +126,9 @@ class Api
         } else {
             $this->type = 'Achievements';
             if ($category === false) {
-                $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_URL, $id, $this->converters->getAchKindId($kind));
+                $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_URL, $id, $this->converters->getAchKindId(strval($kind)));
             } else {
-                $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_CAT_URL, $id, $this->converters->getAchCatId($kind));
+                $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_CAT_URL, $id, $this->converters->getAchCatId(strval($kind)));
             }
         }
         $this->typesettings['id'] = $id;
@@ -140,7 +140,7 @@ class Api
     #############
     #Groups functions
     #############
-    public function getFreeCompany($id)
+    public function getFreeCompany(string $id)
     {
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_URL, $id);
         $this->type = 'FreeCompany';
@@ -148,7 +148,7 @@ class Api
         return $this->parse();
     }
 
-    public function getFreeCompanyMembers($id, int $page = 1)
+    public function getFreeCompanyMembers(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
         $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'/?page='.$page, $id);
@@ -157,7 +157,7 @@ class Api
         return $this->parse();
     }
 
-    public function getLinkshellMembers($id, int $page = 1)
+    public function getLinkshellMembers(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
         $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'/?page='.$page, $id);

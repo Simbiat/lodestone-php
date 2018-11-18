@@ -417,7 +417,7 @@ trait Parsers
         if ($this->type == 'Achievements' && $this->typesettings['allachievements']) {
             $this->typesettings['allachievements'] = false;
             foreach (self::achkinds as $kindid) {
-                $this->getCharacterAchievements($this->typesettings['id'], false, $kindid, false, $this->typesettings['details'], $this->typesettings['only_owned']);
+                $this->getCharacterAchievements($this->typesettings['id'], false, strval($kindid), false, $this->typesettings['details'], $this->typesettings['only_owned']);
             }
         }
         
