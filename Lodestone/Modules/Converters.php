@@ -1,6 +1,6 @@
 <?php
 #Functions used to convert textual filters to appropriate IDs used by Lodestone
-
+declare(strict_types=1);
 namespace Lodestone\Modules;
 
 class Converters {

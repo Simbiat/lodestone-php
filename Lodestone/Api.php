@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Lodestone;
 
 // use all the things
