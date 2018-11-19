@@ -77,17 +77,23 @@ trait Parsers
                 'updates',
                 'status',
             ])) {
-                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
+                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER), preg_last_error())) {
+                    return $this;
+                }
                 $this->pages($pages, $resultkey, $resultsubkey);
             }
             if (in_array($this->type, ['GrandCompanyRanking', 'FreeCompanyRanking'])) {
-                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
+                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER), preg_last_error())) {
+                    return $this;
+                }
                 $this->pages($pages, $resultkey, $resultsubkey);
             }
             
             #Banners special precut
             if ($this->type == 'banners') {
-                if (!$this->regexfail(preg_match(Regex::BANNERS, $this->html, $banners), preg_last_error(), $started)) {return $this;}
+                if (!$this->regexfail(preg_match(Regex::BANNERS, $this->html, $banners), preg_last_error())) {
+                    return $this;
+                }
                 $this->html = $banners[0];
             }
             
@@ -98,7 +104,9 @@ trait Parsers
                 'updates',
                 'status',
             ])) {
-                if (!$this->regexfail(preg_match_all(Regex::NOTICES, $this->html, $notices, PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
+                if (!$this->regexfail(preg_match_all(Regex::NOTICES, $this->html, $notices, PREG_SET_ORDER), preg_last_error())) {
+                    return $this;
+                }
                 $this->html = $notices[0][0];
             }
             
@@ -144,7 +152,32 @@ trait Parsers
                 default:
                     $regex = Regex::CHARACTERLIST; break;
             }
-            if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error(), $started)) {return $this;}
+            if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {
+                if (in_array($this->type, [
+                    'searchCharacter',
+                    'CharacterFriends',
+                    'CharacterFollowing',
+                    'FreeCompanyMembers',
+                    'LinkshellMembers',
+                    'PvPTeamMembers',
+                    'searchFreeCompany',
+                    'searchLinkshell',
+                    'searchPvPTeam',
+                    'topics',
+                    'notices',
+                    'maintenance',
+                    'updates',
+                    'status',
+                ])) {
+                    if (!empty($this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['total'])) {
+                        return $this;
+                    } else {
+                        $this->errorUnregister();
+                    }
+                } else {
+                    return $this;
+                }
+            }
             
             #Character results update
             if ($this->type == 'Character') {
@@ -717,7 +750,9 @@ trait Parsers
     
     protected function jobs(): array
     {
-        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER), preg_last_error())) {return $this;}
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER), preg_last_error())) {
+            return $this;
+        }
         foreach ($jobs as $job) {
             $tempjobs[$this->converters->classToJob($job['name'])] = [
                 'level'=>(is_numeric($job['level']) ? (int)$job['level'] : 0),
@@ -732,7 +767,9 @@ trait Parsers
     
     protected function attributes(): array
     {
-        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER), preg_last_error())) {return $this;}
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER), preg_last_error())) {
+            return $this;
+        }
         foreach ($attributes as $attribute) {
             if (empty($attribute['name'])) {
                 $tempattrs[html_entity_decode($attribute['name2'], ENT_QUOTES | ENT_HTML5)] = $attribute['value2'];
@@ -745,7 +782,7 @@ trait Parsers
     
     protected function collectibales(string $type): array
     {
-        $colls = array();
+        $colls = [];
         if ($type == 'mounts') {
             preg_match_all(Regex::CHARACTER_MOUNTS, $this->html, $results, PREG_SET_ORDER);
         } elseif ($type == 'minions') {
@@ -762,7 +799,9 @@ trait Parsers
     
     protected function items(): array
     {
-        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {return array();}
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {
+            return [];
+        }
         #Remove duplicates
         $half = count($tempresults);
         for ($i = count($tempresults)/2; $i <= $half; $i++) {
@@ -848,7 +887,7 @@ trait Parsers
     }
     
     #Function to return error in case regex resulted in 0 or error
-    protected function regexfail($matchescount, $errorcode, $started = 0): bool
+    protected function regexfail($matchescount, $errorcode): bool
     {
         if ($matchescount === 0) {
             $this->errorRegister('No matches found for regex', 'parse');
@@ -886,6 +925,17 @@ trait Parsers
             $this->result['benchmark']['parsetime'][] = $d->format("H:i:s.u");
             $this->result['benchmark']['memory'] = $this->converters->memory(memory_get_usage(true));
             $this->result['benchmark']['memorypeak'] = $this->converters->memory(memory_get_peak_usage(true));
+        }
+    }
+    
+    #Function to reset last error (in case false positive)
+    protected function errorUnregister(): void
+    {
+        array_pop($this->errors);
+        if (empty($this->errors)) {
+            $this->lasterror = NULL;
+        } else {
+            $this->lasterror = end($this->errors);
         }
     }
 }

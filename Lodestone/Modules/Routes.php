@@ -19,8 +19,8 @@ class Routes
     
     // characters
     const LODESTONE_CHARACTERS_URL = self::LODESTONE_URL_BASE . '/character/%s/';
-    const LODESTONE_CHARACTERS_FRIENDS_URL = self::LODESTONE_URL_BASE . '/character/%s/friend';
-    const LODESTONE_CHARACTERS_FOLLOWING_URL = self::LODESTONE_URL_BASE . '/character/%s/following';
+    const LODESTONE_CHARACTERS_FRIENDS_URL = self::LODESTONE_URL_BASE . '/character/%s/friend/';
+    const LODESTONE_CHARACTERS_FOLLOWING_URL = self::LODESTONE_URL_BASE . '/character/%s/following/';
     const LODESTONE_CHARACTERS_SEARCH_URL = self::LODESTONE_URL_BASE .'/character';
     const LODESTONE_ACHIEVEMENTS_URL = self::LODESTONE_URL_BASE . '/character/%s/achievement/kind/%s/';
     const LODESTONE_ACHIEVEMENTS_CAT_URL = self::LODESTONE_URL_BASE . '/character/%s/achievement/category/%s/';

@@ -91,7 +91,7 @@ class Api
     public function getCharacterFriends(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FRIENDS_URL.'/?page='.$page, $id);
+        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FRIENDS_URL.'?page='.$page, $id);
         $this->type = 'CharacterFriends';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -100,7 +100,7 @@ class Api
     public function getCharacterFollowing(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FOLLOWING_URL.'/?page='.$page, $id);
+        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FOLLOWING_URL.'?page='.$page, $id);
         $this->type = 'CharacterFollowing';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -151,7 +151,7 @@ class Api
     public function getFreeCompanyMembers(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'/?page='.$page, $id);
+        $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'?page='.$page, $id);
         $this->type = 'FreeCompanyMembers';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -160,7 +160,7 @@ class Api
     public function getLinkshellMembers(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'/?page='.$page, $id);
+        $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'?page='.$page, $id);
         $this->type = 'LinkshellMembers';
         $this->typesettings['id'] = $id;
         return $this->parse();
