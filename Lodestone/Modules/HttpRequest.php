@@ -60,7 +60,11 @@ class HttpRequest
         $curlerror = curl_error($handle);
         $hlength = curl_getinfo($handle, CURLINFO_HEADER_SIZE);
         $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-        $data = substr($response, $hlength);
+        if ($response === false) {
+            throw new \Exception($curlerror, $httpCode);
+        } else {
+            $data = substr($response, $hlength);
+        }
         
         curl_close($handle);
         unset($handle);
