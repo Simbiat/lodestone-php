@@ -152,6 +152,11 @@ trait Parsers
                 default:
                     $regex = Regex::CHARACTERLIST; break;
             }
+            
+            #Uncomment for debugging purposes
+            #file_put_contents(dirname(__FILE__).'/regex.txt', $regex);
+            #file_put_contents(dirname(__FILE__).'/html.txt', $this->html);
+            
             if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {
                 if (in_array($this->type, [
                     'searchCharacter',
