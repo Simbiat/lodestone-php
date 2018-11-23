@@ -322,6 +322,9 @@ trait Parsers
                         }
                         #Trim slogan
                         $tempresults[$key]['slogan'] = trim($tempresult['slogan']);
+                        if (empty($tempresult['members_count'])) {
+                            $tempresults[$key]['members_count'] = 0;
+                        }
                         break;
                     case 'Achievements':
                         $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
@@ -655,48 +658,48 @@ trait Parsers
             case 'FreeCompanyMembers':
             case 'LinkshellMembers':
             case 'PvPTeamMembers':
-                if (!empty($pages[0]['pageCurrent'])) {
+                if (!empty($pages[0]['pageCurrent']) || $pages[0]['pageCurrent'] == 0) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = 1;
                 }
-                if (!empty($pages[0]['pageTotal'])) {
+                if (!empty($pages[0]['pageTotal']) || $pages[0]['pageTotal'] == 0) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'];
                 }
-                if (!empty($pages[0]['total'])) {
+                if (!empty($pages[0]['total']) || $pages[0]['total'] == 0) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['total'] = $pages[0]['total'];
                 }
                 break;
             case 'GrandCompanyRanking':
             case 'FreeCompanyRanking':
-                if (!empty($pages[0]['pageCurrent'])) {
+                if (!empty($pages[0]['pageCurrent']) || $pages[0]['pageCurrent'] == 0) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = 1;
                 }
-                if (!empty($pages[0]['pageTotal'])) {
+                if (!empty($pages[0]['pageTotal']) || $pages[0]['pageTotal'] == 0) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'];
                 }
-                if (!empty($pages[0]['total'])) {
+                if (!empty($pages[0]['total']) || $pages[0]['total'] == 0) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['total'] = $pages[0]['total'];
                 }
                 break;
             default:
-                if (!empty($pages[0]['pageCurrent'])) {
+                if (!empty($pages[0]['pageCurrent']) || $pages[0]['pageCurrent'] == 0) {
                     $this->result[$resultkey]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
                     $this->result[$resultkey]['pageCurrent'] = 1;
                 }
-                if (!empty($pages[0]['pageTotal'])) {
+                if (!empty($pages[0]['pageTotal']) || $pages[0]['pageTotal'] == 0) {
                     $this->result[$resultkey]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
                     $this->result[$resultkey]['pageTotal'] = $this->result[$resultkey]['pageCurrent'];
                 }
-                if (!empty($pages[0]['total'])) {
+                if (!empty($pages[0]['total']) || $pages[0]['total'] == 0) {
                     $this->result[$resultkey]['total'] = $pages[0]['total'];
                 }
                 break;
