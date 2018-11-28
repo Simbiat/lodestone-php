@@ -658,48 +658,48 @@ trait Parsers
             case 'FreeCompanyMembers':
             case 'LinkshellMembers':
             case 'PvPTeamMembers':
-                if (!empty($pages[0]['pageCurrent']) || $pages[0]['pageCurrent'] == 0) {
+                if (isset($pages[0]['pageCurrent']) && is_numeric($pages[0]['pageCurrent'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = 1;
                 }
-                if (!empty($pages[0]['pageTotal']) || $pages[0]['pageTotal'] == 0) {
+                if (isset($pages[0]['pageTotal']) && is_numeric($pages[0]['pageTotal'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'];
                 }
-                if (!empty($pages[0]['total']) || $pages[0]['total'] == 0) {
+                if (isset($pages[0]['total']) && is_numeric($pages[0]['total'])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['total'] = $pages[0]['total'];
                 }
                 break;
             case 'GrandCompanyRanking':
             case 'FreeCompanyRanking':
-                if (!empty($pages[0]['pageCurrent']) || $pages[0]['pageCurrent'] == 0) {
+                if (isset($pages[0]['pageCurrent']) && is_numeric($pages[0]['pageCurrent'])) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = 1;
                 }
-                if (!empty($pages[0]['pageTotal']) || $pages[0]['pageTotal'] == 0) {
+                if (isset($pages[0]['pageTotal']) && is_numeric($pages[0]['pageTotal'])) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'];
                 }
-                if (!empty($pages[0]['total']) || $pages[0]['total'] == 0) {
+                if (isset($pages[0]['total']) && is_numeric($pages[0]['total'])) {
                     $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['total'] = $pages[0]['total'];
                 }
                 break;
             default:
-                if (!empty($pages[0]['pageCurrent']) || $pages[0]['pageCurrent'] == 0) {
+                if (isset($pages[0]['pageCurrent']) && is_numeric($pages[0]['pageCurrent'])) {
                     $this->result[$resultkey]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
                     $this->result[$resultkey]['pageCurrent'] = 1;
                 }
-                if (!empty($pages[0]['pageTotal']) || $pages[0]['pageTotal'] == 0) {
+                if (isset($pages[0]['pageTotal']) && is_numeric($pages[0]['pageTotal'])) {
                     $this->result[$resultkey]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
                     $this->result[$resultkey]['pageTotal'] = $this->result[$resultkey]['pageCurrent'];
                 }
-                if (!empty($pages[0]['total']) || $pages[0]['total'] == 0) {
+                if (isset($pages[0]['total']) && is_numeric($pages[0]['total'])) {
                     $this->result[$resultkey]['total'] = $pages[0]['total'];
                 }
                 break;
