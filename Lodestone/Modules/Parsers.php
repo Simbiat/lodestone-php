@@ -480,11 +480,20 @@ trait Parsers
                 break;
             case 'FreeCompany':
             case 'Character':
-                $this->result[$resultkey][$this->typesettings['id']] = $result; break;
+                $this->result[$resultkey][$this->typesettings['id']] = $result;
+                break;
             case 'CharacterFriends':
             case 'CharacterFollowing':
             case 'FreeCompanyMembers':
             case 'LinkshellMembers':
+                if ($result == 404) {
+                    if (!is_scalar($this->result[$resultkey][$this->typesettings['id']]) && !is_array($this->result[$resultkey][$this->typesettings['id']][$resultsubkey])) {
+                        $this->result[$resultkey][$this->typesettings['id']][$resultsubkey] = $result;
+                    }
+                } else {
+                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$id] = $result;
+                }
+                break;
             case 'PvPTeamMembers':
                 if ($result == 404) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey] = $result;
@@ -515,8 +524,9 @@ trait Parsers
                 break;
             case 'worlds':
                 if ($result != 404) {
-                    $this->result[$resultkey][$result['server']] = $result['status']; break;
+                    $this->result[$resultkey][$result['server']] = $result['status'];
                 }
+                break;
             case 'feast':
                 if ($result == 404) {
                     $this->result[$resultkey][$this->typesettings['season']] = $result;
