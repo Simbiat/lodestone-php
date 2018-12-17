@@ -18,13 +18,17 @@
         "ext-curl": "*"
     },
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Lodestone\\": "/"
         }
     },
     "autoload-dev": {
-        "psr-0": {
+        "psr-4": {
             "Lodestone\\Tests\\": "tests/"
         }
-    }
+    },
+	"support": {
+		"issues": "https://github.com/Simbiat/lodestone-php/issues",
+		"source": "https://github.com/Simbiat/lodestone-php"
+	}
 }
