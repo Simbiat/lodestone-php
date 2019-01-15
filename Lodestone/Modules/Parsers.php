@@ -772,6 +772,8 @@ trait Parsers
             return $this;
         }
         foreach ($jobs as $job) {
+            $job['expcur'] = preg_replace('/[^0-9]/', '', $job['expcur']);
+            $job['expmax'] = preg_replace('/[^0-9]/', '', $job['expmax']);
             $tempjobs[$this->converters->classToJob($job['name'])] = [
                 'level'=>(is_numeric($job['level']) ? (int)$job['level'] : 0),
                 'specialist'=>(empty($job['specialist']) ? false : true),
