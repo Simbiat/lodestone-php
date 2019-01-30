@@ -371,11 +371,11 @@ class Api
             $sort = 'win';
         }
         if ($week_month == 'weekly') {
-            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', $week)) {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', strval($week))) {
                 $week = 0;
             }
         } else {
-            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', $week)) {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', strval($week))) {
                 $week = 0;
             }
         }
@@ -402,11 +402,11 @@ class Api
             $week_month = 'weekly';
         }
         if ($week_month == 'weekly') {
-            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', $week)) {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', strval($week))) {
                 $week = 0;
             }
         } else {
-            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', $week)) {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', strval($week))) {
                 $week = 0;
             }
         }
@@ -432,11 +432,11 @@ class Api
             $week_month = 'weekly';
         }
         if ($week_month == 'weekly') {
-            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', $week)) {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|[1-4][0-9]|5[0-3])$/', strval($week))) {
                 $week = 0;
             }
         } else {
-            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', $week)) {
+            if (!preg_match('/^[0-9]{4}(0[1-9]|1[0-2])$/', strval($week))) {
                 $week = 0;
             }
         }
