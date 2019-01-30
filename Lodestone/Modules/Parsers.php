@@ -366,6 +366,9 @@ trait Parsers
                         #Decode html entities
                         $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['race'] = html_entity_decode($tempresult['race'], ENT_QUOTES | ENT_HTML5);
+                        if ($tempresults[$key]['race'] == '----') {
+                            throw new \Exception('Character without set race.');
+                        }
                         $tempresults[$key]['clan'] = html_entity_decode($tempresult['clan'], ENT_QUOTES | ENT_HTML5);
                         $tempresults[$key]['nameday'] = str_replace("32st", "32nd", $tempresults[$key]['nameday']);
                         if (!empty($tempresult['uppertitle'])) {
