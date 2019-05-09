@@ -54,7 +54,7 @@ trait Parsers
             $finished = microtime(true);
             $duration = $finished - $started;
             $micro = sprintf("%06d", $duration * 1000000);
-            $d = new \DateTime(date('H:i:s.'.$micro, $duration));
+            $d = new \DateTime(date('H:i:s.'.$micro, (int)$duration));
             $this->result['benchmark']['httptime'][] = $d->format("H:i:s.u");
         }
         $started = microtime(true);
@@ -77,13 +77,13 @@ trait Parsers
                 'updates',
                 'status',
             ])) {
-                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER), preg_last_error())) {
+                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), 'PAGECOUNT')) {
                     return $this;
                 }
                 $this->pages($pages, $resultkey, $resultsubkey);
             }
             if (in_array($this->type, ['GrandCompanyRanking', 'FreeCompanyRanking'])) {
-                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER), preg_last_error())) {
+                if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), 'PAGECOUNT2')) {
                     return $this;
                 }
                 $this->pages($pages, $resultkey, $resultsubkey);
@@ -91,7 +91,7 @@ trait Parsers
             
             #Banners special precut
             if ($this->type == 'banners') {
-                if (!$this->regexfail(preg_match(Regex::BANNERS, $this->html, $banners), preg_last_error())) {
+                if (!$this->regexfail(preg_match(Regex::BANNERS, $this->html, $banners), preg_last_error(), 'BANNERS')) {
                     return $this;
                 }
                 $this->html = $banners[0];
@@ -104,7 +104,7 @@ trait Parsers
                 'updates',
                 'status',
             ])) {
-                if (!$this->regexfail(preg_match_all(Regex::NOTICES, $this->html, $notices, PREG_SET_ORDER), preg_last_error())) {
+                if (!$this->regexfail(preg_match_all(Regex::NOTICES, $this->html, $notices, PREG_SET_ORDER), preg_last_error(), 'NOTICES')) {
                     return $this;
                 }
                 $this->html = $notices[0][0];
@@ -157,7 +157,7 @@ trait Parsers
             #file_put_contents(dirname(__FILE__).'/regex.txt', $regex);
             #file_put_contents(dirname(__FILE__).'/html.txt', $this->html);
             
-            if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {
+            if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error(), 'main regex')) {
                 if (in_array($this->type, [
                     'searchCharacter',
                     'CharacterFriends',
@@ -446,7 +446,7 @@ trait Parsers
             $finished = microtime(true);
             $duration = $finished - $started;
             $micro = sprintf("%06d", $duration * 1000000);
-            $d = new \DateTime(date('H:i:s.'.$micro, $duration));
+            $d = new \DateTime(date('H:i:s.'.$micro, (int)$duration));
             $this->result['benchmark']['parsetime'][] = $d->format("H:i:s.u");
             $this->result['benchmark']['memory'] = $this->converters->memory(memory_get_usage(true));
             $this->result['benchmark']['memorypeak'] = $this->converters->memory(memory_get_peak_usage(true));
@@ -490,7 +490,7 @@ trait Parsers
             case 'FreeCompanyMembers':
             case 'LinkshellMembers':
                 if ($result == 404) {
-                    if (!is_scalar($this->result[$resultkey][$this->typesettings['id']]) && !is_array($this->result[$resultkey][$this->typesettings['id']][$resultsubkey])) {
+                    if (!isset($this->result[$resultkey]) || (!is_scalar($this->result[$resultkey][$this->typesettings['id']]) && !is_array($this->result[$resultkey][$this->typesettings['id']][$resultsubkey]))) {
                         $this->result[$resultkey][$this->typesettings['id']][$resultsubkey] = $result;
                     }
                 } else {
@@ -771,7 +771,7 @@ trait Parsers
     
     protected function jobs(): array
     {
-        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER), preg_last_error())) {
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER), preg_last_error(), 'CHARACTER_JOBS')) {
             return $this;
         }
         foreach ($jobs as $job) {
@@ -790,7 +790,7 @@ trait Parsers
     
     protected function attributes(): array
     {
-        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER), preg_last_error())) {
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER), preg_last_error(), 'CHARACTER_ATTRIBUTES')) {
             return $this;
         }
         foreach ($attributes as $attribute) {
@@ -822,7 +822,7 @@ trait Parsers
     
     protected function items(): array
     {
-        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error())) {
+        if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error(), 'CHARACTER_GEAR')) {
             return [];
         }
         #Remove duplicates
@@ -910,10 +910,10 @@ trait Parsers
     }
     
     #Function to return error in case regex resulted in 0 or error
-    protected function regexfail($matchescount, $errorcode): bool
+    protected function regexfail($matchescount, $errorcode, $regexid): bool
     {
         if ($matchescount === 0) {
-            $this->errorRegister('No matches found for regex', 'parse');
+            $this->errorRegister('No matches found for regex ('.$regexid.')', 'parse');
             return false;
         } elseif ($matchescount === false) {
             $this->errorRegister(array_flip(get_defined_constants(true)['pcre'])[$errorcode], 'parse');
@@ -935,7 +935,7 @@ trait Parsers
             }
             if ($type == 'http') {
                 $micro = sprintf("%06d", $duration * 1000000);
-                $d = new \DateTime(date('H:i:s.'.$micro, $duration));
+                $d = new \DateTime(date('H:i:s.'.$micro, (int)$duration));
                 $this->result['benchmark']['httptime'][] = $d->format("H:i:s.u");
                 $duration = 0;
                 $micro = sprintf("%06d", $duration * 1000000);

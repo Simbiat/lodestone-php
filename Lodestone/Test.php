@@ -18,17 +18,17 @@ class Test
         $this->Lodestone = (new \Lodestone\Api)->setLanguage($language)->setUseragent('Simbiat Software UAT')->setBenchmark(true);
         
         #Checking characters
-        $this->Lodestone->getCharacter(6691027);
+        $this->Lodestone->getCharacter('6691027');
         $this->tableline('Character (regular)', $this->Lodestone->getResult()['characters']['6691027']);
-        $this->Lodestone->getCharacter(21915843);
+        $this->Lodestone->getCharacter('21915843');
         $this->tableline('Character (empty)', $this->Lodestone->getResult()['characters']['21915843']);
-        $this->Lodestone->getCharacter(21471245);
+        $this->Lodestone->getCharacter('21471245');
         $this->tableline('Character (with PvP)', $this->Lodestone->getResult()['characters']['21471245']);
-        $this->Lodestone->getCharacterFriends(6691027);
+        $this->Lodestone->getCharacterFriends('6691027');
         $this->tableline('Character friends', $this->Lodestone->getResult()['characters']['6691027']['friends']);
-        $this->Lodestone->getCharacterFollowing(6691027)->getResult();
+        $this->Lodestone->getCharacterFollowing('6691027')->getResult();
         $this->tableline('Character following', $this->Lodestone->getResult()['characters']['6691027']['following']);
-        $this->Lodestone->getCharacterAchievements(6691027, false, 39, true, true);
+        $this->Lodestone->getCharacterAchievements('6691027', false, 39, true, true);
         $this->tableline('Achievements', $this->Lodestone->getResult()['characters']['6691027']['achievements']);
         
         #Checking groups
@@ -42,8 +42,8 @@ class Test
         $this->tableline('Free company (no plot, focus and recruitment)', $this->Lodestone->getResult()['freecompanies']['9234631035923203676']);
         $this->Lodestone->getLinkshellMembers('19984723346535274', 1);
         $this->tableline('Linkshell', $this->Lodestone->getResult()['linkshells']['19984723346535274']);
-        $this->Lodestone->getPvPTeam('fd58c424bce8697a0a56bbc38fa5c4966067a9d5');
-        $this->tableline('PvP team', $this->Lodestone->getResult()['pvpteams']['fd58c424bce8697a0a56bbc38fa5c4966067a9d5']);
+        $this->Lodestone->getPvPTeam('d1ce24446f4fbf6e0eabd31334feef2bc16966d1');
+        $this->tableline('PvP team', $this->Lodestone->getResult()['pvpteams']['d1ce24446f4fbf6e0eabd31334feef2bc16966d1']);
         
         #Checking searches
         $this->Lodestone->searchCharacter();
@@ -91,12 +91,12 @@ class Test
         
         #Checking Errors
         $this->Lodestone->getFreeCompany('1');
-        $this->tableline('Non existing free company', @$this->Lodestone->getResult()['freecompanies']['1'], true);
+        $this->tableline('Non-existant free company', @$this->Lodestone->getResult()['freecompanies']['1'], true);
         $this->Lodestone->getLinkshellMembers('1', 1);
-        $this->tableline('Non existing linkshell', @$this->Lodestone->getResult()['linkshells']['1'], true);
+        $this->tableline('Non-existant linkshell', @$this->Lodestone->getResult()['linkshells']['1'], true);
         $this->Lodestone->getCharacter('9234631035923213559');
-        $this->tableline('Non existing character', @$this->Lodestone->getResult()['characters']['9234631035923213559'], true);
-        $this->Lodestone->getCharacterAchievements(4339591, false, 39, false, true);
+        $this->tableline('Non-existant character', @$this->Lodestone->getResult()['characters']['9234631035923213559'], true);
+        $this->Lodestone->getCharacterAchievements('4339591', false, 39, false, true);
         $this->tableline('Character with private achievements', @$this->Lodestone->getResult()['characters']['4339591']['achievements'], true);
         
         echo '</table>';
