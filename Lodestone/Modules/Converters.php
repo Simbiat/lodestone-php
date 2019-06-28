@@ -863,6 +863,29 @@ class Converters {
             case 'xaela':
             case 'アウラ・ゼラ':
                 $id = 'tribe_12'; break;
+            case 'hrothgar':
+            case 'ロスガル':
+                $id = 'race_7'; break;
+            case 'helions':
+            case 'ヘリオン':
+            case 'hélion':
+            case 'helion':
+                $id = 'tribe_13'; break;
+            case 'the lost':
+            case 'ロスト':
+            case 'éloigné':
+            case 'losgesagter':
+                $id = 'tribe_14'; break;
+            case 'viera':
+            case 'ヴィエラ':
+            case 'viéra':
+                $id = 'race_8'; break;
+            case 'rava':
+            case 'ラヴァ・ヴィエラ':
+                $id = 'tribe_15'; break;
+            case 'veena':
+            case 'ヴィナ・ヴィエラ':
+                $id = 'tribe_16'; break;
             default:
                 $id = '';
         }
@@ -1026,6 +1049,10 @@ class Converters {
                 $id = '17'; break;
             case 'fsh':
                 $id = '18'; break;
+            case 'gnb':
+                $id = '37'; break;
+            case 'dnc':
+                $id = '38'; break;
             default:
                 $id = '';
         }
@@ -1074,6 +1101,10 @@ class Converters {
                 $id = '7c3485028121b84720df20de7772371d279d097d'; break;
             case 'rdm':
                 $id = '55a98ea6cf180332222184e9fb788a7941a03ec3'; break;
+            case 'gnb':
+                $id = '1c29ab32bcd60f4ac37827066709fa17c872edca'; break;
+            case 'dnc':
+                $id = 'baa255d6ec667f5a88920d8968e86a41261d8576'; break;
             default:
                 $id = '';
         }
