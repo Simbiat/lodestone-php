@@ -24,7 +24,6 @@ class Api
     
     protected $useragent = '';
     protected $language = 'https://na';
-    protected $lang = 'na';
     protected $benchmark = false;
     protected $url = '';
     protected $type = '';
@@ -512,10 +511,11 @@ class Api
         return $this->parse();
     }
 
-    public function getWorldStatus()
+    public function getWorldStatus(bool $worlddetails = false)
     {
         $this->url = $this->language.Routes::LODESTONE_WORLD_STATUS;
         $this->type = 'worlds';
+        $this->typesettings['worlddetails'] = $worlddetails;
         return $this->parse();
     }
     
@@ -560,7 +560,6 @@ class Api
             $language = "na";
         }
         if (in_array($language, ['jp', 'ja'])) {$language = 'jp';}
-        $this->lang = $language;
         $this->language = 'https://'.$language;
         return $this;
     }

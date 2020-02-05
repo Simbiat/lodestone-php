@@ -193,8 +193,8 @@ There is a `\Lodestone\Test` class to test run all of the available functions in
 	</tr>
 	<tr>
 		<td><code>getWorldStatus</code></td>
-		<td></td>
+		<td><code>bool $worlddetails=false</code> - whether to show detailed stauts of worlds or not. Defaults to <code>false</code>.</td>
 		<td><code>worlds</code></td>
-		<td>Returns alphabet sorted array with worlds (servers) names as array keys and status (online/offline) as values.</td>
+		<td>Returns alphabet sorted array with worlds (servers) names as array keys and status (online/offline) as values. In <code>detailed</code> mode shows online status, maintenance status, whether world is preferred or congested and whether world can have new characters as boolean values.</td>
 	</tr>
 </table>

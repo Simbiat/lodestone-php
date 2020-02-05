@@ -365,11 +365,39 @@ trait Parsers
                     case 'Character':
                         #Decode html entities
                         $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
-                        $tempresults[$key]['race'] = html_entity_decode($tempresult['race'], ENT_QUOTES | ENT_HTML5);
+                        #There are cases of characters not returning a proper race or clan (usually both). I've reported this issue to Square Enix several times and they simply update affected characters. This breaks normal update routines, though, so both race and clan are defaulted to what the game suggests for new characters: Midlander Hyur. Appropriate comments are added, though for information purposes.
+                        $tempresults[$key]['race'] = trim(html_entity_decode($tempresult['race'], ENT_QUOTES | ENT_HTML5));
                         if ($tempresults[$key]['race'] == '----') {
-                            throw new \Exception('Character without set race.');
+                            switch(strtolower($this->language)) {
+                                case 'https://jp':
+                                case 'https://ja':
+                                    $tempresults[$key]['race'] = 'ヒューラン'; break;
+                                case 'https://de':
+                                    $tempresults[$key]['race'] = 'Hyuran'; break;
+                                default:
+                                    $tempresults[$key]['race'] = 'Hyur';
+                            }
+                            $tempresults[$key]['comment'] = 'Defaulted race';
                         }
-                        $tempresults[$key]['clan'] = html_entity_decode($tempresult['clan'], ENT_QUOTES | ENT_HTML5);
+                        $tempresults[$key]['clan'] = trim(html_entity_decode($tempresult['clan'], ENT_QUOTES | ENT_HTML5));
+                        if ($tempresults[$key]['clan'] == '----') {
+                            switch(strtolower($this->language)) {
+                                case 'https://jp':
+                                case 'https://ja':
+                                    $tempresults[$key]['clan'] = 'ミッドランダー'; break;
+                                case 'https://fr':
+                                    $tempresults[$key]['clan'] = 'Hyurois'; break;
+                                case 'https://de':
+                                    $tempresults[$key]['clan'] = 'Wiesländer'; break;
+                                default:
+                                    $tempresults[$key]['clan'] = 'Midlander';
+                            }
+                            if ($tempresults[$key]['comment'] === 'Defaulted race') {
+                                $tempresults[$key]['comment'] .= ' and clan';
+                            } else {
+                                $tempresults[$key]['comment'] = 'Defaulted clan';
+                            }
+                        }
                         $tempresults[$key]['nameday'] = str_replace("32st", "32nd", $tempresults[$key]['nameday']);
                         if (!empty($tempresult['uppertitle'])) {
                             $tempresults[$key]['title'] = html_entity_decode($tempresult['uppertitle'], ENT_QUOTES | ENT_HTML5);
@@ -420,8 +448,9 @@ trait Parsers
                         }
                         $tempresults[$key]['jobs'] = $this->jobs();
                         $tempresults[$key]['attributes'] = $this->attributes();
-                        $tempresults[$key]['mounts'] = $this->collectibales('mounts');
-                        $tempresults[$key]['minions'] = $this->collectibales('minions');
+                        #Minions and mounts now show only icon on Lodestone, thus it's not really practically to grab them
+                        #$tempresults[$key]['mounts'] = $this->collectibales('mounts');
+                        #$tempresults[$key]['minions'] = $this->collectibales('minions');
                         $tempresults[$key]['gear'] = $this->items();
                         break;
                 }
@@ -466,7 +495,7 @@ trait Parsers
         }
         
         $this->allpagesproc($resultkey, $resultsubkey);
-        
+
         return $this;
     }
     
@@ -527,7 +556,17 @@ trait Parsers
                 break;
             case 'worlds':
                 if ($result != 404) {
-                    $this->result[$resultkey][$result['server']] = $result['status'];
+                    if ($this->typesettings['worlddetails']) {
+                        $this->result[$resultkey][$result['server']] = [
+                            'Online'=>($result['maintenance'] === '1' ? true : false),
+                            'Full maintenance'=>($result['maintenance'] === '3' ? true : false),
+                            'Preferred'=>(in_array($result['population'], ['Preferred', '優遇', 'Désignés', 'Bevorzugt']) ? true : false),
+                            'Congested'=>(in_array($result['population'], ['Congested', '混雑', 'Surpeuplés', 'Belastet']) ? true : false),
+                            'New characters'=>(in_array($result['newchars'], ['Creation of New Characters Available', '新規キャラクター作成可', 'Création de personnage possible', 'Erstellung möglich']) ? true : false),
+                        ];
+                    } else {
+                        $this->result[$resultkey][$result['server']] = $result['status'];
+                    }
                 }
                 break;
             case 'feast':
@@ -889,6 +928,12 @@ trait Parsers
             $tempresults[$key]['trading']['sellable'] = empty($tempresult['unsellable']);
             $tempresults[$key]['trading']['marketable'] = empty($tempresult['marketprohibited']);
             $tempresults[$key]['trading']['tradeable'] = empty($tempresult['untradeable']);
+            #Link to shop, if present
+            if (empty($tempresult['shop'])) {
+                    $tempresults[$key]['trading']['shop'] = NULL;
+                } else {
+                    $tempresults[$key]['trading']['shop'] = $this->language.Routes::LODESTONE_URL_BASE.$tempresult['shop'];
+            }
             #Customization
             $tempresults[$key]['customization'] = [
                 'crestable'=>$this->converters->imageToBool($tempresult['crestable']),
@@ -904,7 +949,7 @@ trait Parsers
                     'icon'=>$tempresult['glamouricon'],
                 ];
             }
-            unset($tempresults[$key]['level'], $tempresults[$key]['classes'], $tempresults[$key]['price'], $tempresults[$key]['unsellable'], $tempresults[$key]['marketprohibited'], $tempresults[$key]['repair'], $tempresults[$key]['materials'], $tempresults[$key]['desynthesizable'], $tempresults[$key]['melding'], $tempresults[$key]['advancedmelding'], $tempresults[$key]['convertible'], $tempresults[$key]['glamourname'], $tempresults[$key]['glamourid'], $tempresults[$key]['glamouricon'], $tempresults[$key]['crestable'], $tempresults[$key]['glamourable'], $tempresults[$key]['projectable'], $tempresults[$key]['dyeable'], $tempresults[$key]['untradeable']);
+            unset($tempresults[$key]['level'], $tempresults[$key]['classes'], $tempresults[$key]['price'], $tempresults[$key]['unsellable'], $tempresults[$key]['marketprohibited'], $tempresults[$key]['repair'], $tempresults[$key]['materials'], $tempresults[$key]['desynthesizable'], $tempresults[$key]['melding'], $tempresults[$key]['advancedmelding'], $tempresults[$key]['convertible'], $tempresults[$key]['glamourname'], $tempresults[$key]['glamourid'], $tempresults[$key]['glamouricon'], $tempresults[$key]['crestable'], $tempresults[$key]['glamourable'], $tempresults[$key]['projectable'], $tempresults[$key]['dyeable'], $tempresults[$key]['untradeable'], $tempresults[$key]['shop']);
         }
         return $tempresults;
     }

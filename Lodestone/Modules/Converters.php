@@ -791,7 +791,7 @@ class Converters {
             case 'hyuran':
                 $id = 'race_1'; break;
             case 'midlander':
-            case 'ミッドランダー ':
+            case 'ミッドランダー':
             case 'hyurois':
             case 'wiesländer':
                 $id = 'tribe_1'; break;
