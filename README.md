@@ -84,7 +84,7 @@ There is a `\Lodestone\Test` class to test run all of the available functions in
 	</tr>
 	<tr>
 		<td><code>getLinkshell</code></td>
-		<td><ul><li><code>$id</code> - id of Linkshell.</li><li><code>int $page = 1</code> - members' page. Defaults to <code>1</code></li></ul></td>
+		<td><ul><li><code>$id</code> - id of Linkshell (numeric) or Crossworld Linkshell (alfa-numeric).</li><li><code>int $page = 1</code> - members' page. Defaults to <code>1</code></li></ul></td>
 		<td><code>linkshells[$linkshell]</code>, where <code>$linkshell</code> is id of linkshell returned with respective details as an array.</td>
 		<td>Returns requested member's page of the Linkshell and general information.</td>
 	</tr>
@@ -143,7 +143,7 @@ There is a `\Lodestone\Test` class to test run all of the available functions in
 	</tr>
 	<tr>
 		<td><code>searchLinkshell</code></td>
-		<td><ul><li><code>string $name = ''</code> - optional name to search.</li><li><code>string $server = ''</code> - optional server name to filter.</li><li><code>int $character_count = 0</code> - filter by Linkshell size. Supports same counts as Lodestone: 1-10, 11-30, 31-50, 51-. Anything else will result in no filtering.</li><li><code>string $order = ''</code> - optional sorting order. Refer to Converters.php for possible values.</li><li><code>int $page = 1</code> - number of the page to parse. Defaults to <code>1</code>.</li></ul></td>
+		<td><ul><li><code>string $name = ''</code> - optional name to search.</li><li><code>string $server = ''</code> - optional server name to filter.</li><li><code>int $character_count = 0</code> - filter by Linkshell size. Supports same counts as Lodestone: 1-10, 11-30, 31-50, 51-. Anything else will result in no filtering.</li><li><code>string $order = ''</code> - optional sorting order. Refer to Converters.php for possible values.</li><li><code>int $page = 1</code> - number of the page to parse. Defaults to <code>1</code>.</li><li><code>bool $crossworld = false</code> - whether we are searching for regular or crossworld Linkshell. Searching for regular ones by default.</li></ul></td>
 		<td><code>linkshells[$linkshell]</code>, where <code>$linkshell</code> is id of each linkshell returned with respective details as an array.</td>
 	</tr>
 	<tr>

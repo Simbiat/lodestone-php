@@ -409,10 +409,31 @@ trait Parsers
                         #Gender to text
                         $tempresults[$key]['gender'] = ($tempresult['gender'] == '♂' ? 'male' : 'female');
                         #Guardian
-                        $tempresults[$key]['guardian'] = [
-                            'name'=>html_entity_decode($tempresult['guardian'], ENT_QUOTES | ENT_HTML5),
-                            'icon'=>$tempresult['guardianicon'],
-                        ];
+                        if (empty($tempresults[$key]['guardian'])) {
+                            switch(strtolower($this->language)) {
+                                case 'https://jp':
+                                case 'https://ja':
+                                    $tempresults[$key]['guardian']['name'] = 'ハルオーネ'; break;
+                                    break;
+                                case 'https://fr':
+                                    $tempresults[$key]['guardian']['name'] = 'Halone, la Conquérante'; break;
+                                case 'https://de':
+                                    $tempresults[$key]['guardian']['name'] = 'Halone - Die Furie'; break;
+                                default:
+                                    $tempresults[$key]['guardian']['name'] = 'Halone, the Fury'; break;
+                            }
+                            $tempresults[$key]['guardian']['icon'] = 'https://img.finalfantasyxiv.com/lds/h/5/qmgVmQ1o6skxdK4hDEbIV5NETA.png';
+                            if (empty($tempresults[$key]['comment'])) {
+                                $tempresults[$key]['comment'] = 'Defaulted guardian';
+                            } else {
+                                $tempresults[$key]['comment'] .= ' and guardian';
+                            }
+                        } else {
+                            $tempresults[$key]['guardian'] = [
+                                'name'=>html_entity_decode($tempresult['guardian'], ENT_QUOTES | ENT_HTML5),
+                                'icon'=>$tempresult['guardianicon'],
+                            ];
+                        }
                         #City
                         $tempresults[$key]['city'] = [
                             'name'=>html_entity_decode($tempresult['city'], ENT_QUOTES | ENT_HTML5),

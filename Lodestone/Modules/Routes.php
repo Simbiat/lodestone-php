@@ -32,7 +32,8 @@ class Routes
     // linkshell
     const LODESTONE_LINKSHELL_SEARCH_URL = self::LODESTONE_URL_BASE . '/linkshell';
     const LODESTONE_LINKSHELL_MEMBERS_URL = self::LODESTONE_URL_BASE .'/linkshell/%s/';
-    
+    const LODESTONE_CROSSWORLD_LINKSHELL_SEARCH_URL = self::LODESTONE_URL_BASE . '/crossworld_linkshell';
+    const LODESTONE_CROSSWORLD_LINKSHELL_MEMBERS_URL = self::LODESTONE_URL_BASE .'/crossworld_linkshell/%s/';
     // pvp team
     const LODESTONE_PVPTEAM_SEARCH_URL = self::LODESTONE_URL_BASE . '/pvpteam';
     const LODESTONE_PVPTEAM_MEMBERS_URL = self::LODESTONE_URL_BASE .'/pvpteam/%s/';

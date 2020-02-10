@@ -159,7 +159,11 @@ class Api
     public function getLinkshellMembers(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'?page='.$page, $id);
+        if (preg_match('/[a-zA-Z0-9]{40}/mi', $id)) {
+            $this->url = sprintf($this->language.Routes::LODESTONE_CROSSWORLD_LINKSHELL_MEMBERS_URL.'?page='.$page, $id);
+        } else {
+            $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'?page='.$page, $id);
+        }
         $this->type = 'LinkshellMembers';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -277,7 +281,7 @@ class Api
         return $this->parse();
     }
 
-    public function searchLinkshell(string $name = '', string $server = '', int $character_count = 0, string $order = '', int $page = 1)
+    public function searchLinkshell(string $name = '', string $server = '', int $character_count = 0, string $order = '', int $page = 1, bool $crossworld = false)
     {
         $page = $this->pageCheck($page);
         $query = $this->queryBuilder([
@@ -287,7 +291,11 @@ class Api
             'order' => $this->converters->getSearchOrderId($order),
             'page' => $page,
         ]);
-        $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_SEARCH_URL.$query);
+        if ($crossworld) {
+            $this->url = sprintf($this->language.Routes::LODESTONE_CROSSWORLD_LINKSHELL_SEARCH_URL.$query);
+        } else {
+            $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_SEARCH_URL.$query);
+        }
         $this->type = 'searchLinkshell';
         $this->typesettings['name'] = $name;
         $this->typesettings['server'] = $server;
