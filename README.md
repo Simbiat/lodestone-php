@@ -50,6 +50,12 @@ There is a `\Lodestone\Test` class to test run all of the available functions in
 		<td>Returns character details.</td>
 	</tr>
 	<tr>
+		<td><code>getCharacterJobs</code></td>
+		<td><code>$id</code> - id of character.</td>
+		<td><code>characters[$id]['jobs']</code>, where <code>$id</code> is id of character.</td>
+		<td>Returns character jobs' details.</td>
+	</tr>
+	<tr>
 		<td><code>getCharacterFriends</code></td>
 		<td><ul><li><code>$id</code> - id of character.</li><li><code>int $page = 1</code> - characters' page. Defaults to <code>1</code>.</li></ul></td>
 		<td><code>characters[$id]['friends'][$character]</code>, where <code>$id</code> is id of character and <code>$character</code> is id of friends returned with respective details as an array.</td>

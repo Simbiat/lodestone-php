@@ -86,6 +86,14 @@ class Api
         $this->typesettings['id'] = $id;
         return $this->parse();
     }
+    
+    public function getCharacterJobs(string $id)
+    {
+        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_JOBS_URL, $id);
+        $this->type = 'CharacterJobs';
+        $this->typesettings['id'] = $id;
+        return $this->parse();
+    }
 
     public function getCharacterFriends(string $id, int $page = 1)
     {

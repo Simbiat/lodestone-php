@@ -24,6 +24,8 @@ class Test
         $this->tableline('Character (empty)', $this->Lodestone->getResult()['characters']['21915843']);
         $this->Lodestone->getCharacter('21471245');
         $this->tableline('Character (with PvP)', $this->Lodestone->getResult()['characters']['21471245']);
+        $this->Lodestone->getCharacterJobs('6691027');
+        $this->tableline('Character jobs', $this->Lodestone->getResult()['characters']['6691027']['jobs']);
         $this->Lodestone->getCharacterFriends('6691027');
         $this->tableline('Character friends', $this->Lodestone->getResult()['characters']['6691027']['friends']);
         $this->Lodestone->getCharacterFollowing('6691027')->getResult();

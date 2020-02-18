@@ -12,6 +12,8 @@ trait Parsers
             case 'searchCharacter':
             case 'Character':
                 $resultkey = 'characters'; $resultsubkey = ''; break;
+            case 'CharacterJobs':
+                $resultkey = 'characters'; $resultsubkey = 'jobs'; break;
             case 'CharacterFriends':
                 $resultkey = 'characters'; $resultsubkey = 'friends'; break;
             case 'CharacterFollowing':
@@ -141,6 +143,8 @@ trait Parsers
                     $regex = Regex::ACHIEVEMENT_DETAILS; break;
                 case 'Character':
                     $regex = Regex::CHARACTER_GENERAL; break;
+                case 'CharacterJobs':
+                    $regex = Regex::CHARACTER_JOBS; break;
                 case 'topics':
                 case 'news':
                     $regex = Regex::NEWS; break;
@@ -467,12 +471,23 @@ trait Parsers
                         } else {
                             $tempresults[$key]['bio'] = '';
                         }
-                        $tempresults[$key]['jobs'] = $this->jobs();
                         $tempresults[$key]['attributes'] = $this->attributes();
                         #Minions and mounts now show only icon on Lodestone, thus it's not really practically to grab them
                         #$tempresults[$key]['mounts'] = $this->collectibales('mounts');
                         #$tempresults[$key]['minions'] = $this->collectibales('minions');
                         $tempresults[$key]['gear'] = $this->items();
+                        break;
+                    case 'CharacterJobs':
+                        $tempresult['id'] = $this->converters->classToJob($tempresult['name']);
+                        $tempresult['expcur'] = preg_replace('/[^0-9]/', '', $tempresult['expcur']);
+                        $tempresult['expmax'] = preg_replace('/[^0-9]/', '', $tempresult['expmax']);
+                        $tempresults[$key] = [
+                            'level'=>(is_numeric($tempresult['level']) ? (int)$tempresult['level'] : 0),
+                            'specialist'=>(empty($tempresult['specialist']) ? false : true),
+                            'expcur'=>(is_numeric($tempresult['expcur']) ? (int)$tempresult['expcur'] : 0),
+                            'expmax'=>(is_numeric($tempresult['expmax']) ? (int)$tempresult['expmax'] : 0),
+                            'icon'=>$tempresult['icon'],
+                        ];
                         break;
                 }
                 
@@ -535,6 +550,7 @@ trait Parsers
             case 'Character':
                 $this->result[$resultkey][$this->typesettings['id']] = $result;
                 break;
+            case 'CharacterJobs':
             case 'CharacterFriends':
             case 'CharacterFollowing':
             case 'FreeCompanyMembers':
@@ -832,7 +848,7 @@ trait Parsers
     protected function jobs(): array
     {
         if (!$this->regexfail(preg_match_all(Regex::CHARACTER_JOBS, $this->html, $jobs, PREG_SET_ORDER), preg_last_error(), 'CHARACTER_JOBS')) {
-            return $this;
+            return [];
         }
         foreach ($jobs as $job) {
             $job['expcur'] = preg_replace('/[^0-9]/', '', $job['expcur']);
@@ -851,7 +867,7 @@ trait Parsers
     protected function attributes(): array
     {
         if (!$this->regexfail(preg_match_all(Regex::CHARACTER_ATTRIBUTES, $this->html, $attributes, PREG_SET_ORDER), preg_last_error(), 'CHARACTER_ATTRIBUTES')) {
-            return $this;
+            return [];
         }
         foreach ($attributes as $attribute) {
             if (empty($attribute['name'])) {
@@ -885,11 +901,6 @@ trait Parsers
         if (!$this->regexfail(preg_match_all(Regex::CHARACTER_GEAR, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error(), 'CHARACTER_GEAR')) {
             return [];
         }
-        #Remove duplicates
-        $half = count($tempresults);
-        for ($i = count($tempresults)/2; $i <= $half; $i++) {
-            unset($tempresults[$i]);
-        }
         #Remove non-named groups
         foreach ($tempresults as $key=>$tempresult) {
             foreach ($tempresult as $key2=>$details) {
@@ -903,7 +914,7 @@ trait Parsers
             #Requirements
             $tempresults[$key]['requirements'] = [
                 'level'=>$tempresult['level'],
-                'classes'=>explode(' ', $tempresult['classes']),
+                'classes'=>(in_array($tempresult['classes'], ['Disciple of the Land', 'Disciple of the Hand', 'Disciple of Magic', 'Disciple of War', 'Disciples of War or Magic', 'All Classes', 'ギャザラー', 'Sammler', 'Récolteurs', 'Handwerker', 'Artisans', 'クラフター', 'Magier', 'Mages', 'ソーサラー', 'Krieger', 'Combattants', 'ファイター', 'Krieger, Magier', 'Combattants et mages', 'ファイター ソーサラー', 'Alle Klassen', 'Toutes les classes', '全クラス']) ? $tempresult['classes'] : explode(' ', $tempresult['classes'])),
             ];
             #Attributes
             for ($i = 1; $i <= 15; $i++) {

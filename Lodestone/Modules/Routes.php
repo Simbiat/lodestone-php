@@ -21,6 +21,9 @@ class Routes
     const LODESTONE_CHARACTERS_URL = self::LODESTONE_URL_BASE . '/character/%s/';
     const LODESTONE_CHARACTERS_FRIENDS_URL = self::LODESTONE_URL_BASE . '/character/%s/friend/';
     const LODESTONE_CHARACTERS_FOLLOWING_URL = self::LODESTONE_URL_BASE . '/character/%s/following/';
+    const LODESTONE_CHARACTERS_JOBS_URL = self::LODESTONE_URL_BASE . '/character/%s/class_job/';
+    const LODESTONE_CHARACTERS_MINIONS_URL = self::LODESTONE_URL_BASE . '/character/%s/minion/';
+    const LODESTONE_CHARACTERS_MOUNTS_URL = self::LODESTONE_URL_BASE . '/character/%s/mount/';
     const LODESTONE_CHARACTERS_SEARCH_URL = self::LODESTONE_URL_BASE .'/character';
     const LODESTONE_ACHIEVEMENTS_URL = self::LODESTONE_URL_BASE . '/character/%s/achievement/kind/%s/';
     const LODESTONE_ACHIEVEMENTS_CAT_URL = self::LODESTONE_URL_BASE . '/character/%s/achievement/category/%s/';
