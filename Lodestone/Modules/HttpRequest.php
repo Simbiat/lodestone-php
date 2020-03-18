@@ -11,7 +11,7 @@ class HttpRequest
     /**
      * curl options
      */
-    protected $CURL_OPTIONS = [
+    protected array $CURL_OPTIONS = [
         CURLOPT_POST => false,
         CURLOPT_BINARYTRANSFER => false,
         CURLOPT_HEADER => true,

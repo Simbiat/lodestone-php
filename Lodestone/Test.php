@@ -4,7 +4,7 @@ namespace Lodestone;
 
 class Test
 {
-    private $Lodestone;
+    private object $Lodestone;
     
     public function __construct(string $language = 'na')
     {

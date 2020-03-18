@@ -22,18 +22,18 @@ class Api
     #List of achievements categories' ids excluding 1
     const achkinds = [2, 3, 4, 5, 6, 8, 11, 12, 13];
     
-    protected $useragent = '';
-    protected $language = 'https://na';
-    protected $benchmark = false;
-    protected $url = '';
-    protected $type = '';
-    protected $typesettings = [];
-    protected $html = '';
-    protected $allpages = false;
-    protected $converters = null;
-    protected $result = [];
-    protected $errors = [];
-    protected $lasterror = NULL;
+    protected string $useragent = '';
+    protected string $language = 'https://na';
+    protected bool $benchmark = false;
+    protected string $url = '';
+    protected string $type = '';
+    protected array $typesettings = [];
+    protected string $html = '';
+    protected bool $allpages = false;
+    protected ?object $converters = null;
+    protected array $result = [];
+    protected array $errors = [];
+    protected ?string $lasterror = NULL;
     
     public function __construct()
     {
