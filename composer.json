@@ -4,7 +4,7 @@
     "keywords": ["ffxiv","php","parser","lodestone"],
     "description": "Small lodestone parser built in PHP based on one from Viion.",
     "homepage": "https://github.com/Simbiat/lodestone-php",
-    "license": "MIT",
+    "license": "AGPL-3.0-or-later",
     "authors": [
         {
             "name": "Dmitry Kustov",
