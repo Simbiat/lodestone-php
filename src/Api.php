@@ -33,7 +33,7 @@ class Api
     protected ?object $converters = null;
     protected array $result = [];
     protected array $errors = [];
-    protected ?string $lasterror = NULL;
+    protected ?array $lasterror = NULL;
     
     public function __construct()
     {
