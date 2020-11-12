@@ -240,6 +240,9 @@ trait Parsers
                             if (empty($this->result['server'])) {
                                 $this->result[$resultkey][$this->typesettings['id']]['server'] = $tempresult['server'];
                             }
+                            if (!empty($pages[0]['linkshellserver'])) {
+                                $this->result[$resultkey][$this->typesettings['id']]['server'] = $pages[0]['linkshellserver'];
+                            }
                         }
                         break;
                     case 'frontline':
@@ -795,7 +798,13 @@ trait Parsers
         }
         #Linkshell members specific
         if (!empty($pages[0]['linkshellname'])) {
-            $this->result[$resultkey][$this->typesettings['id']]['name'] = $pages[0]['linkshellname'];
+            $this->result[$resultkey][$this->typesettings['id']]['name'] = trim($pages[0]['linkshellname']);
+            if (!empty($pages[0]['linkshellserver'])) {
+                $this->result[$resultkey][$this->typesettings['id']]['server'] = $pages[0]['linkshellserver'];
+            }
+            if (!empty($pages[0]['linkshellformed'])) {
+                $this->result[$resultkey][$this->typesettings['id']]['formed'] = $pages[0]['linkshellformed'];
+            }
         }
         #PvpTeam members specific
         if (!empty($pages[0]['pvpname'])) {
