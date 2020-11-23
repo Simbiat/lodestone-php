@@ -82,13 +82,13 @@ trait Parsers
                 if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), 'PAGECOUNT')) {
                     return $this;
                 }
-                $this->pages($pages, $resultkey, $resultsubkey);
+                $this->pages($pages, $resultkey);
             }
             if (in_array($this->type, ['GrandCompanyRanking', 'FreeCompanyRanking'])) {
                 if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), 'PAGECOUNT2')) {
                     return $this;
                 }
-                $this->pages($pages, $resultkey, $resultsubkey);
+                $this->pages($pages, $resultkey);
             }
             
             #Banners special precut
@@ -159,6 +159,7 @@ trait Parsers
             
             #Uncomment for debugging purposes
             #file_put_contents(dirname(__FILE__).'/regex.txt', $regex);
+            #file_put_contents(dirname(__FILE__).'/pagecount.txt', Regex::PAGECOUNT);
             #file_put_contents(dirname(__FILE__).'/html.txt', $this->html);
             
             if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error(), 'main regex')) {
@@ -221,6 +222,12 @@ trait Parsers
                     case 'LinkshellMembers':
                     case 'PvPTeamMembers':
                         $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
+                        if (!empty($tempresult['linkshellcommunityid'])) {
+                            $tempresults[$key]['communityid'] = $tempresult['linkshellcommunityid'];
+                        }
+                        if (!empty($tempresult['pvpteamcommunityid'])) {
+                            $tempresults[$key]['communityid'] = $tempresult['pvpteamcommunityid'];
+                        }
                         if ($this->type == 'FreeCompanyMembers') {
                             $tempresults[$key]['rankid'] = $this->converters->FCRankID($tempresult['rankicon']);
                         }
@@ -327,8 +334,11 @@ trait Parsers
                                 unset($tempresults[$key]['seekingname'.$i], $tempresults[$key]['seekingoff'.$i], $tempresults[$key]['seekingicon'.$i]);
                             }
                         }
-                        #Trim slogan
+                        #Trim stuff
                         $tempresults[$key]['slogan'] = trim($tempresult['slogan']);
+                        $tempresults[$key]['active'] = trim($tempresult['active']);
+                        $tempresults[$key]['recruitment'] = trim($tempresult['recruitment']);
+                        $tempresults[$key]['grandCompany'] = trim($tempresult['grandCompany']);
                         if (empty($tempresult['members_count'])) {
                             $tempresults[$key]['members_count'] = 0;
                         }
@@ -668,13 +678,13 @@ trait Parsers
                 case 'CharacterFollowing':
                 case 'FreeCompanyMembers':
                 case 'LinkshellMembers':
-                    $current_page = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'];
-                    $total_page = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'];
+                    $current_page = $this->result[$resultkey][$this->typesettings['id']]['pageCurrent'];
+                    $total_page = $this->result[$resultkey][$this->typesettings['id']]['pageTotal'];
                     break;
                 case 'GrandCompanyRanking':
                 case 'FreeCompanyRanking':
-                    $current_page = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'];
-                    $total_page = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'];
+                    $current_page = $this->result[$resultkey][$this->typesettings['week']]['pageCurrent'];
+                    $total_page = $this->result[$resultkey][$this->typesettings['week']]['pageTotal'];
                     break;
                 default:
                     $current_page = $this->result[$resultkey]['pageCurrent'];
@@ -686,14 +696,14 @@ trait Parsers
             } else {
                 $current_page++;
             }
-            ini_set("max_execution_time", "6000");
+            ini_set('max_execution_time', '6000');
             $this->allpages = false;
             switch($this->type) {
                 case 'CharacterFriends':
                 case 'CharacterFollowing':
                 case 'FreeCompanyMembers':
                 case 'LinkshellMembers':
-                    $function_to_call = "get".$this->type;
+                    $function_to_call = 'get'.$this->type;
                     for ($i = $current_page; $i <= $total_page; $i++) {
                         $this->$function_to_call($this->typesettings['id'], $i);
                     }
@@ -742,7 +752,7 @@ trait Parsers
     }
     
     #Function to parse pages
-    protected function pages(array $pages, string $resultkey, string $resultsubkey)
+    protected function pages(array $pages, string $resultkey)
     {
         switch($this->type) {
             case 'CharacterFriends':
@@ -750,34 +760,40 @@ trait Parsers
             case 'FreeCompanyMembers':
             case 'LinkshellMembers':
             case 'PvPTeamMembers':
+                if (!empty($pages[0]['linkshellcommunityid'])) {
+                    $this->result[$resultkey][$this->typesettings['id']]['communityid'] = $pages[0]['linkshellcommunityid'];
+                }
+                if (!empty($pages[0]['pvpteamcommunityid'])) {
+                    $this->result[$resultkey][$this->typesettings['id']]['communityid'] = $pages[0]['pvpteamcommunityid'];
+                }
                 if (isset($pages[0]['pageCurrent']) && is_numeric($pages[0]['pageCurrent'])) {
-                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = $pages[0]['pageCurrent'];
+                    $this->result[$resultkey][$this->typesettings['id']]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
-                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'] = 1;
+                    $this->result[$resultkey][$this->typesettings['id']]['pageCurrent'] = 1;
                 }
                 if (isset($pages[0]['pageTotal']) && is_numeric($pages[0]['pageTotal'])) {
-                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $pages[0]['pageTotal'];
+                    $this->result[$resultkey][$this->typesettings['id']]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
-                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageTotal'] = $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['pageCurrent'];
+                    $this->result[$resultkey][$this->typesettings['id']]['pageTotal'] = $this->result[$resultkey][$this->typesettings['id']]['pageCurrent'];
                 }
                 if (isset($pages[0]['total']) && is_numeric($pages[0]['total'])) {
-                    $this->result[$resultkey][$this->typesettings['id']][$resultsubkey]['total'] = $pages[0]['total'];
+                    $this->result[$resultkey][$this->typesettings['id']]['memberscount'] = $pages[0]['total'];
                 }
                 break;
             case 'GrandCompanyRanking':
             case 'FreeCompanyRanking':
                 if (isset($pages[0]['pageCurrent']) && is_numeric($pages[0]['pageCurrent'])) {
-                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = $pages[0]['pageCurrent'];
+                    $this->result[$resultkey][$this->typesettings['week']]['pageCurrent'] = $pages[0]['pageCurrent'];
                 } else {
-                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'] = 1;
+                    $this->result[$resultkey][$this->typesettings['week']]['pageCurrent'] = 1;
                 }
                 if (isset($pages[0]['pageTotal']) && is_numeric($pages[0]['pageTotal'])) {
-                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageTotal'];
+                    $this->result[$resultkey][$this->typesettings['week']]['pageTotal'] = $pages[0]['pageTotal'];
                 } else {
-                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageTotal'] = $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['pageCurrent'];
+                    $this->result[$resultkey][$this->typesettings['week']]['pageTotal'] = $this->result[$resultkey][$this->typesettings['week']]['pageCurrent'];
                 }
                 if (isset($pages[0]['total']) && is_numeric($pages[0]['total'])) {
-                    $this->result[$resultkey][$resultsubkey][$this->typesettings['week']]['total'] = $pages[0]['total'];
+                    $this->result[$resultkey][$this->typesettings['week']]['total'] = $pages[0]['total'];
                 }
                 break;
             default:
@@ -800,7 +816,11 @@ trait Parsers
         if (!empty($pages[0]['linkshellname'])) {
             $this->result[$resultkey][$this->typesettings['id']]['name'] = trim($pages[0]['linkshellname']);
             if (!empty($pages[0]['linkshellserver'])) {
-                $this->result[$resultkey][$this->typesettings['id']]['server'] = $pages[0]['linkshellserver'];
+                if (preg_match('/[a-zA-Z0-9]{40}/mi', $this->typesettings['id'])) {
+                    $this->result[$resultkey][$this->typesettings['id']]['dataCenter'] = $pages[0]['linkshellserver'];
+                } else {
+                    $this->result[$resultkey][$this->typesettings['id']]['server'] = $pages[0]['linkshellserver'];
+                }
             }
             if (!empty($pages[0]['linkshellformed'])) {
                 $this->result[$resultkey][$this->typesettings['id']]['formed'] = $pages[0]['linkshellformed'];
