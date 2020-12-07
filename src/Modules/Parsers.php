@@ -38,6 +38,8 @@ trait Parsers
             case 'GrandCompanyRanking':
             case 'FreeCompanyRanking':
                 $resultkey = $this->type; $resultsubkey = $this->typesettings['week_month']; break;
+            case 'Database':
+                $resultkey = 'database'; $resultsubkey = $this->typesettings['type']; break;
             default:
                 $resultkey = $this->type; $resultsubkey = ''; break;
         }
@@ -86,6 +88,12 @@ trait Parsers
             }
             if (in_array($this->type, ['GrandCompanyRanking', 'FreeCompanyRanking'])) {
                 if (!$this->regexfail(preg_match_all(Regex::PAGECOUNT2,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), 'PAGECOUNT2')) {
+                    return $this;
+                }
+                $this->pages($pages, $resultkey);
+            }
+            if ($this->type === 'Database') {
+                if (!$this->regexfail(preg_match_all(Regex::DBPAGECOUNT,$this->html,$pages,PREG_SET_ORDER), preg_last_error(), 'DBPAGECOUNT')) {
                     return $this;
                 }
                 $this->pages($pages, $resultkey);
@@ -153,6 +161,8 @@ trait Parsers
                 case 'updates':
                 case 'status':
                     $regex = Regex::NOTICES2; break;
+                case 'Database':
+                    $regex = Regex::DBLIST; break;
                 default:
                     $regex = Regex::CHARACTERLIST; break;
             }
@@ -379,6 +389,111 @@ trait Parsers
                             $tempresults[$key]['points'] = 0;
                         }
                         break;
+                    case 'Database':
+                        $tempresults[$key]['name'] = str_replace(['<i>', '</i>'], '', trim($tempresults[$key]['name']));
+                        switch($this->typesettings['type']) {
+                            case 'achievement':
+                                $tempresults[$key]['reward'] = ($tempresults[$key]['column1']==='-' ? NULL : $tempresults[$key]['column1']);
+                                $tempresults[$key]['points'] = intval(($tempresults[$key]['column2'] ?? 0));
+                                break;
+                            case 'quest':
+                                $tempresults[$key]['area'] = ($tempresults[$key]['column1']==='-' ? NULL : $tempresults[$key]['column1']);
+                                $tempresults[$key]['character_level'] = intval(($tempresults[$key]['column2'] ?? 0));
+                                break;
+                            case 'duty':
+                                $tempresults[$key]['character_level'] = intval(($tempresults[$key]['column1'] ?? 0));
+                                $tempresults[$key]['item_level'] = ($tempresults[$key]['column2']==='-' ? 0 : intval($tempresults[$key]['column2']));
+                                break;
+                            case 'item':
+                                $tempresults[$key]['item_level'] = ($tempresults[$key]['column1']==='-' ? 0 : intval($tempresults[$key]['column1']));
+                                $tempresults[$key]['character_level'] = ($tempresults[$key]['column2']==='-' ? 0 : intval($tempresults[$key]['column2']));
+                                break;
+                            case 'recipe':
+                                if (isset($tempresults[$key]['extraicon'])) {
+                                    $tempresults[$key]['collectable'] = true;
+                                } else {
+                                    $tempresults[$key]['collectable'] = false;
+                                }
+                                if (!isset($tempresults[$key]['master'])) {
+                                    $tempresults[$key]['master'] = NULL;
+                                }
+                                $tempresults[$key]['recipe_level'] = ($tempresults[$key]['column1']==='-' ? 0 : intval($tempresults[$key]['column1']));
+                                if (isset($tempresults[$key]['star4'])) {
+                                    $tempresults[$key]['stars'] = 4;
+                                } else {
+                                    if (isset($tempresults[$key]['star3'])) {
+                                        $tempresults[$key]['stars'] = 3;
+                                    } else {
+                                        if (isset($tempresults[$key]['star2'])) {
+                                            $tempresults[$key]['stars'] = 2;
+                                        } else {
+                                            if (isset($tempresults[$key]['star1'])) {
+                                                $tempresults[$key]['stars'] = 1;
+                                            } else {
+                                                $tempresults[$key]['stars'] = 0;
+                                            }
+                                        }
+                                    }
+                                }
+                                if (isset($tempresults[$key]['expert'])) {
+                                    $tempresults[$key]['expert'] = true;
+                                } else {
+                                    $tempresults[$key]['expert'] = false;
+                                }
+                                $tempresults[$key]['item_level'] = ($tempresults[$key]['column2']==='-' ? 0 : intval($tempresults[$key]['column2']));
+                                break;
+                            case 'gathering':
+                                if (isset($tempresults[$key]['extraicon'])) {
+                                    $tempresults[$key]['collectable'] = true;
+                                } else {
+                                    $tempresults[$key]['collectable'] = false;
+                                }
+                                if (isset($tempresults[$key]['hidden'])) {
+                                    $tempresults[$key]['hidden'] = true;
+                                } else {
+                                    $tempresults[$key]['hidden'] = false;
+                                }
+                                $tempresults[$key]['level'] = ($tempresults[$key]['column1']==='-' ? 0 : intval($tempresults[$key]['column1']));
+                                if (isset($tempresults[$key]['star4'])) {
+                                    $tempresults[$key]['stars'] = 4;
+                                } else {
+                                    if (isset($tempresults[$key]['star3'])) {
+                                        $tempresults[$key]['stars'] = 3;
+                                    } else {
+                                        if (isset($tempresults[$key]['star2'])) {
+                                            $tempresults[$key]['stars'] = 2;
+                                        } else {
+                                            if (isset($tempresults[$key]['star1'])) {
+                                                $tempresults[$key]['stars'] = 1;
+                                            } else {
+                                                $tempresults[$key]['stars'] = 0;
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            case 'shop':
+                                $tempresults[$key]['area'] = preg_replace('/\s{1,}((Other Locations)|(ほか)|(Etc.)|(Anderer Ort))/mi', '', str_replace(['<i>', '</i>'], '', trim($tempresults[$key]['column1'])));
+                                break;
+                            case 'text_command':
+                                if (in_array($tempresults[$key]['column1'], ['Yes', '○', 'oui', '○']) === true) {
+                                    $tempresults[$key]['Windows'] = true;
+                                } else {
+                                    $tempresults[$key]['Windows'] = false;
+                                }
+                                if (in_array($tempresults[$key]['column2'], ['Yes', '○', 'oui', '○']) === true) {
+                                    $tempresults[$key]['PS4'] = true;
+                                } else {
+                                    $tempresults[$key]['PS4'] = false;
+                                }
+                                if (in_array($tempresults[$key]['column3'], ['Yes', '○', 'oui', '○']) === true) {
+                                    $tempresults[$key]['Mac'] = true;
+                                } else {
+                                    $tempresults[$key]['Mac'] = false;
+                                }
+                                break;
+                        }
+                        break;
                     case 'Character':
                         #Decode html entities
                         $tempresults[$key]['name'] = html_entity_decode($tempresult['name'], ENT_QUOTES | ENT_HTML5);
@@ -505,7 +620,7 @@ trait Parsers
                 }
                 
                 #Unset stuff for cleaner look. Since it does not trigger warnings if variable is missing, no need to "switch" it
-                unset($tempresults[$key]['crest1'], $tempresults[$key]['crest2'], $tempresults[$key]['crest3'], $tempresults[$key]['fccrestimg1'], $tempresults[$key]['fccrestimg2'], $tempresults[$key]['fccrestimg3'], $tempresults[$key]['gcname'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcrankicon'], $tempresults[$key]['fcid'], $tempresults[$key]['fcname'], $tempresults[$key]['lsrank'], $tempresults[$key]['lsrankicon'], $tempresults[$key]['jobicon'], $tempresults[$key]['jobform'], $tempresults[$key]['estate_greeting'],  $tempresults[$key]['estate_address'],  $tempresults[$key]['estate_name'], $tempresults[$key]['cityicon'], $tempresults[$key]['guardianicon'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcicon'], $tempresults[$key]['uppertitle'], $tempresults[$key]['undertitle'], $tempresults[$key]['pvpid'], $tempresults[$key]['pvpname'], $tempresults[$key]['pvpcrest1'], $tempresults[$key]['pvpcrest2'], $tempresults[$key]['pvpcrest3'], $tempresults[$key]['rank1'], $tempresults[$key]['rank2'], $tempresults[$key]['id']);
+                unset($tempresults[$key]['crest1'], $tempresults[$key]['crest2'], $tempresults[$key]['crest3'], $tempresults[$key]['fccrestimg1'], $tempresults[$key]['fccrestimg2'], $tempresults[$key]['fccrestimg3'], $tempresults[$key]['gcname'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcrankicon'], $tempresults[$key]['fcid'], $tempresults[$key]['fcname'], $tempresults[$key]['lsrank'], $tempresults[$key]['lsrankicon'], $tempresults[$key]['jobicon'], $tempresults[$key]['jobform'], $tempresults[$key]['estate_greeting'],  $tempresults[$key]['estate_address'],  $tempresults[$key]['estate_name'], $tempresults[$key]['cityicon'], $tempresults[$key]['guardianicon'], $tempresults[$key]['gcrank'], $tempresults[$key]['gcicon'], $tempresults[$key]['uppertitle'], $tempresults[$key]['undertitle'], $tempresults[$key]['pvpid'], $tempresults[$key]['pvpname'], $tempresults[$key]['pvpcrest1'], $tempresults[$key]['pvpcrest2'], $tempresults[$key]['pvpcrest3'], $tempresults[$key]['rank1'], $tempresults[$key]['rank2'], $tempresults[$key]['id'], $tempresults[$key]['column1'], $tempresults[$key]['column2'], $tempresults[$key]['column3'], $tempresults[$key]['star1'], $tempresults[$key]['star2'], $tempresults[$key]['star3'], $tempresults[$key]['extraicon']);
                 
                 #Adding to results
                 $this->addToResults($resultkey, $resultsubkey, $tempresults[$key], @$tempresult['id']);
@@ -530,7 +645,7 @@ trait Parsers
             $this->result['benchmark']['memorypeak'] = $this->converters->memory(memory_get_peak_usage(true));
         }
         
-        #Doing achievements details last to get proper order of timeings for benchmarking
+        #Doing achievements details last to get proper order of timings for benchmarking
         if ($this->type == 'Achievements' && $this->typesettings['details']) {
             foreach ($this->result[$resultkey][$this->typesettings['id']][$resultsubkey] as $key=>$ach) {
                 $this->getCharacterAchievements($this->typesettings['id'], $key, 1, false, true);
@@ -542,7 +657,6 @@ trait Parsers
                 $this->getCharacterAchievements($this->typesettings['id'], false, strval($kindid), false, $this->typesettings['details'], $this->typesettings['only_owned']);
             }
         }
-        
         $this->allpagesproc($resultkey, $resultsubkey);
 
         return $this;
@@ -592,6 +706,9 @@ trait Parsers
                 if ($result != 404 || empty($this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$this->typesettings['achievementId']])) {
                     $this->result[$resultkey][$this->typesettings['id']][$resultsubkey][$this->typesettings['achievementId']] = $result;
                 }
+                break;
+            case 'Database':
+                $this->result[$resultkey][$resultsubkey][$id] = $result;
                 break;
             case 'banners':
             case 'topics':
@@ -672,6 +789,7 @@ trait Parsers
                 'status',
                 'GrandCompanyRanking',
                 'FreeCompanyRanking',
+                'Database',
             ])) {
             switch($this->type) {
                 case 'CharacterFriends':
@@ -685,6 +803,10 @@ trait Parsers
                 case 'FreeCompanyRanking':
                     $current_page = $this->result[$resultkey][$this->typesettings['week']]['pageCurrent'];
                     $total_page = $this->result[$resultkey][$this->typesettings['week']]['pageTotal'];
+                    break;
+                case 'Database':
+                    $current_page = $this->result[$resultkey][$this->typesettings['type']]['pageCurrent'];
+                    $total_page = $this->result[$resultkey][$this->typesettings['type']]['pageTotal'];
                     break;
                 default:
                     $current_page = $this->result[$resultkey]['pageCurrent'];
@@ -733,6 +855,11 @@ trait Parsers
                 case 'searchPvPTeam':
                     for ($i = $current_page; $i <= $total_page; $i++) {
                         $this->searchPvPTeam($this->typesettings['name'], $this->typesettings['server'], $this->typesettings['order'], $i);
+                    }
+                    break;
+                case 'Database':
+                    for ($i = $current_page; $i <= $total_page; $i++) {
+                        $this->getDatabaseList($this->typesettings['type'], $i);
                     }
                     break;
                 case 'topics':
@@ -794,6 +921,21 @@ trait Parsers
                 }
                 if (isset($pages[0]['total']) && is_numeric($pages[0]['total'])) {
                     $this->result[$resultkey][$this->typesettings['week']]['total'] = $pages[0]['total'];
+                }
+                break;
+            case 'Database':
+                if (isset($pages[0]['pageCurrent']) && is_numeric($pages[0]['pageCurrent'])) {
+                    $this->result[$resultkey][$this->typesettings['type']]['pageCurrent'] = $pages[0]['pageCurrent'];
+                } else {
+                    $this->result[$resultkey][$this->typesettings['type']]['pageCurrent'] = 1;
+                }
+                if (isset($pages[0]['pageTotal']) && is_numeric($pages[0]['pageTotal'])) {
+                    $this->result[$resultkey][$this->typesettings['type']]['pageTotal'] = $pages[0]['pageTotal'];
+                } else {
+                    $this->result[$resultkey][$this->typesettings['type']]['pageTotal'] = $this->result[$resultkey][$this->typesettings['type']]['pageCurrent'];
+                }
+                if (isset($pages[0]['total']) && is_numeric($pages[0]['total'])) {
+                    $this->result[$resultkey][$this->typesettings['type']]['total'] = $pages[0]['total'];
                 }
                 break;
             default:

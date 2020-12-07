@@ -91,6 +91,24 @@ class Test
         $this->Lodestone->getFreeCompanyRanking('weekly', 0, 'Cerberus', '', 1);
         $this->tableline('Free Company Ranking', $this->Lodestone->getResult()['FreeCompanyRanking']['weekly'][0]);
         
+        #Checking database
+        $this->Lodestone->getDatabaseList('achievement', 1);
+        $this->tableline('Playguide: achievements', $this->Lodestone->getResult()['database']['achievement']);
+        $this->Lodestone->getDatabaseList('quest', 1);
+        $this->tableline('Playguide: quests', $this->Lodestone->getResult()['database']['quest']);
+        $this->Lodestone->getDatabaseList('duty', 1);
+        $this->tableline('Playguide: duties', $this->Lodestone->getResult()['database']['duty']);
+        $this->Lodestone->getDatabaseList('item', 1);
+        $this->tableline('Playguide: items', $this->Lodestone->getResult()['database']['item']);
+        $this->Lodestone->getDatabaseList('recipe', 1);
+        $this->tableline('Playguide: recipes', $this->Lodestone->getResult()['database']['recipe']);
+        $this->Lodestone->getDatabaseList('gathering', 1);
+        $this->tableline('Playguide: gathering', $this->Lodestone->getResult()['database']['gathering']);
+        $this->Lodestone->getDatabaseList('shop', 1);
+        $this->tableline('Playguide: shops', $this->Lodestone->getResult()['database']['shop']);
+        $this->Lodestone->getDatabaseList('text_command', 1);
+        $this->tableline('Playguide: text commands', $this->Lodestone->getResult()['database']['text_command']);
+        
         #Checking Errors
         $this->Lodestone->getFreeCompany('1');
         $this->tableline('Non-existant free company', @$this->Lodestone->getResult()['freecompanies']['1'], true);

@@ -143,6 +143,23 @@ class Api
         $this->typesettings['achievementId'] = $achievementId;
         return $this->parse();
     }
+    
+    #############
+    #Database functions
+    #############
+    public function getDatabaseList(string $type, int $page = 1)
+    {
+        #Ensure we have lowercase for consistency
+        $type = strtolower($type);
+        if (!in_array($type, ['item', 'duty', 'quest', 'recipe', 'gathering', 'achievement', 'shop', 'text_command'])) {
+            throw new \UnexpectedValueException('Unsupported type of database \''.$type.'\' element was requested');
+        }
+        $page = $this->pageCheck($page);
+        $this->url = sprintf($this->language.Routes::LODESTONE_DATABASE_URL.'?page='.$page, $type);
+        $this->type = 'Database';
+        $this->typesettings['type'] = $type;
+        return $this->parse();
+    }
 
     #############
     #Groups functions
