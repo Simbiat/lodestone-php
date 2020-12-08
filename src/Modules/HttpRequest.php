@@ -32,6 +32,7 @@ class HttpRequest
     const HTTP_OK = 200;
     const HTTP_PERM_REDIRECT = 308;
     const HTTP_SERVICE_NOT_AVAILABLE = 503;
+    const HTTP_FORBIDDEN = 403;
     const HTTP_NOT_FOUND = 404;
     
     public function __construct($useragent = "")
@@ -74,6 +75,8 @@ class HttpRequest
             throw new \Exception('Requested page was not found, '.$httpCode, $httpCode);
         } elseif ($httpCode == self::HTTP_SERVICE_NOT_AVAILABLE) {
             throw new \Exception('Lodestone not available, '.$httpCode, $httpCode);
+        } elseif ($httpCode == self::HTTP_FORBIDDEN) {
+            throw new \Exception('Requests are (temporary) blocked, '.$httpCode, $httpCode);
         } elseif ($httpCode == 0) {
             throw new \Exception($curlerror, $httpCode);
         } elseif ($httpCode < self::HTTP_OK || $httpCode > self::HTTP_PERM_REDIRECT) {

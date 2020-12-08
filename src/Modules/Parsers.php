@@ -284,7 +284,7 @@ trait Parsers
                     case 'maintenance':
                     case 'updates':
                     case 'status':
-                        $tempresults[$key]['url'] = $this->language.Routes::LODESTONE_URL_BASE.$tempresult['url'];
+                        $tempresults[$key]['url'] = sprintf(Routes::LODESTONE_URL_BASE, $this->language).$tempresult['url'];
                         break;
                     case 'deepdungeon':
                         $tempresults[$key]['job'] = [
@@ -393,20 +393,20 @@ trait Parsers
                         $tempresults[$key]['name'] = str_replace(['<i>', '</i>'], '', trim($tempresults[$key]['name']));
                         switch($this->typesettings['type']) {
                             case 'achievement':
-                                $tempresults[$key]['reward'] = ($tempresults[$key]['column1']==='-' ? NULL : $tempresults[$key]['column1']);
+                                $tempresults[$key]['reward'] = (trim($tempresults[$key]['column1'])==='-' ? NULL : trim($tempresults[$key]['column1']));
                                 $tempresults[$key]['points'] = intval(($tempresults[$key]['column2'] ?? 0));
                                 break;
                             case 'quest':
-                                $tempresults[$key]['area'] = ($tempresults[$key]['column1']==='-' ? NULL : $tempresults[$key]['column1']);
+                                $tempresults[$key]['area'] = (trim($tempresults[$key]['column1'])==='-' ? NULL : trim($tempresults[$key]['column1']));
                                 $tempresults[$key]['character_level'] = intval(($tempresults[$key]['column2'] ?? 0));
                                 break;
                             case 'duty':
                                 $tempresults[$key]['character_level'] = intval(($tempresults[$key]['column1'] ?? 0));
-                                $tempresults[$key]['item_level'] = ($tempresults[$key]['column2']==='-' ? 0 : intval($tempresults[$key]['column2']));
+                                $tempresults[$key]['item_level'] = (trim($tempresults[$key]['column2'])==='-' ? 0 : intval($tempresults[$key]['column2']));
                                 break;
                             case 'item':
-                                $tempresults[$key]['item_level'] = ($tempresults[$key]['column1']==='-' ? 0 : intval($tempresults[$key]['column1']));
-                                $tempresults[$key]['character_level'] = ($tempresults[$key]['column2']==='-' ? 0 : intval($tempresults[$key]['column2']));
+                                $tempresults[$key]['item_level'] = (trim($tempresults[$key]['column1'])==='-' ? 0 : intval($tempresults[$key]['column1']));
+                                $tempresults[$key]['character_level'] = (trim($tempresults[$key]['column2'])==='-' ? 0 : intval($tempresults[$key]['column2']));
                                 break;
                             case 'recipe':
                                 if (isset($tempresults[$key]['extraicon'])) {
@@ -417,7 +417,7 @@ trait Parsers
                                 if (!isset($tempresults[$key]['master'])) {
                                     $tempresults[$key]['master'] = NULL;
                                 }
-                                $tempresults[$key]['recipe_level'] = ($tempresults[$key]['column1']==='-' ? 0 : intval($tempresults[$key]['column1']));
+                                $tempresults[$key]['recipe_level'] = (trim($tempresults[$key]['column1'])==='-' ? 0 : intval($tempresults[$key]['column1']));
                                 if (isset($tempresults[$key]['star4'])) {
                                     $tempresults[$key]['stars'] = 4;
                                 } else {
@@ -440,7 +440,7 @@ trait Parsers
                                 } else {
                                     $tempresults[$key]['expert'] = false;
                                 }
-                                $tempresults[$key]['item_level'] = ($tempresults[$key]['column2']==='-' ? 0 : intval($tempresults[$key]['column2']));
+                                $tempresults[$key]['item_level'] = (trim($tempresults[$key]['column2'])==='-' ? 0 : intval($tempresults[$key]['column2']));
                                 break;
                             case 'gathering':
                                 if (isset($tempresults[$key]['extraicon'])) {
@@ -453,7 +453,7 @@ trait Parsers
                                 } else {
                                     $tempresults[$key]['hidden'] = false;
                                 }
-                                $tempresults[$key]['level'] = ($tempresults[$key]['column1']==='-' ? 0 : intval($tempresults[$key]['column1']));
+                                $tempresults[$key]['level'] = (trim($tempresults[$key]['column1'])==='-' ? 0 : intval($tempresults[$key]['column1']));
                                 if (isset($tempresults[$key]['star4'])) {
                                     $tempresults[$key]['stars'] = 4;
                                 } else {
@@ -859,7 +859,7 @@ trait Parsers
                     break;
                 case 'Database':
                     for ($i = $current_page; $i <= $total_page; $i++) {
-                        $this->getDatabaseList($this->typesettings['type'], $i);
+                        $this->getDatabaseList($this->typesettings['type'], $this->typesettings['category'], $this->typesettings['subcatecory'], $this->typesettings['search'], $i);
                     }
                     break;
                 case 'topics':
@@ -1135,7 +1135,7 @@ trait Parsers
             if (empty($tempresult['shop'])) {
                     $tempresults[$key]['trading']['shop'] = NULL;
                 } else {
-                    $tempresults[$key]['trading']['shop'] = $this->language.Routes::LODESTONE_URL_BASE.$tempresult['shop'];
+                    $tempresults[$key]['trading']['shop'] = sprintf(Routes::LODESTONE_URL_BASE, $this->language).$tempresult['shop'];
             }
             #Customization
             $tempresults[$key]['customization'] = [

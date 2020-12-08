@@ -81,7 +81,7 @@ class Api
     #############
     public function getCharacter(string $id)
     {
-        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_URL, $id);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_CHARACTERS_URL, $id);
         $this->type = 'Character';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -89,7 +89,7 @@ class Api
     
     public function getCharacterJobs(string $id)
     {
-        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_JOBS_URL, $id);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_CHARACTERS_JOBS_URL, $id);
         $this->type = 'CharacterJobs';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -98,7 +98,7 @@ class Api
     public function getCharacterFriends(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FRIENDS_URL.'?page='.$page, $id);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_CHARACTERS_FRIENDS_URL, $id, $page);
         $this->type = 'CharacterFriends';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -107,7 +107,7 @@ class Api
     public function getCharacterFollowing(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_FOLLOWING_URL.'?page='.$page, $id);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_CHARACTERS_FOLLOWING_URL, $id, $page);
         $this->type = 'CharacterFollowing';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -129,13 +129,13 @@ class Api
         }
         if ($achievementId !== false) {
             $this->type = 'AchievementDetails';
-            $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_DET_URL, $id, $achievementId);
+            $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_ACHIEVEMENTS_DET_URL, $id, $achievementId);
         } else {
             $this->type = 'Achievements';
             if ($category === false) {
-                $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_URL, $id, $this->converters->getAchKindId(strval($kind)));
+                $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_ACHIEVEMENTS_URL, $id, $this->converters->getAchKindId(strval($kind)));
             } else {
-                $this->url = sprintf($this->language.Routes::LODESTONE_ACHIEVEMENTS_CAT_URL, $id, $this->converters->getAchCatId(strval($kind)));
+                $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_ACHIEVEMENTS_CAT_URL, $id, $this->converters->getAchCatId(strval($kind)));
             }
         }
         $this->typesettings['id'] = $id;
@@ -143,30 +143,13 @@ class Api
         $this->typesettings['achievementId'] = $achievementId;
         return $this->parse();
     }
-    
-    #############
-    #Database functions
-    #############
-    public function getDatabaseList(string $type, int $page = 1)
-    {
-        #Ensure we have lowercase for consistency
-        $type = strtolower($type);
-        if (!in_array($type, ['item', 'duty', 'quest', 'recipe', 'gathering', 'achievement', 'shop', 'text_command'])) {
-            throw new \UnexpectedValueException('Unsupported type of database \''.$type.'\' element was requested');
-        }
-        $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_DATABASE_URL.'?page='.$page, $type);
-        $this->type = 'Database';
-        $this->typesettings['type'] = $type;
-        return $this->parse();
-    }
 
     #############
     #Groups functions
-    #############
+    #############    
     public function getFreeCompany(string $id)
     {
-        $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_URL, $id);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_FREECOMPANY_URL, $id);
         $this->type = 'FreeCompany';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -175,7 +158,7 @@ class Api
     public function getFreeCompanyMembers(string $id, int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_MEMBERS_URL.'?page='.$page, $id);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_FREECOMPANY_MEMBERS_URL, $id, $page);
         $this->type = 'FreeCompanyMembers';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -185,9 +168,9 @@ class Api
     {
         $page = $this->pageCheck($page);
         if (preg_match('/[a-zA-Z0-9]{40}/mi', $id)) {
-            $this->url = sprintf($this->language.Routes::LODESTONE_CROSSWORLD_LINKSHELL_MEMBERS_URL.'?page='.$page, $id);
+            $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_CROSSWORLD_LINKSHELL_MEMBERS_URL, $id, $page);
         } else {
-            $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_MEMBERS_URL.'?page='.$page, $id);
+            $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_LINKSHELL_MEMBERS_URL, $id, $page);
         }
         $this->type = 'LinkshellMembers';
         $this->typesettings['id'] = $id;
@@ -196,7 +179,7 @@ class Api
 
     public function getPvPTeam(string $id)
     {
-        $this->url = sprintf($this->language.Routes::LODESTONE_PVPTEAM_MEMBERS_URL, $id);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_PVPTEAM_MEMBERS_URL, $id);
         $this->type = 'PvPTeamMembers';
         $this->typesettings['id'] = $id;
         return $this->parse();
@@ -205,6 +188,30 @@ class Api
     #############
     #Search functions
     #############
+    public function searchDatabase(string $type, int $category = 0, int $subcatecory = 0, string $search = '', int $page = 1)
+    {
+        #Ensure we have lowercase for consistency
+        $type = strtolower($type);
+        if (!in_array($type, ['item', 'duty', 'quest', 'recipe', 'gathering', 'achievement', 'shop', 'text_command'])) {
+            throw new \UnexpectedValueException('Unsupported type of database \''.$type.'\' element was requested');
+        }
+        $page = $this->pageCheck($page);
+        $query = $this->queryBuilder([
+            'db_search_category' => $type,
+            'category2' => $category,
+            'category3' => $subcatecory,
+            'q' => str_ireplace(' ', '+', $search),
+            'page' => $page,
+        ]);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_DATABASE_URL, $type, $query);
+        $this->type = 'Database';
+        $this->typesettings['type'] = $type;
+        $this->typesettings['category'] = $category;
+        $this->typesettings['subcatecory'] = $subcatecory;
+        $this->typesettings['search'] = $search;
+        return $this->parse();
+    }
+    
     public function searchCharacter(string $name = '', string $server = '', string $classjob = '', string $race_tribe = '', $gcid = '', $blog_lang = '', string $order = '', int $page = 1)
     {
         $page = $this->pageCheck($page);
@@ -236,7 +243,7 @@ class Api
             'order' => $this->converters->getSearchOrderId($order),
             'page' => $page,
         ]));
-        $this->url = sprintf($this->language.Routes::LODESTONE_CHARACTERS_SEARCH_URL.$query);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_CHARACTERS_SEARCH_URL, $query);
         $this->type = 'searchCharacter';
         $this->typesettings['name'] = $name;
         $this->typesettings['server'] = $server;
@@ -291,7 +298,7 @@ class Api
             'order' => $this->converters->getSearchOrderId($order),
             'page' => $page,
         ]));
-        $this->url = sprintf($this->language.Routes::LODESTONE_FREECOMPANY_SEARCH_URL.$query);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_FREECOMPANY_SEARCH_URL, $query);
         $this->type = 'searchFreeCompany';
         $this->typesettings['name'] = $name;
         $this->typesettings['server'] = $server;
@@ -317,9 +324,9 @@ class Api
             'page' => $page,
         ]);
         if ($crossworld) {
-            $this->url = sprintf($this->language.Routes::LODESTONE_CROSSWORLD_LINKSHELL_SEARCH_URL.$query);
+            $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_CROSSWORLD_LINKSHELL_SEARCH_URL, $query);
         } else {
-            $this->url = sprintf($this->language.Routes::LODESTONE_LINKSHELL_SEARCH_URL.$query);
+            $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_LINKSHELL_SEARCH_URL, $query);
         }
         $this->type = 'searchLinkshell';
         $this->typesettings['name'] = $name;
@@ -338,7 +345,7 @@ class Api
             'order' => $this->converters->getSearchOrderId($order),
             'page' => $page,
         ]);
-        $this->url = sprintf($this->language.Routes::LODESTONE_PVPTEAM_SEARCH_URL.$query);
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_PVPTEAM_SEARCH_URL, $query);
         $this->type = 'searchPvPTeam';
         $this->typesettings['name'] = $name;
         $this->typesettings['server'] = $server;
@@ -358,7 +365,7 @@ class Api
             'dcgroup' => $dcgroup,
             'rank_type' => $this->converters->getFeastRankId($rank_type),
         ]);
-        $this->url = sprintf($this->language.Routes::LODESTONE_FEAST, strval($season)).$query;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_FEAST, strval($season), $query);
         $this->type = 'feast';
         $this->typesettings['season'] = $season;
         return $this->parse();
@@ -380,7 +387,7 @@ class Api
             'solo_party' => $solo_party,
             'subtype' => $this->converters->getDeepDungeonClassId($subtype),
         ]);
-        $this->url = sprintf($this->language.Routes::LODESTONE_DEEP_DUNGEON, strval($id)).$query;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_DEEP_DUNGEON, strval($id), $query);
         if (empty($id)) {
             $id = 1;
         }
@@ -420,7 +427,7 @@ class Api
             'match' => $this->converters->matchesCount($match),
             'gcid' => $this->converters->getSearchGCId($gcid),
         ]);
-        $this->url = $this->language.Routes::LODESTONE_FRONTLINE.$week_month.'/'.$week.'/'.$query;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_FRONTLINE, $week_month, $week, $query);
         $this->type = 'frontline';
         $this->typesettings['week'] = $week;
         $this->typesettings['week_month'] = $week_month;
@@ -448,7 +455,7 @@ class Api
             'gcid' => $this->converters->getSearchGCId($gcid),
             'page' => $page,
         ]);
-        $this->url = $this->language.Routes::LODESTONE_GCRANKING.$week_month.'/'.$week.'/'.$query;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_GCRANKING, $week_month, $week, $query);
         $this->type = 'GrandCompanyRanking';
         $this->typesettings['week'] = $week;
         $this->typesettings['week_month'] = $week_month;
@@ -478,7 +485,7 @@ class Api
             'gcid' => $this->converters->getSearchGCId($gcid),
             'page' => $page,
         ]);
-        $this->url = $this->language.Routes::LODESTONE_FCRANKING.$week_month.'/'.$week.'/'.$query;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_FCRANKING, $week_month, $week, $query);
         $this->type = 'FreeCompanyRanking';
         $this->typesettings['week'] = $week;
         $this->typesettings['week_month'] = $week_month;
@@ -492,14 +499,14 @@ class Api
     #############
     public function getLodestoneBanners()
     {
-        $this->url = $this->language.Routes::LODESTONE_BANNERS;
+        $this->url = sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_BANNERS;
         $this->type = 'banners';
         return $this->parse();
     }
 
     public function getLodestoneNews()
     {
-        $this->url = $this->language.Routes::LODESTONE_NEWS;
+        $this->url = sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_NEWS;
         $this->type = 'news';
         return $this->parse();
     }
@@ -507,7 +514,7 @@ class Api
     public function getLodestoneTopics(int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = $this->language.Routes::LODESTONE_TOPICS.'?page='.$page;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_TOPICS, $page);
         $this->type = 'topics';
         return $this->parse();
     }
@@ -515,7 +522,7 @@ class Api
     public function getLodestoneNotices(int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = $this->language.Routes::LODESTONE_NOTICES.'?page='.$page;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_NOTICES, $page);
         $this->type = 'notices';
         return $this->parse();
     }
@@ -523,7 +530,7 @@ class Api
     public function getLodestoneMaintenance(int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = $this->language.Routes::LODESTONE_MAINTENANCE.'?page='.$page;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_MAINTENANCE, $page);
         $this->type = 'maintenance';
         return $this->parse();
     }
@@ -531,7 +538,7 @@ class Api
     public function getLodestoneUpdates(int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = $this->language.Routes::LODESTONE_UPDATES.'?page='.$page;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_UPDATES, $page);
         $this->type = 'updates';
         return $this->parse();
     }
@@ -539,14 +546,14 @@ class Api
     public function getLodestoneStatus(int $page = 1)
     {
         $page = $this->pageCheck($page);
-        $this->url = $this->language.Routes::LODESTONE_STATUS.'?page='.$page;
+        $this->url = sprintf(sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_STATUS, $page);
         $this->type = 'status';
         return $this->parse();
     }
 
     public function getWorldStatus(bool $worlddetails = false)
     {
-        $this->url = $this->language.Routes::LODESTONE_WORLD_STATUS;
+        $this->url = sprintf(Routes::LODESTONE_URL_BASE, $this->language).Routes::LODESTONE_WORLD_STATUS;
         $this->type = 'worlds';
         $this->typesettings['worlddetails'] = $worlddetails;
         return $this->parse();
@@ -581,19 +588,19 @@ class Api
     #############
     #Settings functions
     #############
-    public function setUseragent(string $useragent = "")
+    public function setUseragent(string $useragent = '')
     {
         $this->useragent = $useragent;
         return $this;
     }
     
-    public function setLanguage(string $language = "")
+    public function setLanguage(string $language = '')
     {
         if (!in_array($language, self::langallowed)) {
-            $language = "na";
+            $language = 'na';
         }
         if (in_array($language, ['jp', 'ja'])) {$language = 'jp';}
-        $this->language = 'https://'.$language;
+        $this->language = $language;
         return $this;
     }
     
