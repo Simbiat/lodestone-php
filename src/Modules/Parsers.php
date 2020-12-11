@@ -1164,7 +1164,7 @@ trait Parsers
             $this->errorRegister('No matches found for regex ('.$regexid.')', 'parse');
             return false;
         } elseif ($matchescount === false) {
-            $this->errorRegister(array_flip(get_defined_constants(true)['pcre'])[$errorcode], 'parse');
+            $this->errorRegister('Regex ('.$regexid.') failed with error code '.$errorcode, 'parse');
             return false;
         }
         return true;
