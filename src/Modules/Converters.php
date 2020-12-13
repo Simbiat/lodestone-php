@@ -1111,6 +1111,146 @@ class Converters {
         return $id;
     }
     
+    public function getGuardianId(string $guardian): string
+    {
+        switch(strtolower($guardian)) {
+            case 'althyk, the keeper':
+            case 'アルジク':
+            case 'althyk, le contemplateur':
+            case 'althyk - der hüter':
+            case 'althyk':
+                $id = '1'; break;
+            case 'azeyma, the warden':
+            case 'アーゼマ':
+            case 'azeyma, la gardienne':
+            case 'azeyma - die aufseherin':
+            case 'azeyma':
+                $id = '2'; break;
+            case 'byregot, the builder':
+            case 'ビエルゴ':
+            case 'byregot, l\'artisan':
+            case 'byregot - der erbauer':
+            case 'byregot':
+                $id = '3'; break;
+            case 'halone, the fury':
+            case 'ハルオーネ':
+            case 'halone, la conquérante':
+            case 'halone - die furie':
+            case 'halone':
+                $id = '4'; break;
+            case 'llymlaen, the navigator':
+            case 'リムレーン':
+            case 'llymlaen, la navigatrice':
+            case 'llymlaen - die lotsin':
+            case 'llymlaen':
+                $id = '5'; break;
+            case 'menphina, the lover':
+            case 'メネフィナ':
+            case 'menphina, la bien-aimante':
+            case 'menphina - die liebende':
+            case 'menphina':
+                $id = '6'; break;
+            case 'nald\'thal, the traders':
+            case 'ナルザル':
+            case 'nald\'thal, les marchands':
+            case 'nald\'thal - die kaufleute':
+            case 'nald\'thal':
+                $id = '7'; break;
+            case 'nophica, the matron':
+            case 'ノフィカ':
+            case 'nophica, la mère':
+            case 'nophica - die mutter':
+            case 'nophica':
+                $id = '8'; break;
+            case 'nymeia, the spinner':
+            case 'ニメーヤ':
+            case 'nymeia, la fileuse':
+            case 'nymeia - die norne':
+            case 'nymeia':
+                $id = '9'; break;
+            case 'oschon, the wanderer':
+            case 'オシュオン':
+            case 'oschon, le vagabond':
+            case 'oschon - der wanderer':
+            case 'oschon':
+                $id = '10'; break;
+            case 'rhalgr, the destroyer':
+            case 'ラールガー':
+            case 'rhalgr, le destructeur':
+            case 'rhalgr - der zerstörer':
+            case 'rhalgr':
+                $id = '11'; break;
+            case 'thaliak, the scholar':
+            case 'サリャク':
+            case 'thaliak, l\'érudit':
+            case 'thaliak - der forscher':
+            case 'thaliak':
+                $id = '12'; break;
+            default:
+                $id = '';
+        }
+        return $id;
+    }
+    
+    public function getCityId(string $city): string
+    {
+        #IDs are based on what I have in my own database, there is no other meaning behind them
+        switch(strtolower($city)) {
+            case 'gridania':
+            case 'the lavender beds':
+            case 'グリダニア':
+            case 'ラベンダーベッド':
+            case 'lavandière':
+            case 'lavendelbeete':
+                $id = '2'; break;
+            case 'limsa lominsa':
+            case 'mist':
+            case 'リムサ・ロミンサ':
+            case 'ミスト・ヴィレッジ':
+            case 'brumée':
+            case 'dorf des Nebels':
+                $id = '4'; break;
+            case 'ul\'dah':
+            case 'the goblet':
+            case 'ウルダハ':
+            case 'la Coupe':
+            case 'ゴブレットビュート':
+            case 'kelchkuppe':
+                $id = '5'; break;
+            case 'kugane':
+            case 'クガネ':
+            case 'shirogane':
+            case 'シロガネ':
+                $id = '7'; break;
+            default:
+                $id = '';
+        }
+        return $id;
+    }
+    
+    public function getGrandCompanyId(string $gc): string
+    {
+        switch(strtolower($gc)) {
+            case 'maelstrom':
+            case '黒渦団':
+            case 'mahlstrom':
+                $id = '1'; break;
+            case 'order of the twin adder':
+            case '双蛇党':
+            case 'ordre des deux vipères':
+            case 'bruderschaft':
+                $id = '2'; break;
+            case 'immortal flames':
+            case '不滅隊':
+            case 'immortels':
+            case 'legion':
+                $id = '3'; break;
+            default:
+                $id = '';
+        }
+        return $id;
+    }
+    
     public function memory($bytes): string
     {
         $unit=array('b','kb','mb','gb','tb','pb');
