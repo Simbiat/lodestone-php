@@ -1251,6 +1251,130 @@ class Converters {
         return $id;
     }
     
+    public function getGrandCompanyName(int $id = 1, string $lang = 'en'): string
+    {
+        if (!in_array(strtolower($lang), ['na', 'jp', 'ja', 'eu', 'fr', 'de', 'en'])) {
+            throw new \UnexpectedValueException('Unsupported language \''.$lang.'\' requested for Grand Company name');
+        }
+        switch($id) {
+            case 1:
+                switch(strtolower($lang)) {
+                    case 'na':
+                    case 'eu':
+                    case 'en':
+                    case 'fr':
+                        $name = 'Maelstrom'; break;
+                    case 'jp':
+                    case 'ja':
+                        $name = '黒渦団'; break;
+                    case 'de':
+                        $name = 'Mahlstrom'; break;
+                }
+                break;
+            case 2:
+                switch(strtolower($lang)) {
+                    case 'na':
+                    case 'eu':
+                    case 'en':
+                        $name = 'Order of the Twin Adder'; break;
+                    case 'jp':
+                    case 'ja':
+                        $name = '双蛇党'; break;
+                    case 'fr':
+                        $name = 'Ordre des Deux Vipères'; break;
+                    case 'de':
+                        $name = 'Bruderschaft'; break;
+                }
+                break;
+            case 3:
+                switch(strtolower($lang)) {
+                    case 'na':
+                    case 'eu':
+                    case 'en':
+                        $name = 'Immortal Flames'; break;
+                    case 'jp':
+                    case 'ja':
+                        $name = '不滅隊'; break;
+                    case 'fr':
+                        $name = 'Immortels'; break;
+                    case 'de':
+                        $name = 'Legion'; break;
+                }
+                break;
+            default:
+                $name = '';
+        }
+        return $name;
+    }
+    
+    #Returns guardian's color
+    public function colorGuardians(string $guardian): string
+    {
+        switch($this->getGuardianId($guardian)) {
+            case '1':
+                $color = '#776c3e'; break;
+            case '2':
+                $color = '#6b3e3d'; break;
+            case '3':
+                $color = '#4e3a61'; break;
+            case '4':
+                $color = '#536f7b'; break;
+            case '5':
+                $color = '#709959'; break;
+            case '6':
+                $color = '#7196a6'; break;
+            case '7':
+                $color = '#8c4f4f'; break;
+            case '8':
+                $color = '#a69453'; break;
+            case '9':
+                $color = '#465970'; break;
+            case '10':
+                $color = '#566d45'; break;
+            case '11':
+                $color = '#6b4e88'; break;
+            case '12':
+                $color = '#506b8c'; break;
+            default:
+                $color = '';
+        }
+        return $color;
+    }
+    
+    #Returns city's color
+    public function colorCities(string $city): string
+    {
+        switch($this->getCityId($city)) {
+            case '2':
+                $color = '#ffb200'; break;
+            case '4':
+                $color = '#bd0421'; break;
+            case '5':
+                $color = '#080300'; break;
+            case '7':
+                $color = '#8d5810'; break;
+            default:
+                $color = '';
+        }
+        return $color;
+    }
+    
+    #Returns grand company's color
+    public function colorGC(string $company): string
+    {
+        switch($this->getGrandCompanyId($company)) {
+            case '1':
+                $color = '#c22e46'; break;
+            case '2':
+                $color = '#e8a01f'; break;
+            case '3':
+                $color = '#414849'; break;
+            default:
+                $color = '';
+        }
+        return $color;
+    }
+    
     public function memory($bytes): string
     {
         $unit=array('b','kb','mb','gb','tb','pb');
