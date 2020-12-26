@@ -1228,6 +1228,70 @@ class Converters {
         return $id;
     }
     
+    public function getCityName(int $id = 1, string $lang = 'en'): string
+    {
+        if (!in_array(strtolower($lang), ['na', 'jp', 'ja', 'eu', 'fr', 'de', 'en'])) {
+            throw new \UnexpectedValueException('Unsupported language \''.$lang.'\' requested for City name');
+        }
+        switch($id) {
+            case 2:
+                switch(strtolower($lang)) {
+                    case 'na':
+                    case 'eu':
+                    case 'en':
+                    case 'fr':
+                    case 'de':
+                        $name = 'Gridania'; break;
+                    case 'jp':
+                    case 'ja':
+                        $name = 'グリダニア'; break;
+                }
+                break;
+            case 4:
+                switch(strtolower($lang)) {
+                    case 'na':
+                    case 'eu':
+                    case 'en':
+                    case 'fr':
+                    case 'de':
+                        $name = 'Limsa Lominsa'; break;
+                    case 'jp':
+                    case 'ja':
+                        $name = 'リムサ・ロミンサ'; break;
+                }
+                break;
+            case 5:
+                switch(strtolower($lang)) {
+                    case 'na':
+                    case 'eu':
+                    case 'en':
+                    case 'fr':
+                    case 'de':
+                        $name = 'Ul\'dah'; break;
+                    case 'jp':
+                    case 'ja':
+                        $name = 'ウルダハ'; break;
+                }
+                break;
+            case 7:
+                switch(strtolower($lang)) {
+                    case 'na':
+                    case 'eu':
+                    case 'en':
+                    case 'fr':
+                    case 'de':
+                        $name = 'Kugane'; break;
+                    case 'jp':
+                    case 'ja':
+                        $name = 'クガネ'; break;
+                }
+                break;
+            default:
+                $name = '';
+        }
+        return $name;
+    }
+    
     public function getGrandCompanyId(string $gc): string
     {
         switch(strtolower($gc)) {
