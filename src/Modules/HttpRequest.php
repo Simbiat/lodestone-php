@@ -16,9 +16,11 @@ class HttpRequest
         CURLOPT_BINARYTRANSFER => false,
         CURLOPT_HEADER => true,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_FORBID_REUSE => true,
-        CURLOPT_FRESH_CONNECT => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_2TLS,
+        #Allow cahing and reuse of already open connections
+        CURLOPT_FRESH_CONNECT => false,
+        CURLOPT_FORBID_REUSE => false,
+        #Let cURL determine appropriate HTTP version
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_NONE,
         CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_TIMEOUT => 30,
         CURLOPT_FOLLOWLOCATION => true,
