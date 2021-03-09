@@ -169,7 +169,6 @@ trait Parsers
             
             #Uncomment for debugging purposes
             #file_put_contents(dirname(__FILE__).'/regex.txt', $regex);
-            #file_put_contents(dirname(__FILE__).'/pagecount.txt', Regex::PAGECOUNT);
             #file_put_contents(dirname(__FILE__).'/html.txt', $this->html);
             
             if (!$this->regexfail(preg_match_all($regex, $this->html, $tempresults, PREG_SET_ORDER), preg_last_error(), 'main regex')) {
@@ -501,10 +500,10 @@ trait Parsers
                         $tempresults[$key]['race'] = trim(html_entity_decode($tempresult['race'], ENT_QUOTES | ENT_HTML5));
                         if ($tempresults[$key]['race'] == '----') {
                             switch(strtolower($this->language)) {
-                                case 'https://jp':
-                                case 'https://ja':
+                                case 'jp':
+                                case 'ja':
                                     $tempresults[$key]['race'] = 'ヒューラン'; break;
-                                case 'https://de':
+                                case 'de':
                                     $tempresults[$key]['race'] = 'Hyuran'; break;
                                 default:
                                     $tempresults[$key]['race'] = 'Hyur';
@@ -514,12 +513,12 @@ trait Parsers
                         $tempresults[$key]['clan'] = trim(html_entity_decode($tempresult['clan'], ENT_QUOTES | ENT_HTML5));
                         if ($tempresults[$key]['clan'] == '----') {
                             switch(strtolower($this->language)) {
-                                case 'https://jp':
-                                case 'https://ja':
+                                case 'jp':
+                                case 'ja':
                                     $tempresults[$key]['clan'] = 'ミッドランダー'; break;
-                                case 'https://fr':
+                                case 'fr':
                                     $tempresults[$key]['clan'] = 'Hyurois'; break;
-                                case 'https://de':
+                                case 'de':
                                     $tempresults[$key]['clan'] = 'Wiesländer'; break;
                                 default:
                                     $tempresults[$key]['clan'] = 'Midlander';
@@ -543,13 +542,13 @@ trait Parsers
                         #Guardian
                         if (empty($tempresults[$key]['guardian'])) {
                             switch(strtolower($this->language)) {
-                                case 'https://jp':
-                                case 'https://ja':
+                                case 'jp':
+                                case 'ja':
                                     $tempresults[$key]['guardian']['name'] = 'ハルオーネ'; break;
                                     break;
-                                case 'https://fr':
+                                case 'fr':
                                     $tempresults[$key]['guardian']['name'] = 'Halone, la Conquérante'; break;
-                                case 'https://de':
+                                case 'de':
                                     $tempresults[$key]['guardian']['name'] = 'Halone - Die Furie'; break;
                                 default:
                                     $tempresults[$key]['guardian']['name'] = 'Halone, the Fury'; break;

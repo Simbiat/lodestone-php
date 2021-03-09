@@ -23,7 +23,7 @@ class Api
     const achkinds = [2, 3, 4, 5, 6, 8, 11, 12, 13];
     
     protected string $useragent = '';
-    protected string $language = 'https://na';
+    protected string $language = 'na';
     protected bool $benchmark = false;
     protected string $url = '';
     protected string $type = '';
